@@ -13,10 +13,10 @@ class Iterator {
 
   // Essential iterator operations
   virtual reference operator*() = 0;
-  virtual iterator& operator++() = 0;    // prefix
-  virtual iterator operator++(int) = 0;  // postfix
-  virtual bool operator==(const iterator& other) const = 0;
-  virtual bool operator!=(const iterator& other) const = 0;
+  virtual Iterator& operator++() = 0;    // prefix
+  virtual Iterator operator++(int) = 0;  // postfix
+  virtual bool operator==(const Iterator& other) const = 0;
+  virtual bool operator!=(const Iterator& other) const = 0;
 };
 
 template <typename T>
@@ -29,4 +29,4 @@ struct container_traits {
 
 }  // namespace s21
 
-#endif S21_BASE_H
+#endif  // S21_BASE_H
