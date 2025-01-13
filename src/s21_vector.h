@@ -1,10 +1,11 @@
 #ifndef S21_VECTOR_H
 #define S21_VECTOR_H
 
+#include <iterator>
+
 #include "s21_base.h"
 
 namespace s21 {
-#include <iterator>
 
 template <typename T>
 class VectorIterator : public s21::Iterator<T> {
@@ -60,17 +61,28 @@ class vector {
   using const_iterator = const VectorIterator<T>;
   using size_type = typename traits::size_type;
 
-  vector() : data_(nullptr), size_(0), capacity_(0) {}
-  explicit vector(size_type n) : data_{nullptr}, size_{0}, capacity_{0} {
+  explicit vector(size_type n = kMinN)
+      : data_{nullptr}, size_{n}, capacity_{n} {
     if (n > 0) {
       data_ = new value_type[n]();
-      size_ = n;
-      capacity_ = n;
     }
   }
 
+  vector(const vector& other)
+      : data_{nullptr}, size_{other.size_}, capacity_{other.capacity_} {
+    delete[] data_;
+    data_ = new value_type[other.size_];
+  }
+
+  vector(vector&& other) noexcept
+      : data_{other.data_}, size_{other.size_}, capacity_{other.capacity_} {
+    other.data_ = nullptr;
+    other.size_ = 0;
+    other.capacity_ = 0;
+  }
+
   explicit vector(size_type size, value_type value)
-      : data_(nullptr), size_(0), capacity_(0) {
+      : data_{nullptr}, size_{0}, capacity_{0} {
     if (size > 0) {
       data_ = new value_type[size]();
       size_ = size;
@@ -83,10 +95,10 @@ class vector {
   }
 
   explicit vector(std::initializer_list<value_type> init)
-      : data_{new value_type[init.size()]}, size_{init.size()} {
-    for (size_type i{0}; i < size_; ++i) {
-      data_[i] = *(init.begin() + i);
-    }
+      : data_{new value_type[init.size()]},
+        size_{init.size()},
+        capacity_{init.size()} {
+    std::copy(init.begin(), init.end(), data_);
   }
   ~vector() { delete[] data_; }
 
@@ -107,6 +119,34 @@ class vector {
 
   size_type size() { return size_; }
 
+  vector& operator=(const vector& other) {
+    if (this != &other) {
+      delete[] data_;
+      size_ = other.size_;
+      capacity_ = other.capacity_;
+      if (capacity_ > 0) {
+        data_ = new value_type[capacity_];
+        std::copy(other.data_, other.data_ + size_, data_);
+      } else {
+        data_ = nullptr;
+      }
+    }
+    return *this;
+  }
+
+  vector& operator=(vector&& other) noexcept {
+    if (this != &other) {
+      delete[] data_;
+      data_ = other.data_;
+      size_ = other.size_;
+      capacity_ = other.capacity_;
+      other.data_ = nullptr;
+      other.size_ = 0;
+      other.capacity_ = 0;
+    }
+    return *this;
+  }
+
   reference operator[](size_type position) { return data_[position]; }
   const_reference operator[](size_type position) const {
     return data_[position];
@@ -118,15 +158,18 @@ class vector {
   value_type* data_;
   size_type size_;
   size_type capacity_;
+  static constexpr size_type kMinN{0};
 
   void resize(size_type new_capacity) {
-    value_type* new_data = new T[new_capacity];
-    for (size_type i = 0; i < size_; ++i) {
-      new_data[i] = data_[i];
+    value_type* new_data = new value_type[new_capacity];
+    size_type copy_size = std::min(size_, new_capacity);
+    for (size_type i = 0; i < copy_size; ++i) {
+      new_data[i] = std::move(data_[i]);
     }
     delete[] data_;
     data_ = new_data;
-    capacity = new_capacity;
+    capacity_ = new_capacity;
+    size_ = copy_size;
   }
 };
 
