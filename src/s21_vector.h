@@ -69,9 +69,10 @@ class vector {
   }
 
   vector(const vector& other)
-      : data_{nullptr}, size_{other.size_}, capacity_{other.capacity_} {
-    delete[] data_;
-    data_ = new value_type[other.size_];
+      : data_{other.size_ ? new value_type[other.size_] : nullptr},
+        size_{other.size_},
+        capacity_{other.size_} {
+    std::copy(other.data_, other.data_ + size_, data_);
   }
 
   vector(vector&& other) noexcept
@@ -116,6 +117,8 @@ class vector {
   VectorIterator<value_type> end() {
     return VectorIterator<value_type>(data_ + size_);
   }
+
+  bool empty() const noexcept { return size_ == 0; }
 
   size_type size() { return size_; }
 
