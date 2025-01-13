@@ -61,7 +61,7 @@ class vector {
   using size_type = typename traits::size_type;
 
   vector() : data_(nullptr), size_(0), capacity_(0) {}
-  explicit vector(size_type n) : data_(nullptr), size_(0), capacity_(0) {
+  explicit vector(size_type n) : data_{nullptr}, size_{0}, capacity_{0} {
     if (n > 0) {
       data_ = new value_type[n]();
       size_ = n;
