@@ -307,18 +307,6 @@ class vector {
   size_type size_;
   size_type capacity_;
   static constexpr size_type kMinN{0};
-
-  void resize(size_type new_capacity) {
-    value_type* new_data = new value_type[new_capacity];
-    size_type copy_size = std::min(size_, new_capacity);
-    for (size_type i = 0; i < copy_size; ++i) {
-      new_data[i] = std::move(data_[i]);
-    }
-    delete[] data_;
-    data_ = new_data;
-    capacity_ = new_capacity;
-    size_ = copy_size;
-  }
 };
 
 }  // namespace s21
