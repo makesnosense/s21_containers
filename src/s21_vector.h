@@ -65,12 +65,16 @@ class vector {
   using reference = typename traits::reference;
   using const_reference = typename traits::reference;
   using iterator = VectorIterator<T>;
+  using reverse_iterator = VectorIterator<T>;
   using const_iterator = const VectorIterator<T>;
   using size_type = typename traits::size_type;
 
   explicit vector(size_type n = kMinN)
       : data_{nullptr}, size_{n}, capacity_{n} {
     if (n > 0) {
+      if (n > max_size()) {
+        throw std::length_error("too much length");
+      }
       data_ = new value_type[n]();
     }
   }
@@ -92,6 +96,9 @@ class vector {
   explicit vector(size_type size, value_type value)
       : data_{nullptr}, size_{0}, capacity_{0} {
     if (size > 0) {
+      if (size > max_size()) {
+        throw std::length_error("too much length");
+      }
       data_ = new value_type[size]();
       size_ = size;
       capacity_ = size;
@@ -118,16 +125,145 @@ class vector {
   }
 
   size_type capacity() { return capacity_; }
-  VectorIterator<value_type> begin() {
-    return VectorIterator<value_type>(data_);
-  }
-  VectorIterator<value_type> end() {
-    return VectorIterator<value_type>(data_ + size_);
-  }
+
+  iterator begin() { return iterator(data_); }
+
+  iterator end() { return iterator(data_ + size_); }
+
+  reverse_iterator rbegin() { return reverse_iterator(data_ + size_ - 1); }
+
+  reverse_iterator rend() { return reverse_iterator(data_ - 1); }
+
+  reference front() { return data_[0]; }
+
+  reference back() { return data_[size_ - 1]; }
 
   bool empty() const noexcept { return size_ == 0; }
 
   size_type size() { return size_; }
+
+  size_type max_size() const noexcept {
+    return std::numeric_limits<size_type>::max() / sizeof(value_type);
+  }
+
+  void clear() {
+    for (size_type i = 0; i < size_; i++) {
+      data_[i].~value_type();
+    }
+    size_ = 0;
+  }
+
+  void resize(size_t n) {
+    if (n < size_) {
+      for (size_type i = n; i < size_; i++) {
+        data_[i].~value_type();
+      }
+    } else if (n > size_) {
+      if (n > capacity_) {
+        reserve(n);
+      }
+      for (size_type i = size_; i < n; i++) {
+        new (&data_[i]) value_type();
+      }
+    }
+    size_ = n;
+  }
+
+  void reserve(size_type n) {
+    if (n > max_size()) {
+      throw std::length_error("too much length");
+    }
+    if (n > capacity_) {
+      value_type* new_data = new value_type[n];
+      for (size_type i = 0; i < size_; i++) {
+        new_data[i] = std::move(data_[i]);
+      }
+      delete[] data_;
+      data_ = new_data;
+      capacity_ = n;
+    }
+  }
+
+  void shrink_to_fit() {
+    if (size_ < capacity_) {
+      value_type* new_data = new value_type[size_];
+      for (size_type i = 0; i < size_; i++) {
+        new_data[i] = std::move(data_[i]);
+      }
+      delete[] data_;
+      data_ = new_data;
+      capacity_ = size_;
+    }
+  }
+
+  void push_back(const value_type& value) {
+    if (size_ >= capacity_) {
+      size_type new_capacity = (capacity_ == 0) ? 1 : capacity_ * 2;
+      if (capacity_ * 2 > max_size()) {
+        throw std::length_error("too much length");
+      }
+      T* new_data = new value_type[new_capacity];
+
+      for (size_type i = 0; i < size_; i++) {
+        new_data[i] = std::move(data_[i]);
+      }
+
+      delete[] data_;
+      data_ = new_data;
+      capacity_ = new_capacity;
+    }
+    data_[size_++] = value;
+  }
+
+  void pop_back() {
+    if (size_ > 0) {
+      --size_;
+    }
+  }
+
+  iterator insert(const_iterator position, const value_type& value) {
+    size_type index = static_cast<size_type>(std::distance(begin(), position));
+    resize(size() + 1);
+
+    for (size_type i = size() - 1; i > index; --i) {
+      data_[i] = std::move(data_[i - 1]);
+    }
+    data_[index] = value;
+
+    return iterator(data_ + index);
+  }
+
+  // template <class inputIterator>
+  // void insert(const_iterator position, inputIterator first,
+  //             inputIterator last) {
+  //   size_type index = position;
+  //   size_type count = std::distance(first, last);
+
+  //   resize(size() + count);
+
+  //   for (size_type i = size() - 1; i >= index + count; --i) {
+  //     data_[i] = std::move(data_[i - count]);
+  //   }
+
+  //   for (size_type i = 0; i < count; ++i) {
+  //     data_[index + i] = *(first++);
+  //   }
+  // }
+
+  void insert(const_iterator position, size_type count,
+              const value_type& value) {
+    size_type index = static_cast<size_type>(std::distance(begin(), position));
+
+    resize(size() + count);
+
+    for (size_type i = size() - 1; i >= index + count; --i) {
+      data_[i] = std::move(data_[i - count]);
+    }
+
+    for (size_type i = 0; i < count; ++i) {
+      data_[index + i] = value;
+    }
+  }
 
   vector& operator=(const vector& other) {
     if (this != &other) {
@@ -156,6 +292,8 @@ class vector {
     }
     return *this;
   }
+
+  // bool operator
 
   reference operator[](size_type position) { return data_[position]; }
   const_reference operator[](size_type position) const {
