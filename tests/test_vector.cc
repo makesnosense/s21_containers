@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <random>
+
 // #include <string>
 #include <algorithm>
 #include <vector>
@@ -13,8 +15,17 @@ class TestObject {
   bool operator==(const TestObject& other) const {
     return value_ == other.value_;
   }
+  bool operator!=(const TestObject& other) const {
+    return value_ != other.value_;
+  }
+
   bool operator<(const TestObject& other) const {
     return value_ < other.value_;
+  }
+
+  friend std::ostream& operator<<(std::ostream& os, const TestObject& obj) {
+    os << obj.value_;
+    return os;
   }
 
  private:
@@ -237,10 +248,32 @@ TEST(VectorTest, InsertMultipleElement) {
   }
 }
 
-// TYPED_TEST(VectorTest, MinMaxSort) {
-//   EXPECT_EQ(std::min(this->s21_vec_), std::min(this->stl_vec_));
-//   // std::max();
-//   // std::sort();
-// }
+TYPED_TEST(VectorTest, MinMaxSort) {
+  std::random_device rd;   // Create a random device for seed
+  std::mt19937 gen(rd());  // Create a Mersenne Twister generator
 
+  EXPECT_EQ(*std::min_element(this->s21_vec_.begin(), this->s21_vec_.end()),
+            *std::min_element(this->stl_vec_.begin(), this->stl_vec_.end()));
+  std::sort(this->s21_vec_.begin(), this->s21_vec_.end());
+  std::sort(this->stl_vec_.begin(), this->stl_vec_.end());
+  EXPECT_EQ(this->s21_vec_, this->stl_vec_);
+
+  EXPECT_EQ(*std::max_element(this->s21_vec_.begin(), this->s21_vec_.end()),
+            *std::max_element(this->stl_vec_.begin(), this->stl_vec_.end()));
+
+  std::shuffle(this->s21_vec_.begin(), this->s21_vec_.end(), gen);
+  std::shuffle(this->stl_vec_.begin(), this->stl_vec_.end(), gen);
+
+  std::stable_sort(this->s21_vec_.begin(), this->s21_vec_.end());
+  std::stable_sort(this->stl_vec_.begin(), this->stl_vec_.end());
+  EXPECT_EQ(this->s21_vec_, this->stl_vec_);
+
+  EXPECT_EQ(std::binary_search(this->s21_vec_.begin(), this->s21_vec_.end(),
+                               this->s21_vec_[2]),
+            std::binary_search(this->stl_vec_.begin(), this->stl_vec_.end(),
+                               this->s21_vec_[2]));
+}
+
+// std::max();
+// std::sort();
 // #endif
