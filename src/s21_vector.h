@@ -8,7 +8,7 @@
 namespace s21 {
 
 template <typename T>
-class VectorIterator : public s21::Iterator<T> {
+class VectorIterator {
  public:
   using iterator_category = std::random_access_iterator_tag;
   using value_type = T;
@@ -18,17 +18,19 @@ class VectorIterator : public s21::Iterator<T> {
 
   explicit VectorIterator(pointer ptr) : ptr_(ptr) {}
 
-  reference operator*() override { return *ptr_; }
-  VectorIterator& operator++() override {
+  reference operator*() { return *ptr_; }
+  VectorIterator& operator++() {
     ++ptr_;
     return *this;
   }
 
-  VectorIterator operator++(int) override {
+  VectorIterator operator++(int) {
     VectorIterator tmp = *this;
     ++ptr_;
     return tmp;
   }
+
+  VectorIterator operator+(int n) const { return VectorIterator(ptr_ + n); }
 
   VectorIterator& operator--() {
     --ptr_;
@@ -39,10 +41,15 @@ class VectorIterator : public s21::Iterator<T> {
     --ptr_;
     return tmp;
   }
-  bool operator==(const VectorIterator& other) const override {
+
+  difference_type operator-(const VectorIterator& other) const {
+    return ptr_ - other.ptr_;
+  }
+
+  bool operator==(const VectorIterator& other) const {
     return ptr_ == other.ptr_;
   }
-  bool operator!=(const VectorIterator& other) const override {
+  bool operator!=(const VectorIterator& other) const {
     return ptr_ != other.ptr_;
   }
 
