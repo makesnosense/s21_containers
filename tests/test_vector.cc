@@ -163,4 +163,36 @@ TYPED_TEST(VectorTest, Iterators) {
   EXPECT_TRUE(stl_it == this->stl_vec_.end() && s21_it == this->s21_vec_.end());
 }
 
+TYPED_TEST(VectorTest, OperatorBracketsModification) {
+  // Test that operator[] returns a modifiable reference
+  this->stl_vec_[0] = this->stl_vec_[1];
+  this->s21_vec_[0] = this->s21_vec_[1];
+  
+  EXPECT_EQ(this->stl_vec_[0], this->s21_vec_[0]);
+  EXPECT_EQ(this->stl_vec_[1], this->s21_vec_[1]);
+  
+  // Test chained modifications
+  this->stl_vec_[2] = this->stl_vec_[1] = this->stl_vec_[0];
+  this->s21_vec_[2] = this->s21_vec_[1] = this->s21_vec_[0];
+  
+  EXPECT_EQ(this->stl_vec_[0], this->s21_vec_[0]);
+  EXPECT_EQ(this->stl_vec_[1], this->s21_vec_[1]);
+  EXPECT_EQ(this->stl_vec_[2], this->s21_vec_[2]);
+}
+
+// Additional edge cases for reserve()
+TYPED_TEST(VectorTest, ReserveEdgeCases) {
+  // Reserve smaller capacity than current
+  size_t original_capacity = this->s21_vec_.capacity();
+  this->s21_vec_.reserve(1);
+  EXPECT_EQ(this->s21_vec_.capacity(), original_capacity); // Shouldn't shrink
+  
+  // Reserve zero
+  this->s21_vec_.reserve(0);
+  EXPECT_GE(this->s21_vec_.capacity(), this->s21_vec_.size());
+  
+  // Test with max_size
+  EXPECT_THROW(this->s21_vec_.reserve(this->s21_vec_.max_size() + 1), std::length_error);
+}
+
 #endif
