@@ -19,6 +19,8 @@ class VectorIterator {
   explicit VectorIterator(pointer ptr) : ptr_(ptr) {}
 
   reference operator*() { return *ptr_; }
+  reference operator[](difference_type n) const { return ptr_[n]; }
+
   VectorIterator& operator++() {
     ++ptr_;
     return *this;
@@ -30,8 +32,6 @@ class VectorIterator {
     return tmp;
   }
 
-  VectorIterator operator+(int n) const { return VectorIterator(ptr_ + n); }
-
   VectorIterator& operator--() {
     --ptr_;
     return *this;
@@ -42,8 +42,31 @@ class VectorIterator {
     return tmp;
   }
 
+  VectorIterator& operator+=(difference_type n) {
+    ptr_ += n;
+    return *this;
+  }
+
+  VectorIterator operator+(difference_type n) const {
+    return VectorIterator(ptr_ + n);
+  }
+
+  friend VectorIterator operator+(difference_type n,
+                                  const VectorIterator& iter) {
+    return VectorIterator(iter.ptr_ + n);
+  }
+
+  VectorIterator& operator-=(difference_type n) {
+    ptr_ -= n;
+    return *this;
+  }
+
   difference_type operator-(const VectorIterator& other) const {
     return ptr_ - other.ptr_;
+  }
+
+  VectorIterator operator-(difference_type n) const {
+    return VectorIterator(ptr_ - n);
   }
 
   bool operator==(const VectorIterator& other) const {
@@ -51,6 +74,22 @@ class VectorIterator {
   }
   bool operator!=(const VectorIterator& other) const {
     return ptr_ != other.ptr_;
+  }
+
+  bool operator<(const VectorIterator& other) const {
+    return ptr_ < other.ptr_;
+  }
+
+  bool operator>(const VectorIterator& other) const {
+    return ptr_ > other.ptr_;
+  }
+
+  bool operator<=(const VectorIterator& other) const {
+    return ptr_ <= other.ptr_;
+  }
+
+  bool operator>=(const VectorIterator& other) const {
+    return ptr_ >= other.ptr_;
   }
 
  private:
@@ -103,7 +142,7 @@ class vector {
       size_ = size;
       capacity_ = size;
 
-      for (size_type i = 0; i < size; i++) {
+      for (size_type i{0}; i < size; i++) {
         data_[i] = value;
       }
     }
@@ -140,14 +179,14 @@ class vector {
 
   bool empty() const noexcept { return size_ == 0; }
 
-  size_type size() { return size_; }
+  size_type size() const { return size_; }
 
   size_type max_size() const noexcept {
     return std::numeric_limits<size_type>::max() / sizeof(value_type);
   }
 
   void clear() {
-    for (size_type i = 0; i < size_; i++) {
+    for (size_type i{0}; i < size_; i++) {
       data_[i].~value_type();
     }
     size_ = 0;
@@ -175,7 +214,7 @@ class vector {
     }
     if (n > capacity_) {
       value_type* new_data = new value_type[n];
-      for (size_type i = 0; i < size_; i++) {
+      for (size_type i{0}; i < size_; i++) {
         new_data[i] = std::move(data_[i]);
       }
       delete[] data_;
@@ -187,7 +226,7 @@ class vector {
   void shrink_to_fit() {
     if (size_ < capacity_) {
       value_type* new_data = new value_type[size_];
-      for (size_type i = 0; i < size_; i++) {
+      for (size_type i{0}; i < size_; i++) {
         new_data[i] = std::move(data_[i]);
       }
       delete[] data_;
@@ -204,7 +243,7 @@ class vector {
       }
       T* new_data = new value_type[new_capacity];
 
-      for (size_type i = 0; i < size_; i++) {
+      for (size_type i{0}; i < size_; i++) {
         new_data[i] = std::move(data_[i]);
       }
 
@@ -245,7 +284,7 @@ class vector {
   //     data_[i] = std::move(data_[i - count]);
   //   }
 
-  //   for (size_type i = 0; i < count; ++i) {
+  //   for (size_type i{0}; i < count; ++i) {
   //     data_[index + i] = *(first++);
   //   }
   // }
@@ -260,7 +299,7 @@ class vector {
       data_[i] = std::move(data_[i - count]);
     }
 
-    for (size_type i = 0; i < count; ++i) {
+    for (size_type i{0}; i < count; ++i) {
       data_[index + i] = value;
     }
   }
@@ -293,7 +332,13 @@ class vector {
     return *this;
   }
 
-  // bool operator
+  bool operator==(const vector& other) const {
+    if (size_ != other.size_) return false;
+    for (size_type i{0}; i < size_; ++i) {
+      if (data_[i] != other.data_) return false;
+    }
+    return true;
+  }
 
   reference operator[](size_type position) { return data_[position]; }
   const_reference operator[](size_type position) const {
@@ -301,13 +346,30 @@ class vector {
   }
 
  private:
-  // using traits = container_traits<T>;
-
   value_type* data_;
   size_type size_;
   size_type capacity_;
   static constexpr size_type kMinN{0};
 };
+
+template <typename T>
+bool operator==(const s21::vector<T>& first, const std::vector<T>& other) {
+  if (first.size() != other.size()) {
+    return false;
+  }
+
+  for (size_t i = 0; i < first.size(); ++i) {
+    if (first[i] != other[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+template <typename T>
+bool operator==(const std::vector<T>& first, const s21::vector<T>& other) {
+  return other == first;
+}
 
 }  // namespace s21
 
