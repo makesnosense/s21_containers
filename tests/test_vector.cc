@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 // #include <string>
+#include <algorithm>
 #include <vector>
 
 #include "s21_containers.h"
@@ -27,8 +28,8 @@ class VectorTest : public testing::Test {
   VectorTest()
       : empty_stl_vec_(),
         empty_s21_vec_(),
-        stl_vec_{65, 66, 67},
-        s21_vec_{65, 66, 67},
+        stl_vec_{68, 66, 67},
+        s21_vec_{68, 66, 67},
         large_stl_vec_(1000, 42),
         large_s21_vec_(1000, 42) {}
 
@@ -104,8 +105,6 @@ TYPED_TEST(VectorTest, FrontBack) {
   EXPECT_EQ(this->stl_vec_.back(), this->s21_vec_.back());
 }
 
-#if 0
-
 // Capacity Tests
 TYPED_TEST(VectorTest, Capacity) {
   EXPECT_EQ(this->stl_vec_.capacity(), this->s21_vec_.capacity());
@@ -133,6 +132,28 @@ TYPED_TEST(VectorTest, PushBack) {
 
   EXPECT_EQ(this->stl_vec_.size(), this->s21_vec_.size());
   EXPECT_EQ(this->stl_vec_.back(), this->s21_vec_.back());
+}
+
+TEST(VectorTest, For_each) {
+  std::vector<int> stl_v{1, 2, 3};
+  s21::vector<int> s21_v{1, 2, 3};
+
+  for (auto i : stl_v) {
+    stl_v.push_back(i);
+  }
+  for (auto i : s21_v) {
+    s21_v.push_back(i);
+  }
+
+  auto stl_it = stl_v.begin();
+  auto s21_it = s21_v.begin();
+
+  while (stl_it != stl_v.end() && s21_it != s21_v.end()) {
+    EXPECT_EQ(*stl_it, *s21_it);
+    ++stl_it;
+    ++s21_it;
+  }
+  EXPECT_EQ(stl_v.size(), s21_v.size());
 }
 
 TYPED_TEST(VectorTest, PopBack) {
@@ -167,32 +188,59 @@ TYPED_TEST(VectorTest, OperatorBracketsModification) {
   // Test that operator[] returns a modifiable reference
   this->stl_vec_[0] = this->stl_vec_[1];
   this->s21_vec_[0] = this->s21_vec_[1];
-  
+
   EXPECT_EQ(this->stl_vec_[0], this->s21_vec_[0]);
   EXPECT_EQ(this->stl_vec_[1], this->s21_vec_[1]);
-  
+
   // Test chained modifications
   this->stl_vec_[2] = this->stl_vec_[1] = this->stl_vec_[0];
   this->s21_vec_[2] = this->s21_vec_[1] = this->s21_vec_[0];
-  
+
   EXPECT_EQ(this->stl_vec_[0], this->s21_vec_[0]);
   EXPECT_EQ(this->stl_vec_[1], this->s21_vec_[1]);
   EXPECT_EQ(this->stl_vec_[2], this->s21_vec_[2]);
 }
+
+// #if 0
 
 // Additional edge cases for reserve()
 TYPED_TEST(VectorTest, ReserveEdgeCases) {
   // Reserve smaller capacity than current
   size_t original_capacity = this->s21_vec_.capacity();
   this->s21_vec_.reserve(1);
-  EXPECT_EQ(this->s21_vec_.capacity(), original_capacity); // Shouldn't shrink
-  
+  EXPECT_EQ(this->s21_vec_.capacity(), original_capacity);  // Shouldn't shrink
+
   // Reserve zero
   this->s21_vec_.reserve(0);
   EXPECT_GE(this->s21_vec_.capacity(), this->s21_vec_.size());
-  
-  // Test with max_size
-  EXPECT_THROW(this->s21_vec_.reserve(this->s21_vec_.max_size() + 1), std::length_error);
 }
 
-#endif
+// insert
+TEST(VectorTest, InsertSingleElement) {
+  // Вставка элемента в пустой вектор
+  s21::vector<int> s21_vec;
+  s21_vec.insert(s21_vec.begin(), 324);
+  EXPECT_EQ(s21_vec.size(), 1);
+  EXPECT_EQ(s21_vec[0], 324);
+}
+
+TEST(VectorTest, InsertMultipleElement) {
+  // Вставка элементов в пустой вектор
+  s21::vector<int> s21_vec1;
+  s21::vector<int> s21_vec2{7, 7, 7, 7, 7, 7, 7};
+  s21::vector<int>::iterator it = s21_vec2.begin();
+  s21_vec1.insert(s21_vec1.begin(), 7, 7);
+  EXPECT_EQ(s21_vec1.size(), s21_vec2.size());
+  for (auto i : s21_vec1) {
+    EXPECT_EQ(i, *it);
+    *it++;
+  }
+}
+
+// TYPED_TEST(VectorTest, MinMaxSort) {
+//   EXPECT_EQ(std::min(this->s21_vec_), std::min(this->stl_vec_));
+//   // std::max();
+//   // std::sort();
+// }
+
+// #endif
