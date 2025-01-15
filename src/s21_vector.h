@@ -272,22 +272,23 @@ class vector {
     return iterator(data_ + index);
   }
 
-  // template <class inputIterator>
-  // void insert(const_iterator position, inputIterator first,
-  //             inputIterator last) {
-  //   size_type index = position;
-  //   size_type count = std::distance(first, last);
+  template <class InputIter>
+  void insert(const_iterator position, InputIter first, InputIter last) {
+    size_type index = static_cast<size_type>(position - begin());
+    size_type count = static_cast<size_type>(std::distance(first, last));
 
-  //   resize(size() + count);
+    if (count == 0) return;
 
-  //   for (size_type i = size() - 1; i >= index + count; --i) {
-  //     data_[i] = std::move(data_[i - count]);
-  //   }
+    resize(size() + count);
 
-  //   for (size_type i{0}; i < count; ++i) {
-  //     data_[index + i] = *(first++);
-  //   }
-  // }
+    for (size_type i{size() - 1}; i >= index + count; --i) {
+      data_[i] = std::move(data_[i - count]);
+    }
+
+    for (size_type i{0}; i < count; ++i) {
+      data_[index + i] = *(first++);
+    }
+  }
 
   void insert(const_iterator position, size_type count,
               const value_type& value) {
