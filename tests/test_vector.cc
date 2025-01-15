@@ -338,21 +338,7 @@ TYPED_TEST(VectorTest, InsertIntoEmptyVector) {
                          this->empty_stl_vec_.begin()));
 }
 
-#if 0
-TYPED_TEST(VectorTest, InsertFromSelf) {
-  // Insert elements from the same vector
-  auto start_pos = this->s21_vec_.begin();
-  auto end_pos = start_pos + 2;
-
-  this->s21_vec_.insert(this->s21_vec_.end(), start_pos, end_pos);
-  this->stl_vec_.insert(this->stl_vec_.end(), this->stl_vec_.begin(),
-                        this->stl_vec_.begin() + 2);
-
-  EXPECT_EQ(this->s21_vec_.size(), this->stl_vec_.size());
-  EXPECT_TRUE(std::equal(this->s21_vec_.begin(), this->s21_vec_.end(),
-                         this->stl_vec_.begin()));
-}
-
 // std::max();
 // std::sort();
+#if 0
 #endif
