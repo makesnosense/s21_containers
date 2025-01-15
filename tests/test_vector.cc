@@ -212,8 +212,6 @@ TYPED_TEST(VectorTest, OperatorBracketsModification) {
   EXPECT_EQ(this->stl_vec_[2], this->s21_vec_[2]);
 }
 
-// #if 0
-
 // Additional edge cases for reserve()
 TYPED_TEST(VectorTest, ReserveEdgeCases) {
   // Reserve smaller capacity than current
@@ -224,28 +222,6 @@ TYPED_TEST(VectorTest, ReserveEdgeCases) {
   // Reserve zero
   this->s21_vec_.reserve(0);
   EXPECT_GE(this->s21_vec_.capacity(), this->s21_vec_.size());
-}
-
-// insert
-TEST(VectorTest, InsertSingleElement) {
-  // Вставка элемента в пустой вектор
-  s21::vector<int> s21_vec;
-  s21_vec.insert(s21_vec.begin(), 324);
-  EXPECT_EQ(s21_vec.size(), 1);
-  EXPECT_EQ(s21_vec[0], 324);
-}
-
-TEST(VectorTest, InsertMultipleElement) {
-  // Вставка элементов в пустой вектор
-  s21::vector<int> s21_vec1;
-  s21::vector<int> s21_vec2{7, 7, 7, 7, 7, 7, 7};
-  s21::vector<int>::iterator it = s21_vec2.begin();
-  s21_vec1.insert(s21_vec1.begin(), 7, 7);
-  EXPECT_EQ(s21_vec1.size(), s21_vec2.size());
-  for (auto i : s21_vec1) {
-    EXPECT_EQ(i, *it);
-    *it++;
-  }
 }
 
 TYPED_TEST(VectorTest, MinMaxSort) {
@@ -274,6 +250,109 @@ TYPED_TEST(VectorTest, MinMaxSort) {
                                this->s21_vec_[2]));
 }
 
+// insert
+TEST(VectorTest, InsertSingleElement) {
+  // Вставка элемента в пустой вектор
+  s21::vector<int> s21_vec;
+  s21_vec.insert(s21_vec.begin(), 324);
+  EXPECT_EQ(s21_vec.size(), 1);
+  EXPECT_EQ(s21_vec[0], 324);
+}
+
+TEST(VectorTest, InsertMultipleElements) {
+  // Вставка элементов в пустой вектор
+  s21::vector<int> s21_vec1;
+  s21::vector<int> s21_vec2{7, 7, 7, 7, 7, 7, 7};
+  s21::vector<int>::iterator it = s21_vec2.begin();
+  s21_vec1.insert(s21_vec1.begin(), size_t{7}, 7);
+  EXPECT_EQ(s21_vec1.size(), s21_vec2.size());
+  for (auto i : s21_vec1) {
+    EXPECT_EQ(i, *it);
+    *it++;
+  }
+}
+
+TYPED_TEST(VectorTest, InsertIteratorRange) {
+  // Test inserting at beginning
+  std::vector<TypeParam> source{1, 2, 3};
+  this->s21_vec_.insert(this->s21_vec_.begin(), source.begin(), source.end());
+  this->stl_vec_.insert(this->stl_vec_.begin(), source.begin(), source.end());
+  EXPECT_EQ(this->s21_vec_.size(), this->stl_vec_.size());
+  EXPECT_TRUE(std::equal(this->s21_vec_.begin(), this->s21_vec_.end(),
+                         this->stl_vec_.begin()));
+
+  // Test inserting at middle
+  std::vector<TypeParam> source2{4, 5};
+  auto mid_pos_s21 = this->s21_vec_.begin() + 2;
+  auto mid_pos_stl = this->stl_vec_.begin() + 2;
+  this->s21_vec_.insert(mid_pos_s21, source2.begin(), source2.end());
+  this->stl_vec_.insert(mid_pos_stl, source2.begin(), source2.end());
+  EXPECT_EQ(this->s21_vec_.size(), this->stl_vec_.size());
+  EXPECT_TRUE(std::equal(this->s21_vec_.begin(), this->s21_vec_.end(),
+                         this->stl_vec_.begin()));
+
+  // Test inserting at end
+  std::vector<TypeParam> source3{6};
+  this->s21_vec_.insert(this->s21_vec_.end(), source3.begin(), source3.end());
+  this->stl_vec_.insert(this->stl_vec_.end(), source3.begin(), source3.end());
+  EXPECT_EQ(this->s21_vec_.size(), this->stl_vec_.size());
+  EXPECT_TRUE(std::equal(this->s21_vec_.begin(), this->s21_vec_.end(),
+                         this->stl_vec_.begin()));
+}
+
+TYPED_TEST(VectorTest, InsertEmptyRange) {
+  std::vector<TypeParam> empty_source;
+  auto original_size = this->s21_vec_.size();
+
+  this->s21_vec_.insert(this->s21_vec_.begin(), empty_source.begin(),
+                        empty_source.end());
+  EXPECT_EQ(this->s21_vec_.size(), original_size);
+}
+
+TYPED_TEST(VectorTest, InsertLargeRange) {
+  // Create large source vector
+  std::vector<TypeParam> large_source(1000, TypeParam{42});
+
+  // Insert at beginning
+  this->s21_vec_.insert(this->s21_vec_.begin(), large_source.begin(),
+                        large_source.end());
+  this->stl_vec_.insert(this->stl_vec_.begin(), large_source.begin(),
+                        large_source.end());
+
+  EXPECT_EQ(this->s21_vec_.size(), this->stl_vec_.size());
+  EXPECT_TRUE(std::equal(this->s21_vec_.begin(), this->s21_vec_.end(),
+                         this->stl_vec_.begin()));
+}
+
+TYPED_TEST(VectorTest, InsertIntoEmptyVector) {
+  std::vector<TypeParam> source{1, 2, 3, 4, 5};
+
+  this->empty_s21_vec_.insert(this->empty_s21_vec_.begin(), source.begin(),
+                              source.end());
+  this->empty_stl_vec_.insert(this->empty_stl_vec_.begin(), source.begin(),
+                              source.end());
+
+  EXPECT_EQ(this->empty_s21_vec_.size(), this->empty_stl_vec_.size());
+  EXPECT_TRUE(std::equal(this->empty_s21_vec_.begin(),
+                         this->empty_s21_vec_.end(),
+                         this->empty_stl_vec_.begin()));
+}
+
+#if 0
+TYPED_TEST(VectorTest, InsertFromSelf) {
+  // Insert elements from the same vector
+  auto start_pos = this->s21_vec_.begin();
+  auto end_pos = start_pos + 2;
+
+  this->s21_vec_.insert(this->s21_vec_.end(), start_pos, end_pos);
+  this->stl_vec_.insert(this->stl_vec_.end(), this->stl_vec_.begin(),
+                        this->stl_vec_.begin() + 2);
+
+  EXPECT_EQ(this->s21_vec_.size(), this->stl_vec_.size());
+  EXPECT_TRUE(std::equal(this->s21_vec_.begin(), this->s21_vec_.end(),
+                         this->stl_vec_.begin()));
+}
+
 // std::max();
 // std::sort();
-// #endif
+#endif
