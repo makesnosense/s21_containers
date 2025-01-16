@@ -218,6 +218,7 @@ class vector {
         new_data[i] = std::move(data_[i]);
       }
       delete[] data_;
+
       data_ = new_data;
       capacity_ = n;
     }
@@ -236,20 +237,12 @@ class vector {
   }
 
   void push_back(const value_type& value) {
-    if (size_ >= capacity_) {
+    if (size_ == capacity_) {
       size_type new_capacity = (capacity_ == 0) ? 1 : capacity_ * 2;
       if (capacity_ * 2 > max_size()) {
         throw std::length_error("too much length");
       }
-      T* new_data = new value_type[new_capacity];
-
-      for (size_type i{0}; i < size_; i++) {
-        new_data[i] = std::move(data_[i]);
-      }
-
-      delete[] data_;
-      data_ = new_data;
-      capacity_ = new_capacity;
+      reserve(new_capacity);
     }
     data_[size_++] = value;
   }
