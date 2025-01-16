@@ -1,9 +1,8 @@
 #include <gtest/gtest.h>
 
-#include <random>
-
-// #include <string>
 #include <algorithm>
+#include <cstring>
+#include <random>
 #include <vector>
 
 #include "s21_containers.h"
@@ -11,10 +10,54 @@
 // Custom class for testing complex types
 class TestObject {
  public:
-  TestObject(int val = 0) : value_(val) {}
-  bool operator==(const TestObject& other) const {
-    return value_ == other.value_;
+  TestObject(int val = 0) : value_{val}, data_{new int[100]} {
+    std::fill_n(data_, 100, val);
   }
+  ~TestObject() noexcept {
+    delete[] data_;
+    data_ = nullptr;
+  }
+
+  TestObject(const TestObject& other) : value_{other.value_}, data_{nullptr} {
+    int* new_data = new int[100];
+    std::memcpy(new_data, other.data_, 100 * sizeof(int));
+    data_ = new_data;
+  }
+
+  // Move constructor
+  TestObject(TestObject&& other) noexcept
+      : value_{other.value_}, data_{other.data_} {
+    other.data_ = nullptr;
+    other.value_ = 0;
+  }
+
+  // Copy assignment with strong exception guarantee
+  TestObject& operator=(const TestObject& other) {
+    if (this != &other) {      // Self-assignment check
+      TestObject temp{other};  // Copy-and-swap idiom
+      std::swap(value_, temp.value_);
+      std::swap(data_, temp.data_);
+    }
+    return *this;
+  }
+
+  // Move assignment
+  TestObject& operator=(TestObject&& other) noexcept {
+    if (this != &other) {
+      delete[] data_;  // Clean up existing resources
+      data_ = other.data_;
+      value_ = other.value_;
+      other.data_ = nullptr;
+      other.value_ = 0;
+    }
+    return *this;
+  }
+
+  bool operator==(const TestObject& other) const {
+    return value_ == other.value_ &&
+           std::equal(data_, data_ + 100, other.data_);
+  }
+
   bool operator!=(const TestObject& other) const {
     return value_ != other.value_;
   }
@@ -28,8 +71,12 @@ class TestObject {
     return os;
   }
 
+  int get_value() const { return value_; }
+  const int* get_data() const { return data_; }
+
  private:
   int value_;
+  int* data_;
 };
 
 template <typename T>
@@ -189,32 +236,6 @@ TEST(VectorTest, PushBackStringElements) {
   EXPECT_EQ(stl_v[1], s21_v[1]);
 }
 
-TEST(VectorTest, PushBackCustomObjects) {
-  struct CustomObject {
-    int a;
-    double b;
-    bool operator==(const CustomObject& other) const {
-      return a == other.a && b == other.b;
-    }
-  };
-
-  std::vector<CustomObject> stl_v;
-  s21::vector<CustomObject> s21_v;
-
-  CustomObject obj1{1, 1.1};
-  CustomObject obj2{2, 2.2};
-
-  stl_v.push_back(obj1);
-  s21_v.push_back(obj1);
-  stl_v.push_back(obj2);
-  s21_v.push_back(obj2);
-
-  EXPECT_EQ(stl_v.size(), s21_v.size());
-  EXPECT_EQ(stl_v.capacity(), s21_v.capacity());
-  EXPECT_EQ(stl_v[0], s21_v[0]);
-  EXPECT_EQ(stl_v[1], s21_v[1]);
-}
-
 TEST(VectorTest, PushBackAfterReserve) {
   std::vector<int> stl_v;
   s21::vector<int> s21_v;
@@ -250,8 +271,6 @@ TEST(VectorTest, PushBackAfterShrinkToFit) {
   EXPECT_EQ(stl_v.capacity(), s21_v.capacity());
   EXPECT_EQ(stl_v.back(), s21_v.back());
 }
-
-///
 
 TYPED_TEST(VectorTest, PopBack) {
   this->stl_vec_.pop_back();
@@ -424,7 +443,5 @@ TYPED_TEST(VectorTest, InsertIntoEmptyVector) {
                          this->empty_stl_vec_.begin()));
 }
 
-// std::max();
-// std::sort();
 #if 0
 #endif
