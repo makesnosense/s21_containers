@@ -145,27 +145,113 @@ TYPED_TEST(VectorTest, PushBack) {
   EXPECT_EQ(this->stl_vec_.back(), this->s21_vec_.back());
 }
 
-TEST(VectorTest, For_each) {
-  std::vector<int> stl_v{1, 2, 3};
-  s21::vector<int> s21_v{1, 2, 3};
+TEST(VectorTest, PushBackEmptyVector) {
+  std::vector<int> stl_v;
+  s21::vector<int> s21_v;
 
-  for (auto i : stl_v) {
-    stl_v.push_back(i);
-  }
-  for (auto i : s21_v) {
-    s21_v.push_back(i);
-  }
+  stl_v.push_back(42);
+  s21_v.push_back(42);
 
-  auto stl_it = stl_v.begin();
-  auto s21_it = s21_v.begin();
-
-  while (stl_it != stl_v.end() && s21_it != s21_v.end()) {
-    EXPECT_EQ(*stl_it, *s21_it);
-    ++stl_it;
-    ++s21_it;
-  }
   EXPECT_EQ(stl_v.size(), s21_v.size());
+  EXPECT_EQ(stl_v.capacity(), s21_v.capacity());
+  EXPECT_EQ(stl_v[0], s21_v[0]);
 }
+
+TEST(VectorTest, PushBackMultipleElements) {
+  std::vector<int> stl_v;
+  s21::vector<int> s21_v;
+
+  for (int i = 0; i < 100; ++i) {
+    stl_v.push_back(i);
+    s21_v.push_back(i);
+
+    EXPECT_EQ(stl_v.size(), s21_v.size());
+    EXPECT_EQ(stl_v.capacity(), s21_v.capacity());
+    for (size_t j = 0; j < stl_v.size(); ++j) {
+      EXPECT_EQ(stl_v[j], s21_v[j]);
+    }
+  }
+}
+
+TEST(VectorTest, PushBackStringElements) {
+  std::vector<std::string> stl_v;
+  s21::vector<std::string> s21_v;
+
+  stl_v.push_back("hello");
+  s21_v.push_back("hello");
+
+  stl_v.push_back("world");
+  s21_v.push_back("world");
+
+  EXPECT_EQ(stl_v.size(), s21_v.size());
+  EXPECT_EQ(stl_v.capacity(), s21_v.capacity());
+  EXPECT_EQ(stl_v[0], s21_v[0]);
+  EXPECT_EQ(stl_v[1], s21_v[1]);
+}
+
+TEST(VectorTest, PushBackCustomObjects) {
+  struct CustomObject {
+    int a;
+    double b;
+    bool operator==(const CustomObject& other) const {
+      return a == other.a && b == other.b;
+    }
+  };
+
+  std::vector<CustomObject> stl_v;
+  s21::vector<CustomObject> s21_v;
+
+  CustomObject obj1{1, 1.1};
+  CustomObject obj2{2, 2.2};
+
+  stl_v.push_back(obj1);
+  s21_v.push_back(obj1);
+  stl_v.push_back(obj2);
+  s21_v.push_back(obj2);
+
+  EXPECT_EQ(stl_v.size(), s21_v.size());
+  EXPECT_EQ(stl_v.capacity(), s21_v.capacity());
+  EXPECT_EQ(stl_v[0], s21_v[0]);
+  EXPECT_EQ(stl_v[1], s21_v[1]);
+}
+
+TEST(VectorTest, PushBackAfterReserve) {
+  std::vector<int> stl_v;
+  s21::vector<int> s21_v;
+
+  stl_v.reserve(50);
+  s21_v.reserve(50);
+
+  int num_ = 0;
+
+  for (size_t i = 0; i < 50; ++i) {
+    stl_v.push_back(num_);
+    s21_v.push_back(num_);
+
+    num_++;
+
+    EXPECT_EQ(stl_v.size(), s21_v.size());
+    EXPECT_EQ(stl_v.capacity(), s21_v.capacity());
+    EXPECT_EQ(stl_v[i], s21_v[i]);
+  }
+}
+
+TEST(VectorTest, PushBackAfterShrinkToFit) {
+  std::vector<int> stl_v(100, 42);
+  s21::vector<int> s21_v(100, 42);
+
+  stl_v.shrink_to_fit();
+  s21_v.shrink_to_fit();
+
+  stl_v.push_back(24);
+  s21_v.push_back(24);
+
+  EXPECT_EQ(stl_v.size(), s21_v.size());
+  EXPECT_EQ(stl_v.capacity(), s21_v.capacity());
+  EXPECT_EQ(stl_v.back(), s21_v.back());
+}
+
+///
 
 TYPED_TEST(VectorTest, PopBack) {
   this->stl_vec_.pop_back();
