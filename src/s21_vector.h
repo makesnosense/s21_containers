@@ -194,15 +194,32 @@ class vector {
 
   void resize(size_t n) {
     if (n < size_) {
+      // Destroy excess elements
       for (size_type i = n; i < size_; i++) {
         data_[i].~value_type();
       }
     } else if (n > size_) {
       if (n > capacity_) {
-        reserve(n);
-      }
-      for (size_type i = size_; i < n; i++) {
-        new (&data_[i]) value_type();
+        // Create new storage
+        value_type* new_data = new value_type[n];
+        // Move existing elements
+        for (size_type i = 0; i < size_; i++) {
+          new_data[i] = std::move(data_[i]);
+        }
+        // Initialize new elements
+        for (size_type i = size_; i < n; i++) {
+          new_data[i] =
+              value_type();  // Use regular constructor instead of placement new
+        }
+        // Clean up old storage
+        delete[] data_;
+        data_ = new_data;
+        capacity_ = n;
+      } else {
+        // Initialize new elements in existing storage
+        for (size_type i = size_; i < n; i++) {
+          data_[i] = value_type();  // Use assignment instead of placement new
+        }
       }
     }
     size_ = n;
