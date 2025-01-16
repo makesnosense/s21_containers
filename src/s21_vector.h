@@ -348,9 +348,9 @@ class vector {
   }
 
  private:
-  value_type* data_;
-  size_type size_;
-  size_type capacity_;
+  value_type* data_{nullptr};
+  size_type size_{kMinN};
+  size_type capacity_{kMinN};
   static constexpr size_type kMinN{0};
 };
 
