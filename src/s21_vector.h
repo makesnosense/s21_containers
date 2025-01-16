@@ -267,7 +267,7 @@ class vector {
   void pop_back() noexcept {
     if (size_ > 0) {
       --size_;
-      data_[size_].~T();
+      data_[size_].~value_type();
     }
   }
 
