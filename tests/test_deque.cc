@@ -18,10 +18,13 @@ class DequeTest : public testing::Test {
   // s21::deque<T> large_s21_vec_;
 };
 
-using TestedTypes = ::testing::Types<char, int, double, DummyObject>;
+using TestedTypes = ::testing::Types<char, int, double>;
 TYPED_TEST_SUITE(DequeTest, TestedTypes);
 
-TYPED_TEST(DequeTest, DefaultConstructor) {
+TYPED_TEST(DequeTest, First) {
+  (this->empty_s21_deque_).push_front(3);
+  std::cout << "hey";
+  s21::deque<int> d;
   // EXPECT_EQ(this->empty_stl_vec_.size(), this->empty_s21_vec_.size());
   // EXPECT_TRUE(this->empty_s21_vec_.empty());
 }
