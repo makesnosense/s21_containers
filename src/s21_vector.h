@@ -342,9 +342,31 @@ class vector {
     return iterator(data_ + index);
   }
 
+  // iterator erase(const_iterator first, const_iterator last) {
+  //   if (size_ == 0) return end();
+
+  //   size_type start_index =
+  //       static_cast<size_type>(std::distance(begin(), first));
+  //   size_type end_index = static_cast<size_type>(std::distance(begin(),
+  //   last)); size_type count = end_index - start_index;
+
+  //   if (count == 0) {
+  //     return iterator(data_ + start_index);
+  //   }
+  //   for (size_type i = end_index; i < size_; ++i) {
+  //     data_[i - count] = std::move(data_[i]);
+  //   }
+
+  //   for (size_type i = size_ - count; i < size_; ++i) {
+  //     data_[i].~value_type();
+  //   }
+  //   size_ -= count;
+
+  //   return iterator(data_ + start_index);
+  // }
+
   iterator erase(const_iterator first, const_iterator last) {
     if (size_ == 0) return end();
-
     size_type start_index =
         static_cast<size_type>(std::distance(begin(), first));
     size_type end_index = static_cast<size_type>(std::distance(begin(), last));
@@ -353,15 +375,23 @@ class vector {
     if (count == 0) {
       return iterator(data_ + start_index);
     }
-    for (size_type i = end_index; i < size_; ++i) {
-      data_[i - count] = std::move(data_[i]);
+
+    if constexpr (std::is_trivially_copyable_v<value_type>) {
+      std::memmove(data_ + start_index, data_ + end_index,
+                   (size_ - end_index) * sizeof(value_type));
+    } else {
+      for (size_type i = end_index; i < size_; ++i) {
+        data_[i - count] = std::move(data_[i]);
+      }
     }
 
-    for (size_type i = size_ - count; i < size_; ++i) {
-      data_[i].~value_type();
+    if constexpr (!std::is_trivially_destructible_v<value_type>) {
+      for (size_type i = size_ - count; i < size_; ++i) {
+        data_[i].~value_type();
+      }
     }
+
     size_ -= count;
-
     return iterator(data_ + start_index);
   }
 
