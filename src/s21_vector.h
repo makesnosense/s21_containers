@@ -445,11 +445,13 @@ class vector {
 
 template <typename T>
 bool operator==(const s21::vector<T>& first, const std::vector<T>& other) {
+  using size_type = typename s21::vector<T>::traits::size_type;
+
   if (first.size() != other.size()) {
     return false;
   }
 
-  for (size_t i = 0; i < first.size(); ++i) {
+  for (size_type i{0}; i < first.size(); ++i) {
     if (first[i] != other[i]) {
       return false;
     }
