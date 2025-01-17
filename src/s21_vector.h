@@ -104,7 +104,7 @@ class vector {
   using reference = typename traits::reference;
   using const_reference = typename traits::reference;
   using iterator = VectorIterator<T>;
-  using reverse_iterator = VectorIterator<T>;
+  using reverse_iterator = std::reverse_iterator<iterator>;
   using const_iterator = const VectorIterator<T>;
   using size_type = typename traits::size_type;
 
