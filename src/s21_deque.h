@@ -73,11 +73,68 @@ class deque {
   // using const_reverse_iterator = const DequeIterator<T>;
 
   struct Chunk {
-    value_type data[deque::kChunkSize];
+    value_type data_[deque::kChunkSize];
   };
 
-  deque() = default;
-  ~deque() = default;
+  deque() : map_{nullptr} {
+    map_ = new Chunk* [kInitialMapSize] {};
+    map_size_ = kInitialMapSize;
+    front_chunk_index_ = back_chunk_index_ = map_size_ / 2;
+    front_element_index_ = back_element_index_ = kChunkSize / 2;
+
+    AddChunkAt(front_chunk_index_);
+  }
+  ~deque() {
+    for (size_type i{front_chunk_index_}; i <= back_chunk_index_; ++i) {
+      delete map_[i];
+    }
+
+    delete[] map_;
+  };
+  deque(const deque& other) = default;
+  deque& operator=(const deque& other) = default;
+  void push_front(const_reference value) {
+    if (front_element_index_ == 0) {
+      if (front_chunk_index_ == 0) {
+        // Handle reallocation/map growth
+        // or throw if we can't grow
+        return;
+      }
+
+      if (map_[front_chunk_index_ - 1] == nullptr) {
+        --front_chunk_index_;
+        AddChunkAt(front_chunk_index_);
+      }
+      front_element_index_ = kChunkSize;  // we will decrement it right below;
+    }
+
+    --front_element_index_;
+
+    std::cout << front_chunk_index_ << '\n'
+              << front_element_index_ << '\n'
+              << value;
+    map_[front_chunk_index_]->data_[front_element_index_] = value;
+
+    ++size_;
+  }
+
+  void AddChunkAt(size_type chunk_index) { map_[chunk_index] = new Chunk(); }
+  // void AddChunkToFront() {
+  //   --front_chunk_index_;
+  //   AddChunkAt(front_chunk_index_);
+  // }
+  // void AddChunkToBack() {
+  //   ++back_chunk_index_;
+  //   AddChunkAt(front_chunk_index_);
+  // }
+
+  // Chunk** map_;               // Pointer to array of chunk pointers
+  // size_type map_size_;        // Current size of the map array
+  // size_type front_chunk_;     // Index of the first chunk in map
+  // size_type back_chunk_;      // Index of the last chunk in map
+  // size_type front_position_;  // Position in first chunk
+  // size_type back_position_;   // Position in last chunk
+  // size_type size_;            // Total number of elements
 
   // at();
   // push_front(value);
@@ -99,17 +156,18 @@ class deque {
   // operator[];
 
  private:
-  static constexpr size_type kPageSize{4096};
-  static constexpr size_type kChunkSize{kPageSize / sizeof(value_type)};
-  static constexpr size_type kInitialMapSize = 8;
+  // static constexpr size_type kPageSize{4096};
+  // static constexpr size_type kChunkSize{kPageSize / sizeof(value_type)};
+  static constexpr size_type kChunkSize{64 * 2 / sizeof(T)};
+  static constexpr size_type kInitialMapSize{2};
 
-  Chunk** map_;               // Pointer to array of chunk pointers
-  size_type map_size_;        // Current size of the map array
-  size_type front_chunk_;     // Index of the first chunk in map
-  size_type back_chunk_;      // Index of the last chunk in map
-  size_type front_position_;  // Position in first chunk
-  size_type back_position_;   // Position in last chunk
-  size_type size_;            // Total number of elements
+  Chunk** map_{nullptr};              // Pointer to array of chunk pointers
+  size_type map_size_{0};             // Current size of the map array
+  size_type front_chunk_index_{0};    // Index of the first chunk in map
+  size_type back_chunk_index_{0};     // Index of the last chunk in map
+  size_type front_element_index_{0};  // Index within front chunk
+  size_type back_element_index_{0};   // Index within back chunk
+  size_type size_{0};                 // Total number of elements
 };
 }  // namespace s21
 
