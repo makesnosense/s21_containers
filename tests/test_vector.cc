@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "dummy_object.h"
-#include "s21_containers.h"
+#include "s21_vector.h"
 
 template <typename T>
 class VectorTest : public testing::Test {
