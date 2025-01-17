@@ -12,7 +12,6 @@ DEBUG_FLAG := -g
 CXXFLAGS := $(STD_FLAGS) $(WARN_FLAGS) $(DEPENDENCY_FLAGS) $(INCLUDE_DIRS)
 
 #━━━━━━━━━━Test and Coverage Configuration━━━━━━━━━━
-TESTS_CXXFLAGS := $(CXXFLAGS) -Wno-padded -Wno-pragmas
 TESTS_LINKER_FLAGS := -lgtest_main -lgtest -pthread
 COVERAGE_FLAGS := -fprofile-arcs -ftest-coverage
 GCOVR_THEME := --html-theme github.dark-green
@@ -50,7 +49,7 @@ $(BUILD_DIR)/run_tests: $(TESTS_OBJ_FILES)
 
 $(TESTS_BUILD_DIR)/%.o: tests/%.cc
 	@mkdir -p $(TESTS_BUILD_DIR)
-	$(CXX) $(TESTS_CXXFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 coverage: CXXFLAGS += $(COVERAGE_FLAGS)
 coverage: clean $(BUILD_DIR)/run_tests
