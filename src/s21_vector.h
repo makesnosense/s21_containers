@@ -115,6 +115,8 @@ class vector {
         throw std::length_error("too much length");
       }
       data_ = new value_type[n]();
+    } else {
+      data_ = new value_type[0]();
     }
   }
 
@@ -261,7 +263,8 @@ class vector {
       }
       reserve(new_capacity);
     }
-    data_[size_++] = value;
+    data_[size_] = value;
+    size_++;
   }
 
   void pop_back() noexcept {
@@ -314,6 +317,44 @@ class vector {
     for (size_type i{0}; i < count; ++i) {
       data_[index + i] = value;
     }
+  }
+
+  iterator erase(const_iterator position) {
+    if (size_ == 0) return end();
+
+    iterator iter = begin() + (position - begin());
+
+    for (iterator temp = iter; temp + 1 != end(); ++temp) {
+      *temp = std::move(*(temp + 1));
+    }
+
+    (data_ + size_ - 1)->~value_type();
+
+    --size_;
+
+    return iter;
+  }
+  iterator erase(const_iterator first, const_iterator last) {
+    if (size_ == 0) return end();
+
+    size_type start_index =
+        static_cast<size_type>(std::distance(begin(), first));
+    size_type end_index = static_cast<size_type>(std::distance(begin(), last));
+    size_type count = end_index - start_index;
+
+    if (count == 0) {
+      return iterator(data_ + start_index);
+    }
+    for (size_type i = end_index; i < size_; ++i) {
+      data_[i - count] = std::move(data_[i]);
+    }
+
+    for (size_type i = size_ - count; i < size_; ++i) {
+      data_[i].~value_type();
+    }
+    size_ -= count;
+
+    return iterator(data_ + start_index);
   }
 
   vector& operator=(const vector& other) {
