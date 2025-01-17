@@ -2,6 +2,7 @@
 #define DUMMY_OBJECT_H_
 
 #include <algorithm>
+#include <cstddef>
 #include <cstring>
 #include <iostream>
 
