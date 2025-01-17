@@ -56,9 +56,7 @@ class DummyObject {
            std::equal(data_, data_ + 100, other.data_);
   }
 
-  bool operator!=(const DummyObject& other) const {
-    return value_ != other.value_;
-  }
+  bool operator!=(const DummyObject& other) const { return !(*this == other); }
 
   bool operator<(const DummyObject& other) const {
     return value_ < other.value_;
@@ -74,6 +72,7 @@ class DummyObject {
 
  private:
   int value_;
+  std::byte padding_[4];
   int* data_;
 };
 
