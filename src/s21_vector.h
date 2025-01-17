@@ -320,20 +320,28 @@ class vector {
   }
 
   iterator erase(const_iterator position) {
-    if (size_ == 0) return end();
+    if (size_ == 0) {
+      return end();
+    }
+    size_type index = static_cast<size_type>(position - begin());
 
-    iterator iter = begin() + (position - begin());
-
-    for (iterator temp = iter; temp + 1 != end(); ++temp) {
-      *temp = std::move(*(temp + 1));
+    if constexpr (std::is_trivially_copyable_v<value_type>) {
+      std::memmove(data_ + index, data_ + index + 1,
+                   (size_ - index - 1) * sizeof(value_type));
+    } else {
+      for (size_type i = index; i < size_ - 1; ++i) {
+        data_[i] = std::move(data_[i + 1]);
+      }
     }
 
-    (data_ + size_ - 1)->~value_type();
+    if constexpr (std::is_trivially_destructible_v<value_type> == false) {
+      data_[size_ - 1].~value_type();
+    }
 
     --size_;
-
-    return iter;
+    return iterator(data_ + index);
   }
+
   iterator erase(const_iterator first, const_iterator last) {
     if (size_ == 0) return end();
 
