@@ -5,8 +5,8 @@
 #include <random>
 #include <vector>
 
+#include "dummy_object.h"
 #include "s21_containers.h"
-#include "testobject.h"
 
 template <typename T>
 class VectorTest : public testing::Test {
@@ -29,7 +29,7 @@ class VectorTest : public testing::Test {
 };
 
 // Test with multiple types including custom class
-using TestedTypes = ::testing::Types<char, int, double, TestObject>;
+using TestedTypes = ::testing::Types<char, int, double, DummyObject>;
 TYPED_TEST_SUITE(VectorTest, TestedTypes);
 
 // Constructor Tests

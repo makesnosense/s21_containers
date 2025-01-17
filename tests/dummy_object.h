@@ -1,38 +1,38 @@
-#ifndef TESTOBJECT_H_
-#define TESTOBJECT_H_
+#ifndef DUMMY_OBJECT_H_
+#define DUMMY_OBJECT_H_
 
 #include <algorithm>
 #include <cstring>
 #include <iostream>
 
 // Custom class for testing complex types
-class TestObject {
+class DummyObject {
  public:
-  TestObject(int val = 0) : value_{val}, data_{new int[100]} {
+  DummyObject(int val = 0) : value_{val}, data_{new int[100]} {
     std::fill_n(data_, 100, val);
   }
-  ~TestObject() noexcept {
+  ~DummyObject() noexcept {
     delete[] data_;
     data_ = nullptr;
   }
 
-  TestObject(const TestObject& other) : value_{other.value_}, data_{nullptr} {
+  DummyObject(const DummyObject& other) : value_{other.value_}, data_{nullptr} {
     int* new_data = new int[100];
     std::memcpy(new_data, other.data_, 100 * sizeof(int));
     data_ = new_data;
   }
 
   // Move constructor
-  TestObject(TestObject&& other) noexcept
+  DummyObject(DummyObject&& other) noexcept
       : value_{other.value_}, data_{other.data_} {
     other.data_ = nullptr;
     other.value_ = 0;
   }
 
   // Copy assignment with strong exception guarantee
-  TestObject& operator=(const TestObject& other) {
-    if (this != &other) {      // Self-assignment check
-      TestObject temp{other};  // Copy-and-swap idiom
+  DummyObject& operator=(const DummyObject& other) {
+    if (this != &other) {       // Self-assignment check
+      DummyObject temp{other};  // Copy-and-swap idiom
       std::swap(value_, temp.value_);
       std::swap(data_, temp.data_);
     }
@@ -40,7 +40,7 @@ class TestObject {
   }
 
   // Move assignment
-  TestObject& operator=(TestObject&& other) noexcept {
+  DummyObject& operator=(DummyObject&& other) noexcept {
     if (this != &other) {
       delete[] data_;  // Clean up existing resources
       data_ = other.data_;
@@ -51,20 +51,20 @@ class TestObject {
     return *this;
   }
 
-  bool operator==(const TestObject& other) const {
+  bool operator==(const DummyObject& other) const {
     return value_ == other.value_ &&
            std::equal(data_, data_ + 100, other.data_);
   }
 
-  bool operator!=(const TestObject& other) const {
+  bool operator!=(const DummyObject& other) const {
     return value_ != other.value_;
   }
 
-  bool operator<(const TestObject& other) const {
+  bool operator<(const DummyObject& other) const {
     return value_ < other.value_;
   }
 
-  friend std::ostream& operator<<(std::ostream& os, const TestObject& obj) {
+  friend std::ostream& operator<<(std::ostream& os, const DummyObject& obj) {
     os << obj.value_;
     return os;
   }
@@ -77,4 +77,4 @@ class TestObject {
   int* data_;
 };
 
-#endif  // TESTOBJECT_H_
+#endif  // DUMMY_OBJECT_H_
