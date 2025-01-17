@@ -443,5 +443,91 @@ TYPED_TEST(VectorTest, InsertIntoEmptyVector) {
                          this->empty_stl_vec_.begin()));
 }
 
+// erase
+
+TEST(VectorTest, EraseSingleElement) {
+  s21::vector<int> customVec;
+  customVec.push_back(1);
+  customVec.push_back(2);
+  customVec.push_back(3);
+
+  std::vector<int> stdVec = {1, 2, 3};
+
+  auto customIt = customVec.erase(customVec.begin() + 1);
+  auto stdIt = stdVec.erase(stdVec.begin() + 1);
+
+  EXPECT_EQ(customVec.size(), stdVec.size());
+
+  EXPECT_EQ(customVec[0], stdVec[0]);
+  EXPECT_EQ(customVec[1], stdVec[1]);
+
+  EXPECT_EQ(*customIt, *stdIt);
+}
+
+TEST(VectorTest, EraseRange) {
+  s21::vector<int> customVec;
+  customVec.push_back(1);
+  customVec.push_back(2);
+  customVec.push_back(3);
+  customVec.push_back(4);
+
+  std::vector<int> stdVec = {1, 2, 3, 4};
+
+  auto customIt = customVec.erase(customVec.begin() + 1, customVec.begin() + 3);
+  auto stdIt = stdVec.erase(stdVec.begin() + 1, stdVec.begin() + 3);
+
+  EXPECT_EQ(customVec.size(), stdVec.size());
+
+  EXPECT_EQ(customVec[0], stdVec[0]);
+  EXPECT_EQ(customVec[1], stdVec[1]);
+
+  EXPECT_EQ(*customIt, *stdIt);
+}
+
+TEST(VectorTest, EraseEmptyVector) {
+  s21::vector<int> customVec;
+  std::vector<int> stdVec;
+
+  EXPECT_NO_THROW(customVec.erase(customVec.begin()));
+  EXPECT_NO_THROW(stdVec.erase(stdVec.begin()));
+}
+
+TEST(VectorTest, EraseAtEnd) {
+  s21::vector<int> customVec;
+  customVec.push_back(1);
+  customVec.push_back(2);
+
+  std::vector<int> stdVec = {1, 2};
+
+  auto customIt = customVec.erase(customVec.begin() + 1);
+  auto stdIt = stdVec.erase(stdVec.begin() + 1);
+
+  EXPECT_EQ(customVec.size(), stdVec.size());
+
+  EXPECT_EQ(customVec[0], stdVec[0]);
+
+  EXPECT_EQ(*customIt, *stdIt);
+}
+
+TEST(VectorTest, EraseMultipleElements) {
+  s21::vector<int> customVec;
+  customVec.push_back(1);
+  customVec.push_back(2);
+  customVec.push_back(3);
+  customVec.push_back(4);
+
+  std::vector<int> stdVec = {1, 2, 3, 4};
+
+  auto customIt = customVec.erase(customVec.begin() + 1, customVec.begin() + 3);
+  auto stdIt = stdVec.erase(stdVec.begin() + 1, stdVec.begin() + 3);
+
+  EXPECT_EQ(customVec.size(), stdVec.size());
+
+  EXPECT_EQ(customVec[0], stdVec[0]);
+  EXPECT_EQ(customVec[1], stdVec[1]);
+
+  EXPECT_EQ(*customIt, *stdIt);
+}
+
 #if 0
 #endif
