@@ -525,5 +525,121 @@ TEST(VectorSwapTest, SwapLargeVectors) {
   EXPECT_EQ(my_vector2, std_vector2);
 }
 
+// iterator
+TEST(VectorIteratorTest, ComparisonOperators) {
+  int arr[] = {1, 2, 3, 4};
+  s21::vector<int>::iterator iter1(arr);
+  s21::vector<int>::iterator iter2(arr + 2);
+
+  EXPECT_TRUE(iter1 < iter2);
+  EXPECT_FALSE(iter2 < iter1);
+  EXPECT_TRUE(iter2 > iter1);
+  EXPECT_FALSE(iter1 > iter2);
+  EXPECT_TRUE(iter1 <= iter1);
+  EXPECT_TRUE(iter1 <= iter2);
+  EXPECT_FALSE(iter2 <= iter1);
+  EXPECT_TRUE(iter2 >= iter2);
+  EXPECT_TRUE(iter2 >= iter1);
+  EXPECT_FALSE(iter1 >= iter2);
+}
+
+TEST(VectorIteratorTest, ArithmeticOperators) {
+  int arr[] = {1, 2, 3, 4};
+  s21::vector<int>::iterator iter(arr + 1);
+
+  EXPECT_EQ(*(iter - 1), 1);
+  iter -= 1;
+  EXPECT_EQ(*iter, 1);
+
+  s21::vector<int>::iterator iter2 = 2 + iter;
+  EXPECT_EQ(*iter2, 3);
+}
+
+TEST(VectorIteratorTest, PostDecrement) {
+  int arr[] = {1, 2, 3, 4};
+  s21::vector<int>::iterator iter(arr + 2);
+
+  s21::vector<int>::iterator temp = iter--;
+  EXPECT_EQ(*temp, 3);
+  EXPECT_EQ(*iter, 2);
+}
+
+TEST(VectorIteratorTest, SubscriptOperator) {
+  int arr[] = {10, 20, 30, 40, 50};
+  s21::vector<int>::iterator iter(arr);
+
+  EXPECT_EQ(iter[0], 10);
+  EXPECT_EQ(iter[1], 20);
+  EXPECT_EQ(iter[2], 30);
+
+  iter[0] = 100;
+  EXPECT_EQ(arr[0], 100);
+}
+
+TEST(VectorComparisonTest, EqualVectors) {
+  std::vector<int> std_vec = {1, 2, 3, 4, 5};
+  s21::vector<int> s21_vec;
+  for (int i : std_vec) {
+    s21_vec.push_back(i);
+  }
+
+  EXPECT_TRUE(std_vec == s21_vec);
+  EXPECT_TRUE(s21_vec == std_vec);
+}
+
+TEST(VectorTest, ReverseIterators) {
+  s21::vector<int> my_vec{1, 2, 3, 4};
+  auto rbegin = my_vec.rbegin();
+  auto rend = my_vec.rend();
+
+  std::vector<int> std_vec = {1, 2, 3, 4};
+  auto std_rbegin = std_vec.rbegin();
+  // auto std_rend = std_vec.rend();
+
+  for (; rbegin != rend; ++rbegin, ++std_rbegin) {
+    EXPECT_EQ(*rbegin, *std_rbegin);
+  }
+}
+
+TEST(VectorTest, CopyAssignmentOperator) {
+  s21::vector<int> vec1{1, 2, 3};
+  s21::vector<int> vec2;
+
+  vec2 = vec1;
+
+  EXPECT_EQ(vec1, vec2);
+}
+
+TEST(VectorTest, MoveAssignmentOperator) {
+  s21::vector<int> vec1{1, 2, 3};
+  s21::vector<int> vec2;
+
+  vec2 = std::move(vec1);
+
+  EXPECT_EQ(vec2.size(), 3);
+  EXPECT_EQ(vec2[0], 1);
+  EXPECT_EQ(vec2[1], 2);
+  EXPECT_EQ(vec2[2], 3);
+  EXPECT_EQ(vec1.size(), 0);
+}
+
+TEST(VectorTest, EqualityOperator) {
+  s21::vector<int> vec1{1, 2, 3};
+  s21::vector<int> vec2{1, 2, 3};
+  s21::vector<int> vec3{1, 2, 4};
+
+  EXPECT_TRUE(vec1 == vec2);
+  EXPECT_FALSE(vec1 == vec3);
+}
+
+TEST(VectorTest, ComparisonWithStdVector) {
+  std::vector<int> std_vec{1, 2, 3};
+  s21::vector<int> my_vec{1, 2, 3};
+
+  EXPECT_TRUE(my_vec == std_vec);
+  my_vec[2] = 4;
+  EXPECT_FALSE(my_vec == std_vec);
+}
+
 #if 0
 #endif
