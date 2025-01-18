@@ -395,6 +395,20 @@ class vector {
     return iterator(data_ + start_index);
   }
 
+  void swap(vector& other) noexcept {
+    value_type* temp_data = data_;
+    data_ = other.data_;
+    other.data_ = temp_data;
+
+    size_type temp_capacity = capacity_;
+    capacity_ = other.capacity_;
+    other.capacity_ = temp_capacity;
+
+    size_type temp_size = size_;
+    size_ = other.size_;
+    other.size_ = temp_size;
+  }
+
   vector& operator=(const vector& other) {
     if (this != &other) {
       delete[] data_;
