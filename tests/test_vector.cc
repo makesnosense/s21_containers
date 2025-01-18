@@ -458,5 +458,72 @@ TEST(VectorTest, EraseMultipleElements) {
   EXPECT_EQ(*customIt, *stdIt);
 }
 
+// swap
+TEST(VectorSwapTest, SwapContent) {
+  s21::vector<int> my_vector1{1, 2, 3};
+  s21::vector<int> my_vector2{4, 5};
+
+  std::vector<int> std_vector1{1, 2, 3};
+  std::vector<int> std_vector2{4, 5};
+
+  my_vector1.swap(my_vector2);
+  std_vector1.swap(std_vector2);
+
+  EXPECT_EQ(my_vector1, std_vector1);
+  EXPECT_EQ(my_vector2, std_vector2);
+}
+
+TEST(VectorSwapTest, SwapEmptyAndNonEmpty) {
+  s21::vector<int> my_vector1{};
+  s21::vector<int> my_vector2{1, 2, 3};
+
+  std::vector<int> std_vector1{};
+  std::vector<int> std_vector2{1, 2, 3};
+
+  my_vector1.swap(my_vector2);
+  std_vector1.swap(std_vector2);
+
+  EXPECT_EQ(my_vector1, std_vector1);
+  EXPECT_EQ(my_vector2, std_vector2);
+}
+
+TEST(VectorSwapTest, SwapIdenticalVectors) {
+  s21::vector<int> my_vector1{1, 2, 3};
+  s21::vector<int> my_vector2{1, 2, 3};
+
+  std::vector<int> std_vector1{1, 2, 3};
+  std::vector<int> std_vector2{1, 2, 3};
+
+  my_vector1.swap(my_vector2);
+  std_vector1.swap(std_vector2);
+
+  EXPECT_EQ(my_vector1, std_vector1);
+  EXPECT_EQ(my_vector2, std_vector2);
+}
+
+TEST(VectorSwapTest, SwapWithSelf) {
+  s21::vector<int> my_vector{1, 2, 3};
+  std::vector<int> std_vector{1, 2, 3};
+
+  my_vector.swap(my_vector);
+  std_vector.swap(std_vector);
+
+  EXPECT_EQ(my_vector, std_vector);
+}
+
+TEST(VectorSwapTest, SwapLargeVectors) {
+  s21::vector<int> my_vector1(100, 1);
+  s21::vector<int> my_vector2(200, 2);
+
+  std::vector<int> std_vector1(100, 1);
+  std::vector<int> std_vector2(200, 2);
+
+  my_vector1.swap(my_vector2);
+  std_vector1.swap(std_vector2);
+
+  EXPECT_EQ(my_vector1, std_vector1);
+  EXPECT_EQ(my_vector2, std_vector2);
+}
+
 #if 0
 #endif
