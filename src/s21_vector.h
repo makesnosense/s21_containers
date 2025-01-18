@@ -171,9 +171,10 @@ class vector {
 
   iterator end() { return iterator(data_ + size_); }
 
-  reverse_iterator rbegin() { return reverse_iterator(data_ + size_ - 1); }
-
-  reverse_iterator rend() { return reverse_iterator(data_ - 1); }
+  reverse_iterator rbegin() {
+    return reverse_iterator(iterator(data_ + size_));
+  }
+  reverse_iterator rend() { return reverse_iterator(iterator(data_)); }
 
   reference front() { return data_[0]; }
 
@@ -196,31 +197,24 @@ class vector {
 
   void resize(size_t n) {
     if (n < size_) {
-      // Destroy excess elements
       for (size_type i = n; i < size_; i++) {
         data_[i].~value_type();
       }
     } else if (n > size_) {
       if (n > capacity_) {
-        // Create new storage
         value_type* new_data = new value_type[n];
-        // Move existing elements
         for (size_type i = 0; i < size_; i++) {
           new_data[i] = std::move(data_[i]);
         }
-        // Initialize new elements
         for (size_type i = size_; i < n; i++) {
-          new_data[i] =
-              value_type();  // Use regular constructor instead of placement new
+          new_data[i] = value_type();
         }
-        // Clean up old storage
         delete[] data_;
         data_ = new_data;
         capacity_ = n;
       } else {
-        // Initialize new elements in existing storage
         for (size_type i = size_; i < n; i++) {
-          data_[i] = value_type();  // Use assignment instead of placement new
+          data_[i] = value_type();
         }
       }
     }
@@ -342,29 +336,6 @@ class vector {
     return iterator(data_ + index);
   }
 
-  // iterator erase(const_iterator first, const_iterator last) {
-  //   if (size_ == 0) return end();
-
-  //   size_type start_index =
-  //       static_cast<size_type>(std::distance(begin(), first));
-  //   size_type end_index = static_cast<size_type>(std::distance(begin(),
-  //   last)); size_type count = end_index - start_index;
-
-  //   if (count == 0) {
-  //     return iterator(data_ + start_index);
-  //   }
-  //   for (size_type i = end_index; i < size_; ++i) {
-  //     data_[i - count] = std::move(data_[i]);
-  //   }
-
-  //   for (size_type i = size_ - count; i < size_; ++i) {
-  //     data_[i].~value_type();
-  //   }
-  //   size_ -= count;
-
-  //   return iterator(data_ + start_index);
-  // }
-
   iterator erase(const_iterator first, const_iterator last) {
     if (size_ == 0) return end();
     size_type start_index =
@@ -440,7 +411,7 @@ class vector {
   bool operator==(const vector& other) const {
     if (size_ != other.size_) return false;
     for (size_type i{0}; i < size_; ++i) {
-      if (data_[i] != other.data_) return false;
+      if (data_[i] != other.data_[i]) return false;
     }
     return true;
   }
