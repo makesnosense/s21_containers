@@ -110,9 +110,9 @@ class deque {
 
     --front_element_index_;
 
-    std::cout << front_chunk_index_ << '\n'
-              << front_element_index_ << '\n'
-              << value;
+    std::cout << "front_chunk: " << front_chunk_index_ << '\n'
+              << "front_element_index_: " << front_element_index_ << '\n'
+              << "value: " << value << '\n';
     map_[front_chunk_index_]->data_[front_element_index_] = value;
 
     ++size_;
@@ -137,7 +137,6 @@ class deque {
   // size_type size_;            // Total number of elements
 
   // at();
-  // push_front(value);
   // push_back(value);
   // pop_front();
   // pop_back();
@@ -153,13 +152,41 @@ class deque {
   // shrink_to_fit();
   // front();
   // back();
-  // operator[];
+
+  size_type size() const { return size_; }
+
+  reference operator[](size_type index) {
+    size_type chunk_offset{(index + front_element_index_) / kChunkSize};
+
+    size_type chunk_index = front_chunk_index_ + chunk_offset;
+
+    size_type element_index_in_chunk{(front_element_index_ + index) %
+                                     kChunkSize};
+
+    return map_[chunk_index]->data_[element_index_in_chunk];
+  }
+
+  // size_type get_from_chunk_index() const { return front_chunk_index_; }
+  // size_type get_back_chunk_index() const { return back_chunk_index_; }
+  // size_type get_front_element_index() const { return front_element_index_; }
+  // size_type get_back_element_index() const { return back_element_index_; }
+  // size_type get_chunk_size() const { return kChunkSize; }
+  // size_type get_map_size() const { return map_size_; }
+  // size_type get_element(const size_type index) const {
+  //   return map_[front_chunk_index]->data_[front_element_index];
+  // }
+
+  // get_element_by_chunk_and_element_index(size_type chunk_index, size_type
+  // element_index) {
+
+  // }
 
  private:
   // static constexpr size_type kPageSize{4096};
   // static constexpr size_type kChunkSize{kPageSize / sizeof(value_type)};
-  static constexpr size_type kChunkSize{64 * 2 / sizeof(T)};
-  static constexpr size_type kInitialMapSize{2};
+  // static constexpr size_type kChunkSize{64 * 2 / sizeof(T)};
+  static constexpr size_type kChunkSize{10};
+  static constexpr size_type kInitialMapSize{10};
 
   Chunk** map_{nullptr};              // Pointer to array of chunk pointers
   size_type map_size_{0};             // Current size of the map array
@@ -169,6 +196,16 @@ class deque {
   size_type back_element_index_{0};   // Index within back chunk
   size_type size_{0};                 // Total number of elements
 };
+
+template <typename T>
+std::ostream& operator<<(std::ostream& out, deque<T>& q) {
+  for (size_t index{0}; index < q.size(); ++index) {
+    out << q[index] << ' ';
+  }
+
+  return out;
+}
+
 }  // namespace s21
 
 #endif  // S21_DEQUE_H
