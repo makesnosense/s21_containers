@@ -1,4 +1,7 @@
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpadded"
 #include <gtest/gtest.h>
+#pragma GCC diagnostic pop
 
 #include <algorithm>
 #include <cstring>
