@@ -35,7 +35,7 @@ class list {
         tail_->next_ = new_node;
         new_node->pre_ = tail_;
         tail_ = new_node;
-        }
+      }
       size_++;
     }
   }
@@ -127,8 +127,8 @@ class list {
   }
   void pop_front() {
     if (empty()) {
-    throw std::out_of_range("List is empty");
-  }
+      throw std::out_of_range("List is empty");
+    }
 
     if (head_ == tail_) {
       delete head_;
@@ -193,8 +193,12 @@ class list {
   ~list() = default;
   ///////////////////////////////////
  private:
+#ifdef __GNUC__  // For GCC/Clang
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpadded"
+#endif
   struct Node {
-    value_type data_;
+    alignas(alignof(value_type)) value_type data_;
     Node* next_;
     Node* pre_;
 
@@ -204,6 +208,10 @@ class list {
     Node& operator=(const Node&) = default;
     ~Node() = default;
   };
+
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
 
   Node* head_;
   Node* tail_;
