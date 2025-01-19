@@ -184,6 +184,8 @@ class vector {
 
   size_type size() const { return size_; }
 
+  value_type* data() { return data_; }
+
   size_type max_size() const noexcept {
     return std::numeric_limits<size_type>::max() / sizeof(value_type);
   }
