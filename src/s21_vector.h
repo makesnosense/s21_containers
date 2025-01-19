@@ -16,8 +16,9 @@ class VectorIterator {
   using reference = T&;
   using difference_type = std::ptrdiff_t;
 
-  explicit VectorIterator(pointer ptr) : ptr_(ptr) {}
-
+  VectorIterator(pointer ptr) : ptr_{ptr} {}
+  VectorIterator() : ptr_(nullptr) {}
+  operator pointer() const { return ptr_; }
   reference operator*() { return *ptr_; }
   reference operator[](difference_type n) const { return ptr_[n]; }
 
