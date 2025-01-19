@@ -85,7 +85,7 @@ class deque {
     map_ = new Chunk* [kInitialMapSize] {};
     map_size_ = kInitialMapSize;
     front_chunk_index_ = back_chunk_index_ = map_size_ / 2;
-    front_element_index_ = back_element_index_ = kChunkSize / 2;
+    front_element_index_ = back_vacant_index_ = kChunkSize / 2;
 
     AddChunkAt(front_chunk_index_);
   }
@@ -97,30 +97,80 @@ class deque {
     delete[] map_;
   };
   deque(const deque& other) = default;
+
   deque& operator=(const deque& other) = default;
+
   void push_front(const_reference value) {
     if (front_element_index_ == 0) {
       if (front_chunk_index_ == 0) {
-        // Handle reallocation/map growth
-        // or throw if we can't grow
-        return;
+        GrowMap(true);
       }
 
       if (map_[front_chunk_index_ - 1] == nullptr) {
         --front_chunk_index_;
         AddChunkAt(front_chunk_index_);
       }
-      front_element_index_ = kChunkSize;  // we will decrement it right below;
+      front_element_index_ = kChunkSize;
     }
 
     --front_element_index_;
 
-    std::cout << "front_chunk: " << front_chunk_index_ << '\n'
-              << "front_element_index_: " << front_element_index_ << '\n'
-              << "value: " << value << '\n';
+    // std::cout << "front_chunk: " << front_chunk_index_ << '\n'
+    //           << "front_element_index_: " << front_element_index_ << '\n'
+    //           << "value: " << value << '\n';
     map_[front_chunk_index_]->data_[front_element_index_] = value;
 
     ++size_;
+  }
+
+  void push_back(const_reference value) {
+    if (back_vacant_index_ == 0) {
+      if (back_chunk_index_ == map_size_ - 1) {
+        GrowMap(false);
+      }
+
+      if (map_[back_chunk_index_ + 1] == nullptr) {
+        ++back_chunk_index_;
+        AddChunkAt(back_chunk_index_);
+      }
+      back_vacant_index_ = 0;
+    }
+    // std::cout << "back_chunk: " << back_chunk_index_ << '\n'
+    //           << "back_vacant_index_: " << back_vacant_index_ << '\n'
+    //           << "value: " << value << '\n';
+    map_[back_chunk_index_]->data_[back_vacant_index_] = value;
+
+    ++back_vacant_index_;
+
+    back_vacant_index_ %= kChunkSize;
+
+    ++size_;
+  }
+
+  void GrowMap(bool to_the_front) {
+    size_type new_size_map{map_size_ * 2};
+    Chunk** new_map = new Chunk* [new_size_map] {};
+
+    size_type new_front_chunk_index{};
+    size_type new_back_chunk_index{};
+
+    if (to_the_front == true) {
+      new_front_chunk_index = map_size_;
+      new_back_chunk_index = map_size_ + back_chunk_index_;
+
+      std::move(map_, map_ + map_size_, new_map + map_size_);
+
+    } else {
+      new_front_chunk_index = front_chunk_index_;
+      new_back_chunk_index = back_chunk_index_;
+
+      std::move(map_, map_ + map_size_, new_map);
+    }
+    delete[] map_;
+    front_chunk_index_ = new_front_chunk_index;
+    back_chunk_index_ = new_back_chunk_index;
+    map_size_ = new_size_map;
+    map_ = new_map;
   }
 
   void AddChunkAt(size_type chunk_index) { map_[chunk_index] = new Chunk(); }
@@ -174,7 +224,7 @@ class deque {
   // size_type get_from_chunk_index() const { return front_chunk_index_; }
   // size_type get_back_chunk_index() const { return back_chunk_index_; }
   // size_type get_front_element_index() const { return front_element_index_; }
-  // size_type get_back_element_index() const { return back_element_index_; }
+  // size_type get_back_element_index() const { return back_vacant_index_; }
   // size_type get_chunk_size() const { return kChunkSize; }
   // size_type get_map_size() const { return map_size_; }
   // size_type get_element(const size_type index) const {
@@ -196,7 +246,7 @@ class deque {
   size_type front_chunk_index_{0};    // Index of the first chunk in map
   size_type back_chunk_index_{0};     // Index of the last chunk in map
   size_type front_element_index_{0};  // Index within front chunk
-  size_type back_element_index_{0};   // Index within back chunk
+  size_type back_vacant_index_{0};    // Index within back chunk
   size_type size_{0};                 // Total number of elements
 };
 
