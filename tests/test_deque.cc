@@ -19,7 +19,7 @@ class DequeTest : public testing::Test {
 };
 
 using TestedTypes = ::testing::Types<int>;
-TYPED_TEST_SUITE(DequeTest, TestedTypes);
+TYPED_TEST_SUITE(DequeTest, TestedTypes, );
 
 TYPED_TEST(DequeTest, First) {
   for (int i{0}; i < 70; i++) {
