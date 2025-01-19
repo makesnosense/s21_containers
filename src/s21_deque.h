@@ -66,6 +66,11 @@ class deque {
   using const_reference = typename traits::const_reference;
   using size_type = typename traits::size_type;
 
+ private:
+  static constexpr size_type kChunkSize{10};
+  static constexpr size_type kInitialMapSize{10};
+
+ public:
   // using iterator = DequeIterator<T>;
 
   // using const_iterator = const DequeIterator<T>;
@@ -185,8 +190,6 @@ class deque {
   // static constexpr size_type kPageSize{4096};
   // static constexpr size_type kChunkSize{kPageSize / sizeof(value_type)};
   // static constexpr size_type kChunkSize{64 * 2 / sizeof(T)};
-  static constexpr size_type kChunkSize{10};
-  static constexpr size_type kInitialMapSize{10};
 
   Chunk** map_{nullptr};              // Pointer to array of chunk pointers
   size_type map_size_{0};             // Current size of the map array
