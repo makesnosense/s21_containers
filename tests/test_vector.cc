@@ -11,7 +11,6 @@
 template <typename T>
 class VectorTest : public testing::Test {
  protected:
-  // Initialize vectors with different sizes and values for different tests
   VectorTest()
       : empty_stl_vec_(),
         empty_s21_vec_(),
@@ -28,11 +27,9 @@ class VectorTest : public testing::Test {
   s21::vector<T> large_s21_vec_;
 };
 
-// Test with multiple types including custom class
 using TestedTypes = ::testing::Types<char, int, double, DummyObject>;
 TYPED_TEST_SUITE(VectorTest, TestedTypes);
 
-// Constructor Tests
 TYPED_TEST(VectorTest, DefaultConstructor) {
   EXPECT_EQ(this->empty_stl_vec_.size(), this->empty_s21_vec_.size());
   EXPECT_TRUE(this->empty_s21_vec_.empty());
@@ -54,7 +51,6 @@ TYPED_TEST(VectorTest, InitializerListConstructor) {
   }
 }
 
-// Copy and Move Tests
 TYPED_TEST(VectorTest, CopyConstructor) {
   std::vector<TypeParam> stl_copy(this->stl_vec_);
   s21::vector<TypeParam> s21_copy(this->s21_vec_);
@@ -70,7 +66,7 @@ TYPED_TEST(VectorTest, MoveConstructor) {
   s21::vector<TypeParam> s21_move(std::move(this->s21_vec_));
 
   EXPECT_EQ(stl_move.size(), s21_move.size());
-  EXPECT_TRUE(this->s21_vec_.empty());  // Moved-from vector should be empty
+  EXPECT_TRUE(this->s21_vec_.empty());
 }
 
 // Element Access Tests
@@ -237,7 +233,6 @@ TYPED_TEST(VectorTest, OperatorBracketsModification) {
   EXPECT_EQ(this->stl_vec_[0], this->s21_vec_[0]);
   EXPECT_EQ(this->stl_vec_[1], this->s21_vec_[1]);
 
-  // Test chained modifications
   this->stl_vec_[2] = this->stl_vec_[1] = this->stl_vec_[0];
   this->s21_vec_[2] = this->s21_vec_[1] = this->s21_vec_[0];
 
@@ -248,19 +243,17 @@ TYPED_TEST(VectorTest, OperatorBracketsModification) {
 
 // Additional edge cases for reserve()
 TYPED_TEST(VectorTest, ReserveEdgeCases) {
-  // Reserve smaller capacity than current
   size_t original_capacity = this->s21_vec_.capacity();
   this->s21_vec_.reserve(1);
-  EXPECT_EQ(this->s21_vec_.capacity(), original_capacity);  // Shouldn't shrink
+  EXPECT_EQ(this->s21_vec_.capacity(), original_capacity);
 
-  // Reserve zero
   this->s21_vec_.reserve(0);
   EXPECT_GE(this->s21_vec_.capacity(), this->s21_vec_.size());
 }
 
 TYPED_TEST(VectorTest, MinMaxSort) {
-  std::random_device rd;   // Create a random device for seed
-  std::mt19937 gen(rd());  // Create a Mersenne Twister generator
+  std::random_device rd;
+  std::mt19937 gen(rd());
 
   EXPECT_EQ(*std::min_element(this->s21_vec_.begin(), this->s21_vec_.end()),
             *std::min_element(this->stl_vec_.begin(), this->stl_vec_.end()));
@@ -286,7 +279,6 @@ TYPED_TEST(VectorTest, MinMaxSort) {
 
 // insert
 TEST(VectorTest, InsertSingleElement) {
-  // Вставка элемента в пустой вектор
   s21::vector<int> s21_vec;
   s21_vec.insert(s21_vec.begin(), 324);
   EXPECT_EQ(s21_vec.size(), 1);
@@ -294,7 +286,6 @@ TEST(VectorTest, InsertSingleElement) {
 }
 
 TEST(VectorTest, InsertMultipleElements) {
-  // Вставка элементов в пустой вектор
   s21::vector<int> s21_vec1;
   s21::vector<int> s21_vec2{7, 7, 7, 7, 7, 7, 7};
   s21::vector<int>::iterator it = s21_vec2.begin();
@@ -307,7 +298,6 @@ TEST(VectorTest, InsertMultipleElements) {
 }
 
 TYPED_TEST(VectorTest, InsertIteratorRange) {
-  // Test inserting at beginning
   std::vector<TypeParam> source{1, 2, 3};
   this->s21_vec_.insert(this->s21_vec_.begin(), source.begin(), source.end());
   this->stl_vec_.insert(this->stl_vec_.begin(), source.begin(), source.end());
@@ -315,7 +305,6 @@ TYPED_TEST(VectorTest, InsertIteratorRange) {
   EXPECT_TRUE(std::equal(this->s21_vec_.begin(), this->s21_vec_.end(),
                          this->stl_vec_.begin()));
 
-  // Test inserting at middle
   std::vector<TypeParam> source2{4, 5};
   auto mid_pos_s21 = this->s21_vec_.begin() + 2;
   auto mid_pos_stl = this->stl_vec_.begin() + 2;
@@ -325,7 +314,6 @@ TYPED_TEST(VectorTest, InsertIteratorRange) {
   EXPECT_TRUE(std::equal(this->s21_vec_.begin(), this->s21_vec_.end(),
                          this->stl_vec_.begin()));
 
-  // Test inserting at end
   std::vector<TypeParam> source3{6};
   this->s21_vec_.insert(this->s21_vec_.end(), source3.begin(), source3.end());
   this->stl_vec_.insert(this->stl_vec_.end(), source3.begin(), source3.end());
@@ -344,10 +332,8 @@ TYPED_TEST(VectorTest, InsertEmptyRange) {
 }
 
 TYPED_TEST(VectorTest, InsertLargeRange) {
-  // Create large source vector
   std::vector<TypeParam> large_source(1000, TypeParam{42});
 
-  // Insert at beginning
   this->s21_vec_.insert(this->s21_vec_.begin(), large_source.begin(),
                         large_source.end());
   this->stl_vec_.insert(this->stl_vec_.begin(), large_source.begin(),
@@ -639,6 +625,53 @@ TEST(VectorTest, ComparisonWithStdVector) {
   EXPECT_TRUE(my_vec == std_vec);
   my_vec[2] = 4;
   EXPECT_FALSE(my_vec == std_vec);
+}
+
+TEST(VectorTest, DataVector) {
+  std::vector<int> std_vec{1, 2, 3, 4, 5};
+  s21::vector<int> s21_vec{1, 2, 3, 4, 5};
+  int *data_s21 = s21_vec.data();
+  int *data_std = std_vec.data();
+
+  EXPECT_TRUE(*data_s21 == *data_std);
+}
+
+TEST(VectorConstructorTest, DefaultConstructor) {
+  s21::vector<int> v;
+  EXPECT_EQ(v.size(), 0);
+  EXPECT_EQ(v.capacity(), 0);
+  EXPECT_NE(v.data(), nullptr);
+}
+
+TEST(VectorConstructorTest, PositiveSizeConstructor) {
+  s21::vector<int> v(10);
+  EXPECT_EQ(v.size(), 10);
+  EXPECT_EQ(v.capacity(), 10);
+  EXPECT_NE(v.data(), nullptr);
+
+  // Проверяем инициализацию значениями по умолчанию
+  for (std::size_t i = 0; i < v.size(); ++i) {
+    EXPECT_EQ(v[i], 0);
+  }
+}
+
+TEST(VectorConstructorTest, ZeroSizeConstructor) {
+  s21::vector<int> v(0);
+  EXPECT_EQ(v.size(), 0);
+  EXPECT_EQ(v.capacity(), 0);
+  EXPECT_NE(v.data(), nullptr);
+}
+
+TEST(VectorConstructorTest, MaxSizeExceeded) {
+  EXPECT_THROW(s21::vector<int>(
+                   std::numeric_limits<std::size_t>::max() / sizeof(int) + 1),
+               std::length_error);
+}
+
+TEST(VectorConstructorTest, MemoryAllocationCheck) {
+  s21::vector<int> v(5);
+  auto *data = v.data();
+  EXPECT_NE(data, nullptr);
 }
 
 #if 0
