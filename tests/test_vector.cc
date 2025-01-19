@@ -671,8 +671,6 @@ TYPED_TEST(VectorTest, MinMaxSort) {
 
 TEST(VectorTest, EraseEmptyVector) {
   s21::vector<int> custom_vec;
-  std::vector<int> std_vec;
 
   EXPECT_NO_THROW(custom_vec.erase(custom_vec.begin()));
-  EXPECT_NO_THROW(std_vec.erase(std_vec.begin()));
 }
