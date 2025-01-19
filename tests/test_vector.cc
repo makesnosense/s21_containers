@@ -643,5 +643,36 @@ TEST(VectorConstructorTest, MemoryAllocationCheck) {
   EXPECT_NE(data, nullptr);
 }
 
-#if 0
-#endif
+TYPED_TEST(VectorTest, MinMaxSort) {
+  std::random_device rd;
+  std::mt19937 gen(rd());
+
+  EXPECT_EQ(*std::min_element(this->s21_vec_.begin(), this->s21_vec_.end()),
+            *std::min_element(this->stl_vec_.begin(), this->stl_vec_.end()));
+  std::sort(this->s21_vec_.begin(), this->s21_vec_.end());
+  std::sort(this->stl_vec_.begin(), this->stl_vec_.end());
+  EXPECT_EQ(this->s21_vec_, this->stl_vec_);
+
+  EXPECT_EQ(*std::max_element(this->s21_vec_.begin(), this->s21_vec_.end()),
+            *std::max_element(this->stl_vec_.begin(), this->stl_vec_.end()));
+
+  std::shuffle(this->s21_vec_.begin(), this->s21_vec_.end(), gen);
+  std::shuffle(this->stl_vec_.begin(), this->stl_vec_.end(), gen);
+
+  std::stable_sort(this->s21_vec_.begin(), this->s21_vec_.end());
+  std::stable_sort(this->stl_vec_.begin(), this->stl_vec_.end());
+  EXPECT_EQ(this->s21_vec_, this->stl_vec_);
+
+  EXPECT_EQ(std::binary_search(this->s21_vec_.begin(), this->s21_vec_.end(),
+                               this->s21_vec_[2]),
+            std::binary_search(this->stl_vec_.begin(), this->stl_vec_.end(),
+                               this->s21_vec_[2]));
+}
+
+TEST(VectorTest, EraseEmptyVector) {
+  s21::vector<int> custom_vec;
+  std::vector<int> std_vec;
+
+  EXPECT_NO_THROW(custom_vec.erase(custom_vec.begin()));
+  EXPECT_NO_THROW(std_vec.erase(std_vec.begin()));
+}
