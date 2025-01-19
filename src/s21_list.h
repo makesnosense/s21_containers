@@ -30,18 +30,35 @@ class list {
       Node* new_node = new Node(value);
       if (!head_) {
         head_ = new_node;
+        tail_ = new_node;
       } else {
-        Node* current = head_;
-        while (current->next_) {
-          current = current->next_;
+        tail_->next_ = new_node;
+        new_node->pre_ = tail_;
+        tail_ = new_node;
         }
-      }
+      size_++;
     }
   }
-
-  list(const s21::list<T>&) = default;
-  ~list() = default;
-  list& operator=(const list& other) = default;
+  list(size_type n) : head_{nullptr}, tail_{nullptr}, size_{0} {
+    for (size_type i = 0; i < n; i++) {
+      Node* new_node = new Node();
+      if (!head_) {
+        head_ = new_node;
+        tail_ = new_node;
+      } else {
+        tail_->next_ = new_node;
+        new_node->pre_ = tail_;
+        tail_ = new_node;
+      }
+      size_++;
+    }
+  }
+  list(const s21::list<T>& other) {
+    (void)other;
+    if (other.head_ != nullptr) {
+      Node* new_node = new Node();
+    }
+  }
 
   void pop_back() {
     if (empty()) {
@@ -56,12 +73,10 @@ class list {
       return;
     }
 
-    Node* temp = tail_;
     tail_ = tail_->pre_;
 
     tail_->next_ = nullptr;
 
-    free(temp);
     size_--;
   }
   void push_front(const_reference value) {
@@ -91,18 +106,45 @@ class list {
 
     size_++;
   }
-  void pop_front();
 
-  const_reference get_front() const {
-    if (!empty()) {
-      return head_->data_;
+  void reverse() {
+    if (size_ <= 1) return;
+
+    Node* current = head_;
+    Node* prev = nullptr;
+    Node* next = nullptr;
+
+    while (current) {
+      next = current->next_;
+      current->next_ = prev;
+      current->pre_ = next;
+      prev = current;
+      current = next;
     }
+
+    head_ = tail_;
+    tail_ = current;
+  }
+  void pop_front() {
+    if (empty()) {
     throw std::out_of_range("List is empty");
   }
-  const_reference get_back() const;
 
-  int get_size() const;
-  void clear();
+    if (head_ == tail_) {
+      delete head_;
+      head_ = nullptr;
+      tail_ = nullptr;
+      size_--;
+      return;
+    }
+    head_ = head_->next_;
+    head_->pre_ = nullptr;
+  }
+
+  size_type max_size() const noexcept {
+    return (std::numeric_limits<size_type>::max() / sizeof(value_type)) / 4;
+  }
+
   reference get_element(size_type index) {
     if (index >= size_) {
       throw std::out_of_range("Index out of range");
@@ -113,19 +155,52 @@ class list {
     }
     return current->data_;
   }
+  reference front() { return head_->data_; }
+
+  reference back() { return tail_->data_; }
 
   size_type size() const { return size_; }
 
   bool empty() const noexcept { return size_ == 0; }
 
+  T& operator[](size_type index) {
+    if (index >= size_) {
+      throw std::out_of_range("Index out of range");
+    }
+    Node* current = head_;
+    for (size_type i = 0; i < index; ++i) {
+      current = current->next_;
+    }
+    return current->data_;
+  }
+
+  const T& operator[](size_type index) const {
+    if (index >= size_) {
+      throw std::out_of_range("Index out of range");
+    }
+    Node* current = head_;
+    for (size_type i = 0; i < index; ++i) {
+      current = current->next_;
+    }
+    return current->data_;
+  }
+  list& operator=(const list& other) = default;
+
+  int get_size() const;
+
+  void clear();
+
+  ~list() = default;
+  ///////////////////////////////////
  private:
   struct Node {
-    value_type data_;
     Node* next_;
     Node* pre_;
-    Node(value_type val) : data_(val), next_(nullptr), pre_(nullptr) {}
+    value_type data_;
+    Node() : next_(nullptr), pre_(nullptr), data_(T()) {}
+    Node(value_type val) : next_(nullptr), pre_(nullptr), data_(val) {}
     Node(const Node&) = default;
-    Node& operator=(const Node&) = delete;
+    Node& operator=(const Node&) = default;
     ~Node() = default;
   };
 
