@@ -28,7 +28,7 @@ class VectorTest : public testing::Test {
 };
 
 using TestedTypes = ::testing::Types<char, int, double, DummyObject>;
-TYPED_TEST_SUITE(VectorTest, TestedTypes);
+TYPED_TEST_SUITE(VectorTest, TestedTypes, );
 
 TYPED_TEST(VectorTest, DefaultConstructor) {
   EXPECT_EQ(this->empty_stl_vec_.size(), this->empty_s21_vec_.size());
