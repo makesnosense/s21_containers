@@ -34,3 +34,14 @@ TYPED_TEST(DequeTest, First) {
   // EXPECT_EQ(this->empty_stl_vec_.size(), this->empty_s21_vec_.size());
   // EXPECT_TRUE(this->empty_s21_vec_.empty());
 }
+
+TYPED_TEST(DequeTest, Second) {
+  for (int i{0}; i < 70; i++) {
+    (this->empty_s21_deque_).push_back(i);
+  }
+  std::cout << "hey \n";
+  std::cout << this->empty_s21_deque_;
+  // s21::deque<int> d;
+  // EXPECT_EQ(this->empty_stl_vec_.size(), this->empty_s21_vec_.size());
+  // EXPECT_TRUE(this->empty_s21_vec_.empty());
+}
