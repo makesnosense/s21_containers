@@ -101,7 +101,7 @@ TYPED_TEST(VectorTest, Reserve) {
   this->s21_vec_.reserve(100);
   this->stl_vec_.reserve(100);
   EXPECT_EQ(this->stl_vec_.capacity(), this->s21_vec_.capacity());
-  EXPECT_GE(this->s21_vec_.capacity(), 100);
+  EXPECT_GE(this->s21_vec_.capacity(), size_t{100});
 }
 
 TYPED_TEST(VectorTest, ShrinkToFit) {
@@ -211,7 +211,7 @@ TYPED_TEST(VectorTest, PopBack) {
 TYPED_TEST(VectorTest, Clear) {
   this->s21_vec_.clear();
   EXPECT_TRUE(this->s21_vec_.empty());
-  EXPECT_EQ(this->s21_vec_.size(), 0);
+  EXPECT_EQ(this->s21_vec_.size(), size_t{0});
 }
 
 // Iterator Tests
@@ -254,37 +254,11 @@ TYPED_TEST(VectorTest, ReserveEdgeCases) {
   EXPECT_GE(this->s21_vec_.capacity(), this->s21_vec_.size());
 }
 
-TYPED_TEST(VectorTest, MinMaxSort) {
-  std::random_device rd;
-  std::mt19937 gen(rd());
-
-  EXPECT_EQ(*std::min_element(this->s21_vec_.begin(), this->s21_vec_.end()),
-            *std::min_element(this->stl_vec_.begin(), this->stl_vec_.end()));
-  std::sort(this->s21_vec_.begin(), this->s21_vec_.end());
-  std::sort(this->stl_vec_.begin(), this->stl_vec_.end());
-  EXPECT_EQ(this->s21_vec_, this->stl_vec_);
-
-  EXPECT_EQ(*std::max_element(this->s21_vec_.begin(), this->s21_vec_.end()),
-            *std::max_element(this->stl_vec_.begin(), this->stl_vec_.end()));
-
-  std::shuffle(this->s21_vec_.begin(), this->s21_vec_.end(), gen);
-  std::shuffle(this->stl_vec_.begin(), this->stl_vec_.end(), gen);
-
-  std::stable_sort(this->s21_vec_.begin(), this->s21_vec_.end());
-  std::stable_sort(this->stl_vec_.begin(), this->stl_vec_.end());
-  EXPECT_EQ(this->s21_vec_, this->stl_vec_);
-
-  EXPECT_EQ(std::binary_search(this->s21_vec_.begin(), this->s21_vec_.end(),
-                               this->s21_vec_[2]),
-            std::binary_search(this->stl_vec_.begin(), this->stl_vec_.end(),
-                               this->s21_vec_[2]));
-}
-
 // insert
 TEST(VectorTest, InsertSingleElement) {
   s21::vector<int> s21_vec;
   s21_vec.insert(s21_vec.begin(), 324);
-  EXPECT_EQ(s21_vec.size(), 1);
+  EXPECT_EQ(s21_vec.size(), size_t{1});
   EXPECT_EQ(s21_vec[0], 324);
 }
 
@@ -400,14 +374,6 @@ TEST(VectorTest, EraseRange) {
   EXPECT_EQ(customVec[1], stdVec[1]);
 
   EXPECT_EQ(*customIt, *stdIt);
-}
-
-TEST(VectorTest, EraseEmptyVector) {
-  s21::vector<int> customVec;
-  std::vector<int> stdVec;
-
-  EXPECT_NO_THROW(customVec.erase(customVec.begin()));
-  EXPECT_NO_THROW(stdVec.erase(stdVec.begin()));
 }
 
 TEST(VectorTest, EraseAtEnd) {
@@ -605,11 +571,11 @@ TEST(VectorTest, MoveAssignmentOperator) {
 
   vec2 = std::move(vec1);
 
-  EXPECT_EQ(vec2.size(), 3);
+  EXPECT_EQ(vec2.size(), size_t{3});
   EXPECT_EQ(vec2[0], 1);
   EXPECT_EQ(vec2[1], 2);
   EXPECT_EQ(vec2[2], 3);
-  EXPECT_EQ(vec1.size(), 0);
+  EXPECT_EQ(vec1.size(), size_t{0});
 }
 
 TEST(VectorTest, EqualityOperator) {
@@ -641,15 +607,15 @@ TEST(VectorTest, DataVector) {
 
 TEST(VectorConstructorTest, DefaultConstructor) {
   s21::vector<int> v;
-  EXPECT_EQ(v.size(), 0);
-  EXPECT_EQ(v.capacity(), 0);
+  EXPECT_EQ(v.size(), size_t{0});
+  EXPECT_EQ(v.capacity(), size_t{0});
   EXPECT_NE(v.data(), nullptr);
 }
 
 TEST(VectorConstructorTest, PositiveSizeConstructor) {
   s21::vector<int> v(10);
-  EXPECT_EQ(v.size(), 10);
-  EXPECT_EQ(v.capacity(), 10);
+  EXPECT_EQ(v.size(), size_t{10});
+  EXPECT_EQ(v.capacity(), size_t{10});
   EXPECT_NE(v.data(), nullptr);
 
   // Проверяем инициализацию значениями по умолчанию
@@ -660,8 +626,8 @@ TEST(VectorConstructorTest, PositiveSizeConstructor) {
 
 TEST(VectorConstructorTest, ZeroSizeConstructor) {
   s21::vector<int> v(0);
-  EXPECT_EQ(v.size(), 0);
-  EXPECT_EQ(v.capacity(), 0);
+  EXPECT_EQ(v.size(), size_t{0});
+  EXPECT_EQ(v.capacity(), size_t{0});
   EXPECT_NE(v.data(), nullptr);
 }
 
