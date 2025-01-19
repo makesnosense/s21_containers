@@ -73,7 +73,7 @@ class DummyObject {
 
  private:
   int value_;
-  std::byte padding_[4];
+  [[maybe_unused]] std::byte padding_[4];
   int* data_;
 };
 
