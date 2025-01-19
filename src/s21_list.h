@@ -194,11 +194,12 @@ class list {
   ///////////////////////////////////
  private:
   struct Node {
+    value_type data_;
     Node* next_;
     Node* pre_;
-    value_type data_;
-    Node() : next_(nullptr), pre_(nullptr), data_(T()) {}
-    Node(value_type val) : next_(nullptr), pre_(nullptr), data_(val) {}
+
+    Node() : data_(T()), next_(nullptr), pre_(nullptr) {}
+    Node(value_type val) : data_(val), next_(nullptr), pre_(nullptr) {}
     Node(const Node&) = default;
     Node& operator=(const Node&) = default;
     ~Node() = default;
