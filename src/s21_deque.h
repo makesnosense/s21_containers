@@ -144,7 +144,7 @@ class deque {
   }
 
   ~deque() {
-    for (size_type i{front_chunk_index_}; i <= back_chunk_index_; ++i) {
+    for (size_type i{front_chunk_index_}; i < map_size_; ++i) {
       delete map_[i];
     }
 
@@ -237,8 +237,8 @@ class deque {
   // }
 
   reference at(size_type position) {
-    if (position >= size_ || position < 0) {
-      throw std::out_of_range("Vector index out of range");
+    if (position >= size_) {
+      throw std::out_of_range("Deque index out of range");
     }
     size_type chunk_offset{(position + front_element_index_) / kChunkSize};
     size_type chunk_index = front_chunk_index_ + chunk_offset;
@@ -264,11 +264,14 @@ class deque {
       --size_;
       if (back_vacant_index_ == 0) {
         back_vacant_index_ = kChunkSize - 1;
+        std::cout << "\n\n hiusdhgk \n\n";
         --back_chunk_index_;
       } else {
         --back_vacant_index_;
       }
-      map_[back_chunk_index_]->data_[back_vacant_index_].~value_type();
+      if constexpr (std::is_trivially_destructible_v<value_type> == false) {
+        map_[back_chunk_index_]->data_[back_vacant_index_].~value_type();
+      }
     }
   }
 
@@ -301,7 +304,12 @@ class deque {
   }
 
   iterator end() {
-    return iterator(map_[back_chunk_index_]->data_ + back_vacant_index_ - 1);
+    if (back_vacant_index_ == 0) {
+      // back_chunk_index points to the chunk with last element,
+      // not with vacant spot
+      return iterator(map_[back_chunk_index_]->data_ + kChunkSize);
+    }
+    return iterator(map_[back_chunk_index_]->data_ + back_vacant_index_);
   }
 
   reference front() {
