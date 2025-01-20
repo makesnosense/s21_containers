@@ -232,3 +232,49 @@ TEST(DequeTest, PopFront_3) {
   EXPECT_EQ(s21_q.at(3), std_q.at(3));
   EXPECT_EQ(s21_q.size(), std_q.size());
 }
+
+// back an front
+TEST(DequeTest, BackAndFront_1) {
+  std::deque<int> std_q;
+  s21::deque<int> s21_q;
+
+  for (int i{1}; i < 6; i++) {
+    if (i % 2 == 0) {
+      std_q.push_front(i);
+      s21_q.push_front(i);
+    } else {
+      std_q.push_back(i);
+      s21_q.push_back(i);
+    }
+  }
+
+  EXPECT_EQ(s21_q.front(), std_q.front());
+  EXPECT_EQ(s21_q.back(), std_q.back());
+}
+
+TEST(DequeTest, BackAndFront_2) {
+  std::deque<int> std_q;
+  s21::deque<int> s21_q;
+
+  for (int i{1}; i < 6; i++) {
+    std_q.push_back(i);
+    s21_q.push_back(i);
+  }
+
+  EXPECT_EQ(s21_q.front(), std_q.front());
+  EXPECT_EQ(s21_q.back(), std_q.back());
+}
+
+// begin and end
+TEST(DequeTest, BeginAndEnd) {
+  std::deque<int> std_q;
+  s21::deque<int> s21_q;
+
+  for (int i{1}; i < 6; i++) {
+    std_q.push_back(i);
+    s21_q.push_back(i);
+  }
+
+  EXPECT_EQ(*(s21_q.begin()), *(std_q.begin()));
+  EXPECT_EQ(*(s21_q.end()), *(std_q.end()));
+}
