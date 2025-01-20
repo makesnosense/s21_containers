@@ -279,8 +279,27 @@ class deque {
   // erase();
   // clear();
   // shrink_to_fit();
-  // front();
-  // back();
+  // void swap(queue& other);
+
+  iterator begin() {
+    return iterator(map_[front_chunk_index_]->data_ + front_element_index_);
+  }
+
+  iterator end() {
+    return iterator(map_[back_chunk_index_]->data_ + back_vacant_index_ - 1);
+  }
+
+  reference front() {
+    return map_[front_chunk_index_]->data_[front_element_index_];
+  }
+
+  reference back() {
+    if (back_vacant_index_ == 0) {
+      return map_[back_chunk_index_]->data_[kChunkSize - 1];
+    } else {
+      return map_[back_chunk_index_]->data_[back_vacant_index_ - 1];
+    }
+  }
 
   reference operator[](size_type index) {
     size_type chunk_offset{(index + front_element_index_) / kChunkSize};
