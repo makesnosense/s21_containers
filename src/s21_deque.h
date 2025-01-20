@@ -273,10 +273,13 @@ class deque {
   }
 
   size_type size() const { return size_; }
+  bool empty() {
+    if (size() == 0) {
+      return true;
+    }
+    return false;
+  }
 
-  // resize();
-  // insert();
-  // erase();
   // clear();
   // shrink_to_fit();
   // void swap(queue& other);
