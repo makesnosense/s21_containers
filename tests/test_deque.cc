@@ -233,7 +233,7 @@ TEST(DequeTest, PopFront_3) {
   EXPECT_EQ(s21_q.size(), std_q.size());
 }
 
-// back an front
+// back and front
 TEST(DequeTest, BackAndFront_1) {
   std::deque<int> std_q;
   s21::deque<int> s21_q;
@@ -275,8 +275,19 @@ TEST(DequeTest, BeginAndEnd) {
     s21_q.push_back(i);
   }
 
-  EXPECT_EQ(*(s21_q.begin()), *(std_q.begin()));
-  EXPECT_EQ(*(s21_q.end()), *(std_q.end()));
+  for (auto i{s21_q.begin()}; i != s21_q.end(); ++i) {
+    *i = 4;
+  }
+
+  for (auto i{std_q.begin()}; i != std_q.end(); ++i) {
+    *i = 4;
+  }
+
+  EXPECT_EQ(s21_q.at(0), std_q.at(0));
+  EXPECT_EQ(s21_q.at(1), std_q.at(1));
+  EXPECT_EQ(s21_q.at(2), std_q.at(2));
+  EXPECT_EQ(s21_q.at(3), std_q.at(3));
+  EXPECT_EQ(s21_q.at(4), std_q.at(4));
 }
 
 // empty
@@ -299,4 +310,71 @@ TEST(DequeTest, Empty_2) {
 
   EXPECT_TRUE(std_q.empty());
   EXPECT_TRUE(s21_q.empty());
+}
+
+// swap
+TEST(DequeTest, Swap) {
+  std::deque<int> std_q_1;
+  s21::deque<int> s21_q_1;
+  std::deque<int> std_q_2;
+  s21::deque<int> s21_q_2;
+
+  for (int i{1}; i < 6; i++) {
+    std_q_1.push_back(i);
+    s21_q_1.push_back(i);
+  }
+
+  for (int i{5}; i < 10; i++) {
+    std_q_2.push_back(i);
+    s21_q_2.push_back(i);
+  }
+
+  std_q_1.swap(std_q_2);
+  s21_q_1.swap(s21_q_2);
+
+  EXPECT_EQ(s21_q_1.at(0), std_q_1.at(0));
+  EXPECT_EQ(s21_q_1.at(1), std_q_1.at(1));
+  EXPECT_EQ(s21_q_1.at(2), std_q_1.at(2));
+  EXPECT_EQ(s21_q_1.at(3), std_q_1.at(3));
+  EXPECT_EQ(s21_q_1.at(4), std_q_1.at(4));
+
+  EXPECT_EQ(s21_q_2.at(0), std_q_2.at(0));
+  EXPECT_EQ(s21_q_2.at(1), std_q_2.at(1));
+  EXPECT_EQ(s21_q_2.at(2), std_q_2.at(2));
+  EXPECT_EQ(s21_q_2.at(3), std_q_2.at(3));
+  EXPECT_EQ(s21_q_2.at(4), std_q_2.at(4));
+}
+
+TEST(DequeTest, MinMaxSort) {
+  std::deque<int> std_q;
+  s21::deque<int> s21_q;
+
+  for (int i{0}; i < 25; i++) {
+    if (i % 2 == 0) {
+      std_q.push_front(i);
+      s21_q.push_front(i);
+    } else {
+      std_q.push_back(i);
+      s21_q.push_back(i);
+    }
+  }
+
+  // EXPECT_EQ(*std::min_element(s21_q.begin(), s21_q.end()),
+  //           *std::min_element(std_q.begin(), std_q.end()));
+  // std::sort(s21_q.begin(), s21_q.end());
+  // std::sort(std_q.begin(), std_q.end());
+  // EXPECT_EQ(s21_q, std_q);
+
+  // EXPECT_EQ(*std::max_element(s21_q.begin(), s21_q.end()),
+  //           *std::max_element(std_q.begin(), std_q.end()));
+
+  // std::shuffle(s21_q.begin(), s21_q.end(), Random::mt);
+  // std::shuffle(std_q.begin(), std_q.end(), Random::mt);
+
+  // std::stable_sort(s21_q.begin(), s21_q.end());
+  // std::stable_sort(std_q.begin(), std_q.end());
+  // EXPECT_EQ(s21_q, std_q);
+
+  // EXPECT_EQ(std::binary_search(s21_q.begin(), s21_q.end(), s21_q[2]),
+  //           std::binary_search(std_q.begin(), std_q.end(), s21_q[2]));
 }
