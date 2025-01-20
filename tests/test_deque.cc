@@ -278,3 +278,25 @@ TEST(DequeTest, BeginAndEnd) {
   EXPECT_EQ(*(s21_q.begin()), *(std_q.begin()));
   EXPECT_EQ(*(s21_q.end()), *(std_q.end()));
 }
+
+// empty
+TEST(DequeTest, Empty_1) {
+  std::deque<int> std_q;
+  s21::deque<int> s21_q;
+
+  for (int i{1}; i < 6; i++) {
+    std_q.push_back(i);
+    s21_q.push_back(i);
+  }
+
+  EXPECT_FALSE(std_q.empty());
+  EXPECT_FALSE(s21_q.empty());
+}
+
+TEST(DequeTest, Empty_2) {
+  std::deque<int> std_q;
+  s21::deque<int> s21_q;
+
+  EXPECT_TRUE(std_q.empty());
+  EXPECT_TRUE(s21_q.empty());
+}
