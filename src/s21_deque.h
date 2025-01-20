@@ -280,9 +280,21 @@ class deque {
     return false;
   }
 
-  // clear();
-  // shrink_to_fit();
-  // void swap(queue& other);
+  void swap(deque& other) {
+    std::swap(other.map_, map_);
+
+    std::swap(other.map_size_, map_size_);
+
+    std::swap(other.front_chunk_index_, front_chunk_index_);
+
+    std::swap(other.back_chunk_index_, back_chunk_index_);
+
+    std::swap(other.front_element_index_, front_element_index_);
+
+    std::swap(other.back_vacant_index_, back_vacant_index_);
+
+    std::swap(other.size_, size_);
+  }
 
   iterator begin() {
     return iterator(map_[front_chunk_index_]->data_ + front_element_index_);
