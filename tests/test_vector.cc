@@ -5,10 +5,10 @@
 
 #include <algorithm>
 #include <cstring>
-#include <random>
 #include <vector>
 
 #include "dummy_object.h"
+#include "random.h"
 #include "s21_vector.h"
 
 template <typename T>
@@ -644,9 +644,6 @@ TEST(VectorConstructorTest, MemoryAllocationCheck) {
 }
 
 TYPED_TEST(VectorTest, MinMaxSort) {
-  std::random_device rd;
-  std::mt19937 gen(rd());
-
   EXPECT_EQ(*std::min_element(this->s21_vec_.begin(), this->s21_vec_.end()),
             *std::min_element(this->stl_vec_.begin(), this->stl_vec_.end()));
   std::sort(this->s21_vec_.begin(), this->s21_vec_.end());
@@ -656,8 +653,8 @@ TYPED_TEST(VectorTest, MinMaxSort) {
   EXPECT_EQ(*std::max_element(this->s21_vec_.begin(), this->s21_vec_.end()),
             *std::max_element(this->stl_vec_.begin(), this->stl_vec_.end()));
 
-  std::shuffle(this->s21_vec_.begin(), this->s21_vec_.end(), gen);
-  std::shuffle(this->stl_vec_.begin(), this->stl_vec_.end(), gen);
+  std::shuffle(this->s21_vec_.begin(), this->s21_vec_.end(), Random::mt);
+  std::shuffle(this->stl_vec_.begin(), this->stl_vec_.end(), Random::mt);
 
   std::stable_sort(this->s21_vec_.begin(), this->s21_vec_.end());
   std::stable_sort(this->stl_vec_.begin(), this->stl_vec_.end());
