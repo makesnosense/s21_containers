@@ -120,7 +120,7 @@ TYPED_TEST(VectorTest, PushBack) {
   EXPECT_EQ(this->stl_vec_.back(), this->s21_vec_.back());
 }
 
-TEST(VectorTest, PushBackEmptyVector) {
+TEST(VectorTestNonTyped, PushBackEmptyVector) {
   std::vector<int> stl_v;
   s21::vector<int> s21_v;
 
@@ -132,7 +132,7 @@ TEST(VectorTest, PushBackEmptyVector) {
   EXPECT_EQ(stl_v[0], s21_v[0]);
 }
 
-TEST(VectorTest, PushBackMultipleElements) {
+TEST(VectorTestNonTyped, PushBackMultipleElements) {
   std::vector<int> stl_v;
   s21::vector<int> s21_v;
 
@@ -148,7 +148,7 @@ TEST(VectorTest, PushBackMultipleElements) {
   }
 }
 
-TEST(VectorTest, PushBackStringElements) {
+TEST(VectorTestNonTyped, PushBackStringElements) {
   std::vector<std::string> stl_v;
   s21::vector<std::string> s21_v;
 
@@ -164,7 +164,7 @@ TEST(VectorTest, PushBackStringElements) {
   EXPECT_EQ(stl_v[1], s21_v[1]);
 }
 
-TEST(VectorTest, PushBackAfterReserve) {
+TEST(VectorTestNonTyped, PushBackAfterReserve) {
   std::vector<int> stl_v;
   s21::vector<int> s21_v;
 
@@ -185,7 +185,7 @@ TEST(VectorTest, PushBackAfterReserve) {
   }
 }
 
-TEST(VectorTest, PushBackAfterShrinkToFit) {
+TEST(VectorTestNonTyped, PushBackAfterShrinkToFit) {
   std::vector<int> stl_v(100, 42);
   s21::vector<int> s21_v(100, 42);
 
@@ -255,14 +255,14 @@ TYPED_TEST(VectorTest, ReserveEdgeCases) {
 }
 
 // insert
-TEST(VectorTest, InsertSingleElement) {
+TEST(VectorTestNonTyped, InsertSingleElement) {
   s21::vector<int> s21_vec;
   s21_vec.insert(s21_vec.begin(), 324);
   EXPECT_EQ(s21_vec.size(), size_t{1});
   EXPECT_EQ(s21_vec[0], 324);
 }
 
-TEST(VectorTest, InsertMultipleElements) {
+TEST(VectorTestNonTyped, InsertMultipleElements) {
   s21::vector<int> s21_vec1;
   s21::vector<int> s21_vec2{7, 7, 7, 7, 7, 7, 7};
   s21::vector<int>::iterator it = s21_vec2.begin();
@@ -337,84 +337,86 @@ TYPED_TEST(VectorTest, InsertIntoEmptyVector) {
 
 // erase
 
-TEST(VectorTest, EraseSingleElement) {
-  s21::vector<int> customVec;
-  customVec.push_back(1);
-  customVec.push_back(2);
-  customVec.push_back(3);
+TEST(VectorTestNonTyped, EraseSingleElement) {
+  s21::vector<int> custom_vec;
+  custom_vec.push_back(1);
+  custom_vec.push_back(2);
+  custom_vec.push_back(3);
 
-  std::vector<int> stdVec = {1, 2, 3};
+  std::vector<int> std_vec = {1, 2, 3};
 
-  auto customIt = customVec.erase(customVec.begin() + 1);
-  auto stdIt = stdVec.erase(stdVec.begin() + 1);
+  auto custom_iterator = custom_vec.erase(custom_vec.begin() + 1);
+  auto std_iterator = std_vec.erase(std_vec.begin() + 1);
 
-  EXPECT_EQ(customVec.size(), stdVec.size());
+  EXPECT_EQ(custom_vec.size(), std_vec.size());
 
-  EXPECT_EQ(customVec[0], stdVec[0]);
-  EXPECT_EQ(customVec[1], stdVec[1]);
+  EXPECT_EQ(custom_vec[0], std_vec[0]);
+  EXPECT_EQ(custom_vec[1], std_vec[1]);
 
-  EXPECT_EQ(*customIt, *stdIt);
+  EXPECT_EQ(*custom_iterator, *std_iterator);
 }
 
-TEST(VectorTest, EraseRange) {
-  s21::vector<int> customVec;
-  customVec.push_back(1);
-  customVec.push_back(2);
-  customVec.push_back(3);
-  customVec.push_back(4);
+TEST(VectorTestNonTyped, EraseRange) {
+  s21::vector<int> custom_vec;
+  custom_vec.push_back(1);
+  custom_vec.push_back(2);
+  custom_vec.push_back(3);
+  custom_vec.push_back(4);
 
-  std::vector<int> stdVec = {1, 2, 3, 4};
+  std::vector<int> std_vec = {1, 2, 3, 4};
 
-  auto customIt = customVec.erase(customVec.begin() + 1, customVec.begin() + 3);
-  auto stdIt = stdVec.erase(stdVec.begin() + 1, stdVec.begin() + 3);
+  auto custom_iterator =
+      custom_vec.erase(custom_vec.begin() + 1, custom_vec.begin() + 3);
+  auto std_iterator = std_vec.erase(std_vec.begin() + 1, std_vec.begin() + 3);
 
-  EXPECT_EQ(customVec.size(), stdVec.size());
+  EXPECT_EQ(custom_vec.size(), std_vec.size());
 
-  EXPECT_EQ(customVec[0], stdVec[0]);
-  EXPECT_EQ(customVec[1], stdVec[1]);
+  EXPECT_EQ(custom_vec[0], std_vec[0]);
+  EXPECT_EQ(custom_vec[1], std_vec[1]);
 
-  EXPECT_EQ(*customIt, *stdIt);
+  EXPECT_EQ(*custom_iterator, *std_iterator);
 }
 
-TEST(VectorTest, EraseAtEnd) {
-  s21::vector<int> customVec;
-  customVec.push_back(1);
-  customVec.push_back(2);
+TEST(VectorTestNonTyped, EraseAtEnd) {
+  s21::vector<int> custom_vec;
+  custom_vec.push_back(1);
+  custom_vec.push_back(2);
 
-  std::vector<int> stdVec = {1, 2};
+  std::vector<int> std_vec = {1, 2};
 
-  auto customIt = customVec.erase(customVec.begin() + 1);
-  auto stdIt = stdVec.erase(stdVec.begin() + 1);
+  auto custom_iterator = custom_vec.erase(custom_vec.begin() + 1);
+  auto std_iterator = std_vec.erase(std_vec.begin() + 1);
 
-  EXPECT_EQ(customVec.size(), stdVec.size());
+  EXPECT_EQ(custom_vec.size(), std_vec.size());
 
-  EXPECT_EQ(customVec[0], stdVec[0]);
+  EXPECT_EQ(custom_vec[0], std_vec[0]);
 
-  EXPECT_EQ(*customIt, *stdIt);
+  EXPECT_EQ(*custom_iterator, *std_iterator);
 }
 
-TEST(VectorTest, EraseMultipleElements) {
-  s21::vector<int> customVec;
-  customVec.push_back(1);
-  customVec.push_back(2);
-  customVec.push_back(3);
-  customVec.push_back(4);
+TEST(VectorTestNonTyped, EraseMultipleElements) {
+  s21::vector<int> custom_vec;
+  custom_vec.push_back(1);
+  custom_vec.push_back(2);
+  custom_vec.push_back(3);
+  custom_vec.push_back(4);
 
-  std::vector<int> stdVec = {1, 2, 3, 4};
+  std::vector<int> std_vec = {1, 2, 3, 4};
 
-  auto customIt = customVec.erase(customVec.begin() + 1, customVec.begin() + 3);
-  auto stdIt = stdVec.erase(stdVec.begin() + 1, stdVec.begin() + 3);
+  auto custom_iterator =
+      custom_vec.erase(custom_vec.begin() + 1, custom_vec.begin() + 3);
+  auto std_iterator = std_vec.erase(std_vec.begin() + 1, std_vec.begin() + 3);
 
-  EXPECT_EQ(customVec.size(), stdVec.size());
+  EXPECT_EQ(custom_vec.size(), std_vec.size());
 
-  EXPECT_EQ(customVec[0], stdVec[0]);
-  EXPECT_EQ(customVec[1], stdVec[1]);
+  EXPECT_EQ(custom_vec[0], std_vec[0]);
+  EXPECT_EQ(custom_vec[1], std_vec[1]);
 
-  EXPECT_EQ(*customIt, *stdIt);
+  EXPECT_EQ(*custom_iterator, *std_iterator);
 }
 
 // swap
-TEST(VectorSwapTest, SwapContent) {
+TEST(VectorTestNonTyped, SwapContent) {
   s21::vector<int> my_vector1{1, 2, 3};
   s21::vector<int> my_vector2{4, 5};
 
@@ -428,7 +430,7 @@ TEST(VectorSwapTest, SwapContent) {
   EXPECT_EQ(my_vector2, std_vector2);
 }
 
-TEST(VectorSwapTest, SwapEmptyAndNonEmpty) {
+TEST(VectorTestNonTyped, SwapEmptyAndNonEmpty) {
   s21::vector<int> my_vector1{};
   s21::vector<int> my_vector2{1, 2, 3};
 
@@ -442,7 +444,7 @@ TEST(VectorSwapTest, SwapEmptyAndNonEmpty) {
   EXPECT_EQ(my_vector2, std_vector2);
 }
 
-TEST(VectorSwapTest, SwapIdenticalVectors) {
+TEST(VectorTestNonTyped, SwapIdenticalVectors) {
   s21::vector<int> my_vector1{1, 2, 3};
   s21::vector<int> my_vector2{1, 2, 3};
 
@@ -456,7 +458,7 @@ TEST(VectorSwapTest, SwapIdenticalVectors) {
   EXPECT_EQ(my_vector2, std_vector2);
 }
 
-TEST(VectorSwapTest, SwapWithSelf) {
+TEST(VectorTestNonTyped, SwapWithSelf) {
   s21::vector<int> my_vector{1, 2, 3};
   std::vector<int> std_vector{1, 2, 3};
 
@@ -466,7 +468,7 @@ TEST(VectorSwapTest, SwapWithSelf) {
   EXPECT_EQ(my_vector, std_vector);
 }
 
-TEST(VectorSwapTest, SwapLargeVectors) {
+TEST(VectorTestNonTyped, SwapLargeVectors) {
   s21::vector<int> my_vector1(100, 1);
   s21::vector<int> my_vector2(200, 2);
 
@@ -481,7 +483,7 @@ TEST(VectorSwapTest, SwapLargeVectors) {
 }
 
 // iterator
-TEST(VectorIteratorTest, ComparisonOperators) {
+TEST(VectorTestNonTyped, ComparisonOperators) {
   int arr[] = {1, 2, 3, 4};
   s21::vector<int>::iterator iter1(arr);
   s21::vector<int>::iterator iter2(arr + 2);
@@ -498,7 +500,7 @@ TEST(VectorIteratorTest, ComparisonOperators) {
   EXPECT_FALSE(iter1 >= iter2);
 }
 
-TEST(VectorIteratorTest, ArithmeticOperators) {
+TEST(VectorTestNonTyped, ArithmeticOperators) {
   int arr[] = {1, 2, 3, 4};
   s21::vector<int>::iterator iter(arr + 1);
 
@@ -510,7 +512,7 @@ TEST(VectorIteratorTest, ArithmeticOperators) {
   EXPECT_EQ(*iter2, 3);
 }
 
-TEST(VectorIteratorTest, PostDecrement) {
+TEST(VectorTestNonTyped, PostDecrement) {
   int arr[] = {1, 2, 3, 4};
   s21::vector<int>::iterator iter(arr + 2);
 
@@ -519,7 +521,7 @@ TEST(VectorIteratorTest, PostDecrement) {
   EXPECT_EQ(*iter, 2);
 }
 
-TEST(VectorIteratorTest, SubscriptOperator) {
+TEST(VectorTestNonTyped, SubscriptOperator) {
   int arr[] = {10, 20, 30, 40, 50};
   s21::vector<int>::iterator iter(arr);
 
@@ -531,7 +533,7 @@ TEST(VectorIteratorTest, SubscriptOperator) {
   EXPECT_EQ(arr[0], 100);
 }
 
-TEST(VectorComparisonTest, EqualVectors) {
+TEST(VectorTestNonTyped, EqualVectors) {
   std::vector<int> std_vec = {1, 2, 3, 4, 5};
   s21::vector<int> s21_vec;
   for (int i : std_vec) {
@@ -542,7 +544,7 @@ TEST(VectorComparisonTest, EqualVectors) {
   EXPECT_TRUE(s21_vec == std_vec);
 }
 
-TEST(VectorTest, ReverseIterators) {
+TEST(VectorTestNonTyped, ReverseIterators) {
   s21::vector<int> my_vec{1, 2, 3, 4};
   auto rbegin = my_vec.rbegin();
   auto rend = my_vec.rend();
@@ -556,7 +558,7 @@ TEST(VectorTest, ReverseIterators) {
   }
 }
 
-TEST(VectorTest, CopyAssignmentOperator) {
+TEST(VectorTestNonTyped, CopyAssignmentOperator) {
   s21::vector<int> vec1{1, 2, 3};
   s21::vector<int> vec2;
 
@@ -565,7 +567,7 @@ TEST(VectorTest, CopyAssignmentOperator) {
   EXPECT_EQ(vec1, vec2);
 }
 
-TEST(VectorTest, MoveAssignmentOperator) {
+TEST(VectorTestNonTyped, MoveAssignmentOperator) {
   s21::vector<int> vec1{1, 2, 3};
   s21::vector<int> vec2;
 
@@ -578,7 +580,7 @@ TEST(VectorTest, MoveAssignmentOperator) {
   EXPECT_EQ(vec1.size(), size_t{0});
 }
 
-TEST(VectorTest, EqualityOperator) {
+TEST(VectorTestNonTyped, EqualityOperator) {
   s21::vector<int> vec1{1, 2, 3};
   s21::vector<int> vec2{1, 2, 3};
   s21::vector<int> vec3{1, 2, 4};
@@ -587,7 +589,7 @@ TEST(VectorTest, EqualityOperator) {
   EXPECT_FALSE(vec1 == vec3);
 }
 
-TEST(VectorTest, ComparisonWithStdVector) {
+TEST(VectorTestNonTyped, ComparisonWithstd_vector) {
   std::vector<int> std_vec{1, 2, 3};
   s21::vector<int> my_vec{1, 2, 3};
 
@@ -596,7 +598,7 @@ TEST(VectorTest, ComparisonWithStdVector) {
   EXPECT_FALSE(my_vec == std_vec);
 }
 
-TEST(VectorTest, DataVector) {
+TEST(VectorTestNonTyped, DataVector) {
   std::vector<int> std_vec{1, 2, 3, 4, 5};
   s21::vector<int> s21_vec{1, 2, 3, 4, 5};
   int *data_s21 = s21_vec.data();
@@ -605,14 +607,14 @@ TEST(VectorTest, DataVector) {
   EXPECT_TRUE(*data_s21 == *data_std);
 }
 
-TEST(VectorConstructorTest, DefaultConstructor) {
+TEST(VectorTestNonTyped, DefaultConstructor) {
   s21::vector<int> v;
   EXPECT_EQ(v.size(), size_t{0});
   EXPECT_EQ(v.capacity(), size_t{0});
   EXPECT_NE(v.data(), nullptr);
 }
 
-TEST(VectorConstructorTest, PositiveSizeConstructor) {
+TEST(VectorTestNonTyped, PositiveSizeConstructor) {
   s21::vector<int> v(10);
   EXPECT_EQ(v.size(), size_t{10});
   EXPECT_EQ(v.capacity(), size_t{10});
@@ -624,20 +626,20 @@ TEST(VectorConstructorTest, PositiveSizeConstructor) {
   }
 }
 
-TEST(VectorConstructorTest, ZeroSizeConstructor) {
+TEST(VectorTestNonTyped, ZeroSizeConstructor) {
   s21::vector<int> v(0);
   EXPECT_EQ(v.size(), size_t{0});
   EXPECT_EQ(v.capacity(), size_t{0});
   EXPECT_NE(v.data(), nullptr);
 }
 
-TEST(VectorConstructorTest, MaxSizeExceeded) {
+TEST(VectorTestNonTyped, MaxSizeExceeded) {
   EXPECT_THROW(s21::vector<int>(
                    std::numeric_limits<std::size_t>::max() / sizeof(int) + 1),
                std::length_error);
 }
 
-TEST(VectorConstructorTest, MemoryAllocationCheck) {
+TEST(VectorTestNonTyped, MemoryAllocationCheck) {
   s21::vector<int> v(5);
   auto *data = v.data();
   EXPECT_NE(data, nullptr);
@@ -666,7 +668,7 @@ TYPED_TEST(VectorTest, MinMaxSort) {
                                this->s21_vec_[2]));
 }
 
-TEST(VectorTest, EraseEmptyVector) {
+TEST(VectorTestNonTyped, EraseEmptyVector) {
   s21::vector<int> custom_vec;
 
   EXPECT_NO_THROW(custom_vec.erase(custom_vec.begin()));
