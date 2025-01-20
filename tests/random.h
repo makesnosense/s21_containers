@@ -1,7 +1,6 @@
 #ifndef RANDOM_MT_H
 #define RANDOM_MT_H
 
-#include <array>
 #include <chrono>
 #include <random>
 
