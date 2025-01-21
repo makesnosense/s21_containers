@@ -14,6 +14,8 @@ class ListTest : public testing::Test {
         empty_s21_list_(),
         stl_list_{65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75},
         s21_list_{65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75},
+        stl_list_for_swap{1, 2, 3, 4, 5, 6, 7, 8, 9},
+        s21_list_for_swap{1, 2, 3, 4, 5, 6, 7, 8, 9},
         list_(3),
         alist_(3) {}
 
@@ -21,6 +23,8 @@ class ListTest : public testing::Test {
   s21::list<T> empty_s21_list_;
   std::list<T> stl_list_;
   s21::list<T> s21_list_;
+  std::list<T> stl_list_for_swap;
+  s21::list<T> s21_list_for_swap;
   std::list<T> list_;
   s21::list<T> alist_;
 };
@@ -146,32 +150,27 @@ TYPED_TEST(ListTest, CopyAssignmentOperator) {
   EXPECT_EQ(this->empty_s21_list_.size(), this->s21_list_.size());
 }
 TYPED_TEST(ListTest, swap) {
-  s21::list<int> vec1{1, 2, 3};
-  s21::list<int> vec2{4, 5, 6};
+  // stl_list_for_swap
+  this->s21_list_.swap(this->s21_list_for_swap);
+  this->stl_list_.swap(this->stl_list_for_swap);
 
-  vec1.swap(vec2);
-  for (size_t i = 0; i < vec1.size(); i++) {
-    std::cout << "\n" << vec1.get_element(i) << "\ngg";
-  }
+  auto stl_it = this->stl_list_.begin();
+  for (auto i = this->s21_list_.begin(); i != this->s21_list_.end(); ++i) {
+    EXPECT_EQ(*i, *stl_it);
 
-  for (size_t i = 0; i < vec2.size(); i++) {
-    std::cout << "\n" << vec2.get_element(i) << "\n";
+    ++stl_it;
   }
-  EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
 }
 TYPED_TEST(ListTest, merge) {
-  s21::list<int> vec1{1, 2, 3};
-  s21::list<int> vec2{4, 5, 6};
+  this->s21_list_.merge(this->s21_list_for_swap);
+  this->stl_list_.merge(this->stl_list_for_swap);
 
-  vec1.merge(vec2);
-  for (size_t i = 0; i < vec1.size(); i++) {
-    std::cout << "\n" << vec1.get_element(i) << "\ngg";
-  }
+  auto stl_it = this->stl_list_.begin();
+  for (auto i = this->s21_list_.begin(); i != this->s21_list_.end(); ++i) {
+    EXPECT_EQ(*i, *stl_it);
 
-  for (size_t i = 0; i < vec2.size(); i++) {
-    std::cout << "\n" << vec2.get_element(i) << "\n";
+    ++stl_it;
   }
-  EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
 }
 TYPED_TEST(ListTest, insert) {
   s21::list<int> myList;
