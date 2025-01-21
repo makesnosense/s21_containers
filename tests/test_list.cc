@@ -57,47 +57,33 @@ TYPED_TEST(ListTest, reverse) {
   this->stl_list_.reverse();
   auto it2 = this->stl_list_.begin();
   for (auto it = this->s21_list_.begin(); it != this->s21_list_.end(); ++it) {
-    std::cout << *it << " " << *it2 << " ";
+    // std::cout << *it << " " << *it2 << " ";
     EXPECT_EQ(*it, *it2);
-    std::cout << "\n";
+    // std::cout << "\n";
     ++it2;
   }
 }
-TYPED_TEST(ListTest, sortsss) {
-  // this->s21_list_.sort();
-  for (size_t i = 0; i < this->s21_list_.size(); i++) {
-    // std::cout << "\n\n\n\n\n" << this->s21_list_.get_element(i) <<
-    // "\n\n\n\n\n";
-  }
-  // std::cout << "\n\n\n\n\n" << this->s21_list_[1] << "\n\n\n\n\n";
-  EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
-}
-TYPED_TEST(ListTest, front) {
-  for (size_t i = 0; i < this->s21_list_.size(); i++) {
-    // std::cout << "\n\n\n\n\n" << this->s21_list_.get_element(i) <<
-    // "\n\n\n\n\n";
-  }
-  // std::cout << "\n\n\n\n\n" << this->s21_list_[1] << "\n\n\n\n\n";
-  // std::cout << "\n\n\n\n\n" << this->s21_list_.front() << "\n\n\n\n\n";
-  EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
+
+TYPED_TEST(ListTest, get_front) {
+  EXPECT_EQ(this->stl_list_.front(), this->s21_list_.front());
 }
 TYPED_TEST(ListTest, back) {
-  // std::cout << "\n\n\n\n\n" << this->s21_list_.back() << "\n\n\n\n\n";
-  EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
+  EXPECT_EQ(this->stl_list_.back(), this->s21_list_.back());
 }
 ////ietr
 TYPED_TEST(ListTest, begin) {
-  auto stl_it = this->s21_list_.begin();
-  // stl_it + 2;
-  // std::cout << "\n\n\n\n\nggggggg" << stl_it[1] << "\n\n\n\n\n";
-
-  EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
+  auto s21_it = this->s21_list_.begin();
+  auto stl_it = this->stl_list_.begin();
+  EXPECT_EQ(*s21_it, *stl_it);
 }
 TYPED_TEST(ListTest, end) {
-  auto stl_it = this->s21_list_.end();
-  // std::cout << "\n\n\n\n\neeeee" << *stl_it << "\n\n\n\n\n";
-
-  EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
+  auto s21_it = this->s21_list_.end();
+  auto stl_it = this->stl_list_.end();
+  // if (stl_it == nullptr && s21_it == nullptr) {
+  //   EXPECT_EQ(1, 1);
+  // } else {
+  //   EXPECT_EQ(1, 0);
+  // }
 }
 TYPED_TEST(ListTest, erase) {
   auto stl_it = this->s21_list_.end();
