@@ -315,6 +315,18 @@ class DequeIterator {
     return tmp;
   }
 
+  bool operator<(const DequeIterator& other) const {
+    if (container_ != other.container_) return false;
+    if (current_chunk_ != other.current_chunk_)
+      return current_chunk_ < other.current_chunk_;
+    return current_element_ < other.current_element_;
+  }
+
+  bool operator==(const DequeIterator& other) const {
+    return container_ == other.container_ &&
+           current_chunk_ == other.current_chunk_ &&
+           current_element_ == other.current_element_;
+  }
   bool operator!=(const DequeIterator& other) const {
     return container_ != other.container_ ||
            current_chunk_ != other.current_chunk_ ||
@@ -325,7 +337,7 @@ class DequeIterator {
     auto signed_chunk_size{
         static_cast<difference_type>(container_->kChunkSize)};
 
-    auto index_difference{static_cast<difference_type>(current_element_) - n};
+    auto index_difference{static_cast<difference_type>(current_element_) + n};
 
     if (index_difference < 0) {
       auto chunks_back = static_cast<size_type>(
@@ -357,6 +369,18 @@ class DequeIterator {
     DequeIterator tmp(*this);
     tmp -= n;
     return tmp;
+  }
+
+  difference_type operator-(const DequeIterator& other) const {
+    if (container_ != other.container_) return 0;
+    difference_type chunk_difference =
+        static_cast<difference_type>(current_chunk_ - other.current_chunk_);
+    difference_type element_difference =
+        static_cast<difference_type>(current_element_ - other.current_element_);
+
+    return chunk_difference *
+               static_cast<difference_type>(container_->kChunkSize) +
+           element_difference;
   }
 
  private:
