@@ -83,23 +83,29 @@ TYPED_TEST(ListTest, end) {
   EXPECT_EQ(1, 1);
 }
 TYPED_TEST(ListTest, erase) {
-  auto stl_it = this->s21_list_.end();
-  this->s21_list_.erase(stl_it);
-  for (size_t i = 0; i < this->s21_list_.size(); i++) {
-    //   std::cout << "\n\n\n\n\n" << this->s21_list_.get_element(i) <<
-    //   "\n\n\n\n\n";
-  }
+  auto s21_it = this->s21_list_.begin();
+  auto stl_it = this->stl_list_.begin();
 
-  EXPECT_EQ(this->s21_list_.size(), this->s21_list_.size());
+  this->s21_list_.erase(s21_it);
+  this->stl_list_.erase(stl_it);
+  auto stl_it2 = this->stl_list_.begin();
+
+  for (auto i = this->s21_list_.begin(); i != this->s21_list_.end(); ++i) {
+    EXPECT_EQ(*i, *stl_it2);
+
+    ++stl_it2;
+  }
 }
+
 TYPED_TEST(ListTest, sort) {
+  this->s21_list_.sort();
   for (size_t i = 0; i < this->s21_list_.size(); i++) {
-    //   std::cout << "\n" << this->s21_list_.get_element(i) << "\ngg";
+    std::cout << "\n" << this->s21_list_.get_element(i) << "\ngg";
   }
   this->s21_list_.sort();
 
   for (size_t i = 0; i < this->s21_list_.size(); i++) {
-    //   std::cout << "\n" << this->s21_list_.get_element(i) << "\n";
+    std::cout << "\n" << this->s21_list_.get_element(i) << "\n";
   }
 
   EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
