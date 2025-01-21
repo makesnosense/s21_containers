@@ -561,6 +561,18 @@ class ListIterator {
     ++(*this);
     return temp;
   }
+  ListIterator& operator--() {
+    if (current_ != nullptr) {
+      current_ = current_->pre_;
+    }
+    return *this;
+  }
+
+  ListIterator operator--(int) {
+    ListIterator temp = *this;
+    --(*this);
+    return temp;
+  }
   ListIterator operator+(int n) const {
     ListIterator temp = *this;
     for (int i = 0; i < n && temp.current_ != nullptr; ++i) {
