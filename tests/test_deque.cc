@@ -6,6 +6,7 @@
 #include <deque>
 
 #include "dummy_object.h"
+#include "random.h"
 #include "s21_deque.h"
 
 template <typename T>
@@ -266,29 +267,25 @@ TEST(DequeTest, BackAndFront_2) {
 }
 
 // begin and end
-// TEST(DequeTest, BeginAndEnd) {
-//   std::deque<int> std_q;
-//   s21::deque<int> s21_q;
+TEST(DequeTest, BeginAndEnd) {
+  std::deque<int> std_q;
+  s21::deque<int> s21_q;
 
-//   for (int i{1}; i < 6; i++) {
-//     std_q.push_back(i);
-//     s21_q.push_back(i);
-//   }
+  for (int i{1}; i < 1000; i++) {
+    std_q.push_back(i);
+    s21_q.push_back(i);
+  }
 
-//   for (auto i{s21_q.begin()}; i != s21_q.end(); ++i) {
-//     *i = 4;
-//   }
+  for (auto i{s21_q.begin()}; i != s21_q.end(); ++i) {
+    *i = 4;
+  }
 
-//   for (auto i{std_q.begin()}; i != std_q.end(); ++i) {
-//     *i = 4;
-//   }
+  for (auto i{std_q.begin()}; i != std_q.end(); ++i) {
+    *i = 4;
+  }
 
-//   EXPECT_EQ(s21_q.at(0), std_q.at(0));
-//   EXPECT_EQ(s21_q.at(1), std_q.at(1));
-//   EXPECT_EQ(s21_q.at(2), std_q.at(2));
-//   EXPECT_EQ(s21_q.at(3), std_q.at(3));
-//   EXPECT_EQ(s21_q.at(4), std_q.at(4));
-// }
+  EXPECT_EQ(std_q, s21_q);
+}
 
 // empty
 TEST(DequeTest, Empty_1) {
@@ -359,21 +356,17 @@ TEST(DequeTest, MinMaxSort) {
     }
   }
 
-  auto rrr{s21_q.begin()};
-
-  ++rrr;
-  // std::cout << *rrr;
-  // EXPECT_EQ(*std::min_element(s21_q.begin(), s21_q.end()),
-  //           *std::min_element(std_q.begin(), std_q.end()));
+  EXPECT_EQ(*std::min_element(s21_q.begin(), s21_q.end()),
+            *std::min_element(std_q.begin(), std_q.end()));
 
   // std::cout << s21_q << '\n';
-  // std::sort(s21_q.begin(), s21_q.end());
-  // std::sort(std_q.begin(), std_q.end());
+  std::sort(s21_q.begin(), s21_q.end());
+  std::sort(std_q.begin(), std_q.end());
   // std::cout << s21_q;
-  // EXPECT_EQ(s21_q, std_q);
+  EXPECT_EQ(s21_q, std_q);
 
-  // EXPECT_EQ(*std::max_element(s21_q.begin(), s21_q.end()),
-  //           *std::max_element(std_q.begin(), std_q.end()));
+  EXPECT_EQ(*std::max_element(s21_q.begin(), s21_q.end()),
+            *std::max_element(std_q.begin(), std_q.end()));
 
   // std::shuffle(s21_q.begin(), s21_q.end(), Random::mt);
   // std::shuffle(std_q.begin(), std_q.end(), Random::mt);
@@ -385,3 +378,5 @@ TEST(DequeTest, MinMaxSort) {
   // EXPECT_EQ(std::binary_search(s21_q.begin(), s21_q.end(), s21_q[2]),
   //           std::binary_search(std_q.begin(), std_q.end(), s21_q[2]));
 }
+#if 0
+#endif
