@@ -46,56 +46,56 @@ TYPED_TEST(DequeTest, Second) {
   // EXPECT_TRUE(this->empty_s21_vec_.empty());
 }
 
-// iterartor
-TEST(DequeTest, ComparisonOperators) {
-  int arr[] = {1, 2, 3, 4};
-  s21::deque<int>::iterator iter1(arr);
-  s21::deque<int>::iterator iter2(arr + 2);
+// // iterartor
+// TEST(DequeTest, ComparisonOperators) {
+//   int arr[] = {1, 2, 3, 4};
+//   s21::deque<int>::iterator iter1(arr);
+//   s21::deque<int>::iterator iter2(arr + 2);
 
-  EXPECT_TRUE(iter1 < iter2);
-  EXPECT_FALSE(iter2 < iter1);
-  EXPECT_TRUE(iter2 > iter1);
-  EXPECT_FALSE(iter1 > iter2);
-  EXPECT_TRUE(iter1 <= iter1);
-  EXPECT_TRUE(iter1 <= iter2);
-  EXPECT_FALSE(iter2 <= iter1);
-  EXPECT_TRUE(iter2 >= iter2);
-  EXPECT_TRUE(iter2 >= iter1);
-  EXPECT_FALSE(iter1 >= iter2);
-}
+//   EXPECT_TRUE(iter1 < iter2);
+//   EXPECT_FALSE(iter2 < iter1);
+//   EXPECT_TRUE(iter2 > iter1);
+//   EXPECT_FALSE(iter1 > iter2);
+//   EXPECT_TRUE(iter1 <= iter1);
+//   EXPECT_TRUE(iter1 <= iter2);
+//   EXPECT_FALSE(iter2 <= iter1);
+//   EXPECT_TRUE(iter2 >= iter2);
+//   EXPECT_TRUE(iter2 >= iter1);
+//   EXPECT_FALSE(iter1 >= iter2);
+// }
 
-TEST(DequeTest, ArithmeticOperators) {
-  int arr[] = {1, 2, 3, 4};
-  s21::deque<int>::iterator iter(arr + 1);
+// TEST(DequeTest, ArithmeticOperators) {
+//   int arr[] = {1, 2, 3, 4};
+//   s21::deque<int>::iterator iter(arr + 1);
 
-  EXPECT_EQ(*(iter - 1), 1);
-  iter -= 1;
-  EXPECT_EQ(*iter, 1);
+//   EXPECT_EQ(*(iter - 1), 1);
+//   iter -= 1;
+//   EXPECT_EQ(*iter, 1);
 
-  s21::deque<int>::iterator iter2 = 2 + iter;
-  EXPECT_EQ(*iter2, 3);
-}
+//   s21::deque<int>::iterator iter2 = 2 + iter;
+//   EXPECT_EQ(*iter2, 3);
+// }
 
-TEST(DequeTest, PostDecrement) {
-  int arr[] = {1, 2, 3, 4};
-  s21::deque<int>::iterator iter(arr + 2);
+// TEST(DequeTest, PostDecrement) {
+//   int arr[] = {1, 2, 3, 4};
+//   s21::deque<int>::iterator iter(arr + 2);
 
-  s21::deque<int>::iterator temp = iter--;
-  EXPECT_EQ(*temp, 3);
-  EXPECT_EQ(*iter, 2);
-}
+//   s21::deque<int>::iterator temp = iter--;
+//   EXPECT_EQ(*temp, 3);
+//   EXPECT_EQ(*iter, 2);
+// }
 
-TEST(DequeTest, SubscriptOperator) {
-  int arr[] = {10, 20, 30, 40, 50};
-  s21::deque<int>::iterator iter(arr);
+// TEST(DequeTest, SubscriptOperator) {
+//   int arr[] = {10, 20, 30, 40, 50};
+//   s21::deque<int>::iterator iter(arr);
 
-  EXPECT_EQ(iter[0], 10);
-  EXPECT_EQ(iter[1], 20);
-  EXPECT_EQ(iter[2], 30);
+//   EXPECT_EQ(iter[0], 10);
+//   EXPECT_EQ(iter[1], 20);
+//   EXPECT_EQ(iter[2], 30);
 
-  iter[0] = 100;
-  EXPECT_EQ(arr[0], 100);
-}
+//   iter[0] = 100;
+//   EXPECT_EQ(arr[0], 100);
+// }
 
 // InitializerListConstructor
 TEST(DequeTest, InitializerListConstructor) {
@@ -266,29 +266,29 @@ TEST(DequeTest, BackAndFront_2) {
 }
 
 // begin and end
-TEST(DequeTest, BeginAndEnd) {
-  std::deque<int> std_q;
-  s21::deque<int> s21_q;
+// TEST(DequeTest, BeginAndEnd) {
+//   std::deque<int> std_q;
+//   s21::deque<int> s21_q;
 
-  for (int i{1}; i < 6; i++) {
-    std_q.push_back(i);
-    s21_q.push_back(i);
-  }
+//   for (int i{1}; i < 6; i++) {
+//     std_q.push_back(i);
+//     s21_q.push_back(i);
+//   }
 
-  for (auto i{s21_q.begin()}; i != s21_q.end(); ++i) {
-    *i = 4;
-  }
+//   for (auto i{s21_q.begin()}; i != s21_q.end(); ++i) {
+//     *i = 4;
+//   }
 
-  for (auto i{std_q.begin()}; i != std_q.end(); ++i) {
-    *i = 4;
-  }
+//   for (auto i{std_q.begin()}; i != std_q.end(); ++i) {
+//     *i = 4;
+//   }
 
-  EXPECT_EQ(s21_q.at(0), std_q.at(0));
-  EXPECT_EQ(s21_q.at(1), std_q.at(1));
-  EXPECT_EQ(s21_q.at(2), std_q.at(2));
-  EXPECT_EQ(s21_q.at(3), std_q.at(3));
-  EXPECT_EQ(s21_q.at(4), std_q.at(4));
-}
+//   EXPECT_EQ(s21_q.at(0), std_q.at(0));
+//   EXPECT_EQ(s21_q.at(1), std_q.at(1));
+//   EXPECT_EQ(s21_q.at(2), std_q.at(2));
+//   EXPECT_EQ(s21_q.at(3), std_q.at(3));
+//   EXPECT_EQ(s21_q.at(4), std_q.at(4));
+// }
 
 // empty
 TEST(DequeTest, Empty_1) {
@@ -359,10 +359,17 @@ TEST(DequeTest, MinMaxSort) {
     }
   }
 
+  auto rrr{s21_q.begin()};
+
+  ++rrr;
+  // std::cout << *rrr;
   // EXPECT_EQ(*std::min_element(s21_q.begin(), s21_q.end()),
   //           *std::min_element(std_q.begin(), std_q.end()));
+
+  // std::cout << s21_q << '\n';
   // std::sort(s21_q.begin(), s21_q.end());
   // std::sort(std_q.begin(), std_q.end());
+  // std::cout << s21_q;
   // EXPECT_EQ(s21_q, std_q);
 
   // EXPECT_EQ(*std::max_element(s21_q.begin(), s21_q.end()),

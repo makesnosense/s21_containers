@@ -4,91 +4,9 @@
 #define S21_DEQUE_H
 
 namespace s21 {
+
 template <typename T>
-class DequeIterator {
- public:
-  using iterator_category = std::random_access_iterator_tag;
-  using value_type = T;
-  using pointer = T*;
-  using reference = T&;
-  using difference_type = std::ptrdiff_t;
-
-  DequeIterator() : ptr_(nullptr) {}
-  explicit DequeIterator(pointer ptr) : ptr_{ptr} {}
-  operator pointer() const { return ptr_; }
-
-  reference operator*() { return *ptr_; }
-  reference operator[](difference_type n) { return ptr_[n]; }
-
-  DequeIterator& operator++() {
-    ++ptr_;
-    return *this;
-  }
-
-  DequeIterator operator++(int) {
-    DequeIterator tmp = *this;
-    ++ptr_;
-    return tmp;
-  }
-
-  DequeIterator& operator--() {
-    --ptr_;
-    return *this;
-  }
-  DequeIterator operator--(int) {
-    DequeIterator tmp = *this;
-    --ptr_;
-    return tmp;
-  }
-
-  DequeIterator& operator+=(difference_type n) {
-    ptr_ += n;
-    return *this;
-  }
-
-  DequeIterator operator+(difference_type n) const {
-    return DequeIterator(ptr_ + n);
-  }
-
-  friend DequeIterator operator+(difference_type n, const DequeIterator& iter) {
-    return DequeIterator(iter.ptr_ + n);
-  }
-
-  DequeIterator& operator-=(difference_type n) {
-    ptr_ -= n;
-    return *this;
-  }
-
-  difference_type operator-(const DequeIterator& other) const {
-    return ptr_ - other.ptr_;
-  }
-
-  DequeIterator operator-(difference_type n) const {
-    return DequeIterator(ptr_ - n);
-  }
-
-  bool operator==(const DequeIterator& other) const {
-    return ptr_ == other.ptr_;
-  }
-  bool operator!=(const DequeIterator& other) const {
-    return ptr_ != other.ptr_;
-  }
-
-  bool operator<(const DequeIterator& other) const { return ptr_ < other.ptr_; }
-
-  bool operator>(const DequeIterator& other) const { return ptr_ > other.ptr_; }
-
-  bool operator<=(const DequeIterator& other) const {
-    return ptr_ <= other.ptr_;
-  }
-
-  bool operator>=(const DequeIterator& other) const {
-    return ptr_ >= other.ptr_;
-  }
-
- private:
-  pointer ptr_;
-};
+class DequeIterator;
 
 template <typename T>
 class deque {
@@ -100,9 +18,13 @@ class deque {
   using reference = typename traits::reference;
   using const_reference = typename traits::const_reference;
   using size_type = typename traits::size_type;
+
+  using iterator = DequeIterator<T>;
   using const_iterator = const DequeIterator<T>;
   using reverse_iterator = DequeIterator<T>;
   using const_reverse_iterator = const DequeIterator<T>;
+
+  friend class DequeIterator<T>;
 
  private:
   // static constexpr size_type kPageSize{4096};
@@ -113,8 +35,6 @@ class deque {
   static constexpr size_type kInitialMapSize{10};
 
  public:
-  using iterator = DequeIterator<T>;
-
   struct Chunk {
     value_type data_[deque::kChunkSize];
   };
@@ -227,14 +147,6 @@ class deque {
   }
 
   void AddChunkAt(size_type chunk_index) { map_[chunk_index] = new Chunk(); }
-  // void AddChunkToFront() {
-  //   --front_chunk_index_;
-  //   AddChunkAt(front_chunk_index_);
-  // }
-  // void AddChunkToBack() {
-  //   ++back_chunk_index_;
-  //   AddChunkAt(front_chunk_index_);
-  // }
 
   reference at(size_type position) {
     if (position >= size_) {
@@ -264,7 +176,6 @@ class deque {
       --size_;
       if (back_vacant_index_ == 0) {
         back_vacant_index_ = kChunkSize - 1;
-        std::cout << "\n\n hiusdhgk \n\n";
         --back_chunk_index_;
       } else {
         --back_vacant_index_;
@@ -285,31 +196,20 @@ class deque {
 
   void swap(deque& other) {
     std::swap(other.map_, map_);
-
     std::swap(other.map_size_, map_size_);
-
     std::swap(other.front_chunk_index_, front_chunk_index_);
-
     std::swap(other.back_chunk_index_, back_chunk_index_);
-
     std::swap(other.front_element_index_, front_element_index_);
-
     std::swap(other.back_vacant_index_, back_vacant_index_);
-
     std::swap(other.size_, size_);
   }
 
   iterator begin() {
-    return iterator(map_[front_chunk_index_]->data_ + front_element_index_);
+    return iterator(this, front_chunk_index_, front_element_index_);
   }
 
   iterator end() {
-    if (back_vacant_index_ == 0) {
-      // back_chunk_index points to the chunk with last element,
-      // not with vacant spot
-      return iterator(map_[back_chunk_index_]->data_ + kChunkSize);
-    }
-    return iterator(map_[back_chunk_index_]->data_ + back_vacant_index_);
+    return iterator(this, back_chunk_index_, back_vacant_index_);
   }
 
   reference front() {
@@ -324,7 +224,7 @@ class deque {
     }
   }
 
-  reference operator[](size_type index) {
+  const_reference operator[](size_type index) const {
     size_type chunk_offset{(index + front_element_index_) / kChunkSize};
 
     size_type chunk_index = front_chunk_index_ + chunk_offset;
@@ -333,6 +233,10 @@ class deque {
                                      kChunkSize};
 
     return map_[chunk_index]->data_[element_index_in_chunk];
+  }
+
+  reference operator[](size_type index) {
+    return const_cast<reference>(static_cast<const deque&>(*this)[index]);
   }
 
  private:
@@ -346,12 +250,105 @@ class deque {
 };
 
 template <typename T>
+class DequeIterator {
+ public:
+  using iterator_category = std::random_access_iterator_tag;
+  using size_type = typename deque<T>::size_type;
+  using value_type = T;
+  using pointer = T*;
+  using reference = T&;
+  using difference_type = std::ptrdiff_t;
+
+  // size_type current_chunk_index_{};
+  // size_type current_element_index_{};
+
+  DequeIterator() = default;
+  DequeIterator(deque<T>* container, size_type current_chunk,
+                size_type current_element)
+      : container_{container},
+        current_chunk_(current_chunk),
+        current_element_(current_element) {}
+
+  operator pointer() const {
+    return &(container_->map_[current_chunk_]->data_[current_element_]);
+  }
+
+  reference operator*() {
+    return container_->map_[current_chunk_]->data_[current_element_];
+  }
+  reference operator[](difference_type n) {
+    size_type chunk_offset{(n + current_element_) / container_->kChunkSize};
+    size_type element_index{(n + current_element_) % container_->kChunkSize};
+    return container_->map_[current_chunk_ + chunk_offset]
+        ->data_[current_element_ + element_index];
+  }
+
+  DequeIterator& operator++() {
+    ++current_element_ %= container_->kChunkSize;
+    if (current_element_ == 0) ++current_chunk_;
+    return *this;
+  }
+
+  DequeIterator operator++(int) {
+    DequeIterator tmp = *this;
+    ++(*this);
+    return tmp;
+  }
+
+  DequeIterator& operator--() {
+    if (current_element_ == 0) {
+      --current_chunk_;
+      current_element_ = container_->kChunkSize;
+    }
+    --current_element_;
+    return *this;
+  }
+  DequeIterator operator--(int) {
+    DequeIterator tmp = *this;
+    --(*this);
+    return tmp;
+  }
+
+  bool operator!=(const DequeIterator& other) const {
+    return container_ != other.container_ ||
+           current_chunk_ != other.current_chunk_ ||
+           current_element_ != other.current_element_;
+  }
+
+ private:
+  deque<T>* container_{nullptr};
+  size_type current_chunk_{};
+  size_type current_element_{};
+};
+
+template <typename T>
 std::ostream& operator<<(std::ostream& out, deque<T>& q) {
   for (size_t index{0}; index < q.size(); ++index) {
     out << q[index] << ' ';
   }
 
   return out;
+}
+
+template <typename T>
+bool operator==(const s21::deque<T>& first, const std::deque<T>& other) {
+  using size_type = typename s21::deque<T>::traits::size_type;
+
+  if (first.size() != other.size()) {
+    return false;
+  }
+
+  for (size_type i{0}; i < first.size(); ++i) {
+    if (first[i] != other[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+template <typename T>
+bool operator==(const std::deque<T>& first, const s21::deque<T>& other) {
+  return other == first;
 }
 
 }  // namespace s21
