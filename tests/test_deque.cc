@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 #pragma GCC diagnostic pop
 
+#include <algorithm>
 #include <deque>
 
 #include "dummy_object.h"
