@@ -98,17 +98,17 @@ TYPED_TEST(ListTest, erase) {
 }
 
 TYPED_TEST(ListTest, sort) {
-  this->s21_list_.sort();
-  for (size_t i = 0; i < this->s21_list_.size(); i++) {
-    std::cout << "\n" << this->s21_list_.get_element(i) << "\ngg";
-  }
-  this->s21_list_.sort();
+  this->s21_list_.reverse();
+  this->stl_list_.reverse();
 
-  for (size_t i = 0; i < this->s21_list_.size(); i++) {
-    std::cout << "\n" << this->s21_list_.get_element(i) << "\n";
-  }
+  this->s21_list_.sort();
+  this->stl_list_.sort();
+  auto stl_it = this->stl_list_.begin();
+  for (auto i = this->s21_list_.begin(); i != this->s21_list_.end(); ++i) {
+    EXPECT_EQ(*i, *stl_it);
 
-  EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
+    ++stl_it;
+  }
 }
 
 TYPED_TEST(ListTest, unique) {
