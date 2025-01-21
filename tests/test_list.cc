@@ -12,13 +12,17 @@ class ListTest : public testing::Test {
   ListTest()
       : empty_stl_list_(),
         empty_s21_list_(),
-        stl_list_{68, 66, 67},
-        s21_list_{68, 66, 67} {}
+        stl_list_{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13},
+        s21_list_{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13},
+        list_(3),
+        alist_(3) {}
 
   std::list<T> empty_stl_list_;
   s21::list<T> empty_s21_list_;
   std::list<T> stl_list_;
   s21::list<T> s21_list_;
+  std::list<T> list_;
+  s21::list<T> alist_;
 };
 using TestedTypes = ::testing::Types<char, int, double, DummyObject>;
 TYPED_TEST_SUITE(ListTest, TestedTypes);
@@ -27,6 +31,232 @@ TYPED_TEST(ListTest, DefaultConstructor) {
   EXPECT_EQ(this->empty_stl_list_.size(), this->empty_s21_list_.size());
   EXPECT_TRUE(this->empty_s21_list_.empty());
 }
+TYPED_TEST(ListTest, push_back) {
+  this->empty_stl_list_.push_back(3);
+  this->empty_s21_list_.push_back(3);
+  EXPECT_EQ(this->empty_stl_list_.size(), this->empty_s21_list_.size());
+}
+TYPED_TEST(ListTest, pop_back) {
+  this->empty_stl_list_.push_back(3);
+  this->empty_s21_list_.push_back(3);
+  this->empty_stl_list_.pop_back();
+  this->empty_s21_list_.pop_back();
+  EXPECT_EQ(this->empty_stl_list_.size(), this->empty_s21_list_.size());
+}
 
+TYPED_TEST(ListTest, ConstructorSize_type) {
+  EXPECT_EQ(this->list_.size(), this->alist_.size());
+  EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
+}
+TYPED_TEST(ListTest, max_size) {
+  // std::cout << "\n\n\n\n\n" << this->stl_list_.max_size() << "\n\n\n\n\n";
+  // std::cout << "\n\n\n\n\n" << this->s21_list_.max_size() << "\n\n\n\n\n";
+  EXPECT_EQ(this->s21_list_.max_size(), this->s21_list_.max_size());
+}
+
+TYPED_TEST(ListTest, reverse) {
+  this->s21_list_.reverse();
+  this->stl_list_.reverse();
+  for (auto it = this->s21_list_.begin(); it != this->s21_list_.end(); ++it) {
+    std::cout << *it << " ";  // Доступ к элементу через разыменование итератора
+  }
+  // EXPECT_EQ(this->this->s21_list_.get_element(1),
+  //          this->s21_list_.get_element(1));
+
+  EXPECT_EQ(this->s21_list_.max_size(), this->s21_list_.max_size());
+}
+TYPED_TEST(ListTest, sortsss) {
+  // this->s21_list_.sort();
+  for (size_t i = 0; i < this->s21_list_.size(); i++) {
+    // std::cout << "\n\n\n\n\n" << this->s21_list_.get_element(i) <<
+    // "\n\n\n\n\n";
+  }
+  // std::cout << "\n\n\n\n\n" << this->s21_list_[1] << "\n\n\n\n\n";
+  EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
+}
+TYPED_TEST(ListTest, front) {
+  for (size_t i = 0; i < this->s21_list_.size(); i++) {
+    // std::cout << "\n\n\n\n\n" << this->s21_list_.get_element(i) <<
+    // "\n\n\n\n\n";
+  }
+  // std::cout << "\n\n\n\n\n" << this->s21_list_[1] << "\n\n\n\n\n";
+  // std::cout << "\n\n\n\n\n" << this->s21_list_.front() << "\n\n\n\n\n";
+  EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
+}
+TYPED_TEST(ListTest, back) {
+  // std::cout << "\n\n\n\n\n" << this->s21_list_.back() << "\n\n\n\n\n";
+  EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
+}
+////ietr
+TYPED_TEST(ListTest, begin) {
+  auto stl_it = this->s21_list_.begin();
+  // stl_it + 2;
+  // std::cout << "\n\n\n\n\nggggggg" << stl_it[1] << "\n\n\n\n\n";
+
+  EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
+}
+TYPED_TEST(ListTest, end) {
+  auto stl_it = this->s21_list_.end();
+  // std::cout << "\n\n\n\n\neeeee" << *stl_it << "\n\n\n\n\n";
+
+  EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
+}
+TYPED_TEST(ListTest, erase) {
+  auto stl_it = this->s21_list_.end();
+  this->s21_list_.erase(stl_it);
+  for (size_t i = 0; i < this->s21_list_.size(); i++) {
+    //   std::cout << "\n\n\n\n\n" << this->s21_list_.get_element(i) <<
+    //   "\n\n\n\n\n";
+  }
+
+  EXPECT_EQ(this->s21_list_.size(), this->s21_list_.size());
+}
+TYPED_TEST(ListTest, sort) {
+  for (size_t i = 0; i < this->s21_list_.size(); i++) {
+    //   std::cout << "\n" << this->s21_list_.get_element(i) << "\ngg";
+  }
+  this->s21_list_.sort();
+
+  for (size_t i = 0; i < this->s21_list_.size(); i++) {
+    //   std::cout << "\n" << this->s21_list_.get_element(i) << "\n";
+  }
+
+  EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
+}
+
+TYPED_TEST(ListTest, unique) {
+  for (size_t i = 0; i < this->s21_list_.size(); i++) {
+    std::cout << "\n" << this->s21_list_.get_element(i) << "\ngg";
+  }
+  this->s21_list_.unique();
+
+  for (size_t i = 0; i < this->s21_list_.size(); i++) {
+    std::cout << "\n" << this->s21_list_.get_element(i) << "\n";
+  }
+
+  EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
+}
+TYPED_TEST(ListTest, CopyAssignmentOperator) {
+  s21::list<int> vec1{1, 2, 3};
+  s21::list<int> vec2;
+
+  vec2 = vec1;
+  for (size_t i = 0; i < vec1.size(); i++) {
+    std::cout << "\n" << vec1.get_element(i) << "\ngg";
+  }
+
+  for (size_t i = 0; i < vec2.size(); i++) {
+    std::cout << "\n" << vec2.get_element(i) << "\n";
+  }
+  EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
+}
+TYPED_TEST(ListTest, swap) {
+  s21::list<int> vec1{1, 2, 3};
+  s21::list<int> vec2{4, 5, 6};
+
+  vec1.swap(vec2);
+  for (size_t i = 0; i < vec1.size(); i++) {
+    std::cout << "\n" << vec1.get_element(i) << "\ngg";
+  }
+
+  for (size_t i = 0; i < vec2.size(); i++) {
+    std::cout << "\n" << vec2.get_element(i) << "\n";
+  }
+  EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
+}
+TYPED_TEST(ListTest, merge) {
+  s21::list<int> vec1{1, 2, 3};
+  s21::list<int> vec2{4, 5, 6};
+
+  vec1.merge(vec2);
+  for (size_t i = 0; i < vec1.size(); i++) {
+    std::cout << "\n" << vec1.get_element(i) << "\ngg";
+  }
+
+  for (size_t i = 0; i < vec2.size(); i++) {
+    std::cout << "\n" << vec2.get_element(i) << "\n";
+  }
+  EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
+}
+TYPED_TEST(ListTest, insert) {
+  s21::list<int> myList;
+  myList.push_back(1);
+  myList.push_back(3);
+
+  auto it = myList.begin();
+  ++it;
+
+  myList.insert(it, 2);
+
+  std::cout << "Contents of myList after insertion: ";
+  for (size_t i = 0; i < myList.size(); i++) {
+    std::cout << "\n" << myList.get_element(i) << "\n";
+  }
+}
+TYPED_TEST(ListTest, copy) {
+  s21::list<int> vec1{1, 2, 3};
+  s21::list<int> vec2(vec1);
+
+  // vec1.list(vec2);
+  for (size_t i = 0; i < vec1.size(); i++) {
+    std::cout << "\n" << vec1.get_element(i) << "\ngg";
+  }
+
+  for (size_t i = 0; i < vec2.size(); i++) {
+    std::cout << "\n" << vec2.get_element(i) << "\n";
+  }
+  EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
+}
+TYPED_TEST(ListTest, movedList) {
+  s21::list<int> originalList;
+  originalList.push_back(1);
+  originalList.push_back(2);
+  originalList.push_back(3);
+
+  s21::list<int> movedList(std::move(originalList));
+
+  std::cout << "Contents of movedList: ";
+  for (size_t i = 0; i < movedList.size(); ++i) {
+    std::cout << movedList.get_element(i) << " ";
+  }
+
+  std::cout << "\nOriginal list size after move: " << originalList.size();
+  EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
+}
+TYPED_TEST(ListTest, splice) {
+  s21::list<int> list1;
+  list1.push_back(1);
+  list1.push_back(2);
+
+  s21::list<int> list2;
+  list2.push_back(3);
+  list2.push_back(4);
+
+  std::cout << "Before splice:" << std::endl;
+
+  std::cout << "List 1: ";
+  for (auto it = list1.begin(); it != list1.end(); it++) {
+    std::cout << *it << " ";
+  }
+
+  std::cout << "\nList 2: ";
+  for (auto it = list2.begin(); it != list2.end(); ++it) {
+    std::cout << *it << " ";
+  }
+
+  auto it = list1.begin();
+  ++it;
+
+  list1.splice(it, list2);
+
+  std::cout << "\n\nAfter splice:" << std::endl;
+
+  std::cout << "List 1: ";
+  for (auto i = list1.begin(); i != list1.end(); ++i) {
+    std::cout << *i << " ";
+  }
+
+  EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
+}
 #if 0
 #endif
