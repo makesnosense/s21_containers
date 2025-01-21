@@ -98,24 +98,23 @@ class deque {
 
   void push_back(const_reference value) {
     if (back_vacant_index_ == 0) {
-      if (back_chunk_index_ == map_size_ - 1) {
+      if (back_chunk_index_ == map_size_) {
         GrowMap(false);
       }
 
-      if (map_[back_chunk_index_ + 1] == nullptr) {
-        ++back_chunk_index_;
+      if (map_[back_chunk_index_] == nullptr) {
+        // ++back_chunk_index_;
         AddChunkAt(back_chunk_index_);
       }
       back_vacant_index_ = 0;
     }
-    // std::cout << "back_chunk: " << back_chunk_index_ << '\n'
-    //           << "back_vacant_index_: " << back_vacant_index_ << '\n'
-    //           << "value: " << value << '\n';
+
     map_[back_chunk_index_]->data_[back_vacant_index_] = value;
 
     ++back_vacant_index_;
 
     back_vacant_index_ %= kChunkSize;
+    if (back_vacant_index_ == 0) ++back_chunk_index_;
 
     ++size_;
   }
@@ -259,9 +258,6 @@ class DequeIterator {
   using reference = T&;
   using difference_type = std::ptrdiff_t;
 
-  // size_type current_chunk_index_{};
-  // size_type current_element_index_{};
-
   DequeIterator() = default;
   DequeIterator(deque<T>* container, size_type current_chunk,
                 size_type current_element)
@@ -280,12 +276,19 @@ class DequeIterator {
     size_type chunk_offset{(n + current_element_) / container_->kChunkSize};
     size_type element_index{(n + current_element_) % container_->kChunkSize};
     return container_->map_[current_chunk_ + chunk_offset]
-        ->data_[current_element_ + element_index];
+        ->data_[element_index];
   }
 
   DequeIterator& operator++() {
+    // ++current_element_;
+
     ++current_element_ %= container_->kChunkSize;
-    if (current_element_ == 0) ++current_chunk_;
+
+    // ++current_element_ %= container_->kChunkSize;
+    if (current_element_ == 0) {
+      ++current_chunk_;
+    };
+
     return *this;
   }
 
