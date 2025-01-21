@@ -29,6 +29,7 @@ template <typename T, bool is_const>
 class ListIterator;
 template <typename T>
 class list {
+ public:
   friend struct node<T>;
   friend class ListIterator<T, false>;
   friend class ListIterator<T, true>;
@@ -45,7 +46,6 @@ class list {
   using const_iterator = const ListIterator<T, true>;
   using size_type = typename traits::size_type;
 
- public:
   list() : head_{nullptr}, tail_{nullptr}, size_{0} {}
   explicit list(std::initializer_list<value_type> init)
       : head_{nullptr}, tail_{nullptr}, size_{0} {
