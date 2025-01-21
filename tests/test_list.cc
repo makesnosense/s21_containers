@@ -132,18 +132,18 @@ TYPED_TEST(ListTest, unique) {
   EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
 }
 TYPED_TEST(ListTest, CopyAssignmentOperator) {
-  s21::list<int> vec1{1, 2, 3};
-  s21::list<int> vec2;
+  this->s21_list_ = this->empty_s21_list_;
+  this->stl_list_ = this->empty_stl_list_;
 
-  vec2 = vec1;
-  for (size_t i = 0; i < vec1.size(); i++) {
-    std::cout << "\n" << vec1.get_element(i) << "\ngg";
+  auto stl_it = this->empty_stl_list_.begin();
+  for (auto i = this->empty_s21_list_.begin(); i != this->empty_s21_list_.end();
+       ++i) {
+    EXPECT_EQ(*i, *stl_it);
+
+    ++stl_it;
   }
 
-  for (size_t i = 0; i < vec2.size(); i++) {
-    std::cout << "\n" << vec2.get_element(i) << "\n";
-  }
-  EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
+  EXPECT_EQ(this->empty_s21_list_.size(), this->s21_list_.size());
 }
 TYPED_TEST(ListTest, swap) {
   s21::list<int> vec1{1, 2, 3};
