@@ -18,13 +18,17 @@ class ListTest : public testing::Test {
         s21_list_for_swap{1, 2, 3, 4, 5, 6, 7, 8, 9},
         list_(3),
         alist_(3) {}
-
+  // stl_list_for_copy(stl_list_){},
+  // s21_list_for_copy(s21_list_) {}
+  /// как сделвть cp
   std::list<T> empty_stl_list_;
   s21::list<T> empty_s21_list_;
   std::list<T> stl_list_;
   s21::list<T> s21_list_;
   std::list<T> stl_list_for_swap;
   s21::list<T> s21_list_for_swap;
+  // std::list<T> stl_list_for_copy(stl_list_){};
+  // s21::list<T> s21_list_for_copy(s21_list_){};
   std::list<T> list_;
   s21::list<T> alist_;
 };
@@ -185,17 +189,16 @@ TYPED_TEST(ListTest, insert) {
   }
 }
 TYPED_TEST(ListTest, copy) {
-  s21::list<int> vec1{1, 2, 3};
-  s21::list<int> vec2(vec1);
+  // s21::list<int> vec1{1, 2, 3};
+  // s21::list<int> vec2(vec1);
 
-  // vec1.list(vec2);
-  for (size_t i = 0; i < vec1.size(); i++) {
-    std::cout << "\n" << vec1.get_element(i) << "\ngg";
-  }
+  //   for (size_t i = 0; i < vec1.size(); i++) {
+  //   std::cout << "\n" << vec1.get_element(i) << "\ngg";
+  // }
 
-  for (size_t i = 0; i < vec2.size(); i++) {
-    std::cout << "\n" << vec2.get_element(i) << "\n";
-  }
+  // for (size_t i = 0; i < vec2.size(); i++) {
+  //   std::cout << "\n" << vec2.get_element(i) << "\n";
+  // }
   EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
 }
 TYPED_TEST(ListTest, movedList) {
