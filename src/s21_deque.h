@@ -30,7 +30,6 @@ class deque {
   // static constexpr size_type kPageSize{4096};
   // static constexpr size_type kChunkSize{kPageSize / sizeof(value_type)};
   // static constexpr size_type kChunkSize{64 * 2 / sizeof(T)};
-
   static constexpr size_type kChunkSize{10};
   static constexpr size_type kInitialMapSize{10};
 
@@ -211,16 +210,23 @@ class deque {
     return iterator(this, back_chunk_index_, back_vacant_index_);
   }
 
-  reference front() {
+  const_reference front() const {
     return map_[front_chunk_index_]->data_[front_element_index_];
   }
 
-  reference back() {
+  reference front() {
+    return const_cast<reference>(static_cast<const deque&>(*this).front());
+  }
+
+  const_reference back() const {
     if (back_vacant_index_ == 0) {
-      return map_[back_chunk_index_]->data_[kChunkSize - 1];
-    } else {
-      return map_[back_chunk_index_]->data_[back_vacant_index_ - 1];
+      return map_[back_chunk_index_ - 1]->data_[kChunkSize - 1];
     }
+    return map_[back_chunk_index_]->data_[back_vacant_index_ - 1];
+  }
+
+  reference back() {
+    return const_cast<reference>(static_cast<const deque&>(*this).back());
   }
 
   const_reference operator[](size_type index) const {
@@ -280,11 +286,8 @@ class DequeIterator {
   }
 
   DequeIterator& operator++() {
-    // ++current_element_;
-
-    ++current_element_ %= container_->kChunkSize;
-
-    // ++current_element_ %= container_->kChunkSize;
+    ++current_element_;
+    current_element_ %= container_->kChunkSize;
     if (current_element_ == 0) {
       ++current_chunk_;
     };
@@ -316,6 +319,43 @@ class DequeIterator {
     return container_ != other.container_ ||
            current_chunk_ != other.current_chunk_ ||
            current_element_ != other.current_element_;
+  }
+
+  DequeIterator& operator+=(difference_type n) {
+    auto signed_chunk_size{
+        static_cast<difference_type>(container_->kChunkSize)};
+
+    auto index_difference{static_cast<difference_type>(current_element_) - n};
+
+    if (index_difference < 0) {
+      auto chunks_back = static_cast<size_type>(
+          (-index_difference + signed_chunk_size - 1) / signed_chunk_size);
+      current_chunk_ -= chunks_back;
+      index_difference += chunks_back * container_->kChunkSize;
+    }
+
+    current_chunk_ +=
+        static_cast<size_type>(index_difference / signed_chunk_size);
+    current_element_ =
+        static_cast<size_type>(index_difference % signed_chunk_size);
+
+    return *this;
+  }
+
+  DequeIterator& operator-=(difference_type n) {
+    return operator+=(static_cast<difference_type>(-n));
+  }
+
+  DequeIterator operator+(difference_type n) const {
+    DequeIterator tmp(*this);
+    tmp += n;
+    return tmp;
+  }
+
+  DequeIterator operator-(difference_type n) const {
+    DequeIterator tmp(*this);
+    tmp -= n;
+    return tmp;
   }
 
  private:
