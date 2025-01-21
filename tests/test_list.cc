@@ -12,8 +12,8 @@ class ListTest : public testing::Test {
   ListTest()
       : empty_stl_list_(),
         empty_s21_list_(),
-        stl_list_{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13},
-        s21_list_{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13},
+        stl_list_{65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75},
+        s21_list_{65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75},
         list_(3),
         alist_(3) {}
 
@@ -49,21 +49,19 @@ TYPED_TEST(ListTest, ConstructorSize_type) {
   EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
 }
 TYPED_TEST(ListTest, max_size) {
-  // std::cout << "\n\n\n\n\n" << this->stl_list_.max_size() << "\n\n\n\n\n";
-  // std::cout << "\n\n\n\n\n" << this->s21_list_.max_size() << "\n\n\n\n\n";
   EXPECT_EQ(this->s21_list_.max_size(), this->s21_list_.max_size());
 }
 
 TYPED_TEST(ListTest, reverse) {
   this->s21_list_.reverse();
   this->stl_list_.reverse();
+  auto it2 = this->stl_list_.begin();
   for (auto it = this->s21_list_.begin(); it != this->s21_list_.end(); ++it) {
-    std::cout << *it << " ";  // Доступ к элементу через разыменование итератора
+    std::cout << *it << " " << *it2 << " ";
+    EXPECT_EQ(*it, *it2);
+    std::cout << "\n";
+    ++it2;
   }
-  // EXPECT_EQ(this->this->s21_list_.get_element(1),
-  //          this->s21_list_.get_element(1));
-
-  EXPECT_EQ(this->s21_list_.max_size(), this->s21_list_.max_size());
 }
 TYPED_TEST(ListTest, sortsss) {
   // this->s21_list_.sort();
