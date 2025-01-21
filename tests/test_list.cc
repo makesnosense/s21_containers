@@ -112,13 +112,21 @@ TYPED_TEST(ListTest, sort) {
 }
 
 TYPED_TEST(ListTest, unique) {
-  for (size_t i = 0; i < this->s21_list_.size(); i++) {
-    std::cout << "\n" << this->s21_list_.get_element(i) << "\ngg";
-  }
-  this->s21_list_.unique();
+  this->s21_list_.push_back(5);
+  this->s21_list_.push_back(5);
+  this->s21_list_.push_back(5);
+  this->s21_list_.push_back(5);
+  this->s21_list_.push_back(5);
+  this->stl_list_.push_back(5);
+  this->stl_list_.push_back(5);
+  this->stl_list_.push_back(5);
+  this->stl_list_.push_back(5);
+  this->stl_list_.push_back(5);
+  auto stl_it = this->stl_list_.begin();
+  for (auto i = this->s21_list_.begin(); i != this->s21_list_.end(); ++i) {
+    EXPECT_EQ(*i, *stl_it);
 
-  for (size_t i = 0; i < this->s21_list_.size(); i++) {
-    std::cout << "\n" << this->s21_list_.get_element(i) << "\n";
+    ++stl_it;
   }
 
   EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
