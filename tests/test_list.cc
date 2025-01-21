@@ -150,7 +150,6 @@ TYPED_TEST(ListTest, CopyAssignmentOperator) {
   EXPECT_EQ(this->empty_s21_list_.size(), this->s21_list_.size());
 }
 TYPED_TEST(ListTest, swap) {
-  // stl_list_for_swap
   this->s21_list_.swap(this->s21_list_for_swap);
   this->stl_list_.swap(this->stl_list_for_swap);
 
@@ -173,18 +172,16 @@ TYPED_TEST(ListTest, merge) {
   }
 }
 TYPED_TEST(ListTest, insert) {
-  s21::list<int> myList;
-  myList.push_back(1);
-  myList.push_back(3);
+  auto stl_it = this->stl_list_.begin();
+  auto s21_it = this->s21_list_.begin();
 
-  auto it = myList.begin();
-  ++it;
+  this->stl_list_.insert(stl_it, 2);
+  this->s21_list_.insert(s21_it, 2);
+  stl_it = this->stl_list_.begin();
+  for (auto i = this->s21_list_.begin(); i != this->s21_list_.end(); ++i) {
+    EXPECT_EQ(*i, *stl_it);
 
-  myList.insert(it, 2);
-
-  std::cout << "Contents of myList after insertion: ";
-  for (size_t i = 0; i < myList.size(); i++) {
-    std::cout << "\n" << myList.get_element(i) << "\n";
+    ++stl_it;
   }
 }
 TYPED_TEST(ListTest, copy) {
