@@ -218,39 +218,25 @@ TYPED_TEST(ListTest, movedList) {
   EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
 }
 TYPED_TEST(ListTest, splice) {
-  s21::list<int> list1;
-  list1.push_back(1);
-  list1.push_back(2);
+  this->empty_s21_list_.push_back(1);
+  this->empty_s21_list_.push_back(2);
+  this->empty_stl_list_.push_back(1);
+  this->empty_stl_list_.push_back(2);
 
-  s21::list<int> list2;
-  list2.push_back(3);
-  list2.push_back(4);
-
-  std::cout << "Before splice:" << std::endl;
-
-  std::cout << "List 1: ";
-  for (auto it = list1.begin(); it != list1.end(); it++) {
-    std::cout << *it << " ";
-  }
-
-  std::cout << "\nList 2: ";
-  for (auto it = list2.begin(); it != list2.end(); ++it) {
-    std::cout << *it << " ";
-  }
-
-  auto it = list1.begin();
+  auto it = this->s21_list_.begin();
   ++it;
+  auto it2 = this->stl_list_.begin();
+  ++it2;
 
-  list1.splice(it, list2);
+  this->s21_list_.splice(it, this->empty_s21_list_);
+  this->stl_list_.splice(it2, this->empty_stl_list_);
 
-  std::cout << "\n\nAfter splice:" << std::endl;
+  auto stl_it = this->stl_list_.begin();
+  for (auto i = this->s21_list_.begin(); i != this->s21_list_.end(); ++i) {
+    EXPECT_EQ(*i, *stl_it);
 
-  std::cout << "List 1: ";
-  for (auto i = list1.begin(); i != list1.end(); ++i) {
-    std::cout << *i << " ";
+    ++stl_it;
   }
-
-  EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
 }
 #if 0
 #endif
