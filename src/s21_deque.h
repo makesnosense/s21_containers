@@ -331,7 +331,8 @@ class DequeIterator {
       auto chunks_back = static_cast<size_type>(
           (-index_difference + signed_chunk_size - 1) / signed_chunk_size);
       current_chunk_ -= chunks_back;
-      index_difference += chunks_back * container_->kChunkSize;
+      index_difference +=
+          static_cast<difference_type>(chunks_back * container_->kChunkSize);
     }
 
     current_chunk_ +=
