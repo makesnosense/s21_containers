@@ -368,15 +368,18 @@ TEST(DequeTest, MinMaxSort) {
   EXPECT_EQ(*std::max_element(s21_q.begin(), s21_q.end()),
             *std::max_element(std_q.begin(), std_q.end()));
 
-  // std::shuffle(s21_q.begin(), s21_q.end(), Random::mt);
-  // std::shuffle(std_q.begin(), std_q.end(), Random::mt);
+  // auto it = s21_q.begin();  // points to first element
 
-  // std::stable_sort(s21_q.begin(), s21_q.end());
-  // std::stable_sort(std_q.begin(), std_q.end());
-  // EXPECT_EQ(s21_q, std_q);
+  // std::cout << "\n\n\n" << s21_q.begin() << "\n" << s21_q.end() << "\n\n\n";
+  std::shuffle(s21_q.begin(), s21_q.end(), Random::mt);
+  std::shuffle(std_q.begin(), std_q.end(), Random::mt);
 
-  // EXPECT_EQ(std::binary_search(s21_q.begin(), s21_q.end(), s21_q[2]),
-  //           std::binary_search(std_q.begin(), std_q.end(), s21_q[2]));
+  std::stable_sort(s21_q.begin(), s21_q.end());
+  std::stable_sort(std_q.begin(), std_q.end());
+  EXPECT_EQ(s21_q, std_q);
+
+  EXPECT_EQ(std::binary_search(s21_q.begin(), s21_q.end(), s21_q[2]),
+            std::binary_search(std_q.begin(), std_q.end(), s21_q[2]));
 }
 #if 0
 #endif
