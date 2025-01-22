@@ -18,8 +18,8 @@ class DequeTest : public testing::Test {
         empty_s21_deque_(),
         stl_deque_{68, 3, 86},
         s21_deque_{68, 3, 86},
-        large_stl_deque_{110, 29, 54},
-        large_s21_deque_{110, 29, 54} {}
+        large_stl_deque_(1000, 42),
+        large_s21_deque_(1000, 42) {}
 
   std::deque<T> empty_stl_deque_{};
   s21::deque<T> empty_s21_deque_{};
@@ -177,37 +177,29 @@ TEST(DequeNonTyped, InitializerListConstructor) {
 }
 
 // at
-TYPED_TEST(DequeTest, At_1) {
-  EXPECT_EQ(this->s21_deque_.at(0), this->stl_deque_.at(0));
-  EXPECT_EQ(this->s21_deque_.at(1), this->stl_deque_.at(1));
-  EXPECT_EQ(this->s21_deque_.at(2), this->stl_deque_.at(2));
-}
+TYPED_TEST(DequeTest, At_1) { EXPECT_EQ(this->s21_deque_, this->stl_deque_); }
 
 TYPED_TEST(DequeTest, At_2) {
   TypeParam value{};
 
   for (size_t i = 0; i < 2; ++i) {
-    this->s21_deque_.push_back(value);
-    this->stl_deque_.push_back(value);
+    this->large_s21_deque_.push_back(value);
+    this->large_stl_deque_.push_back(value);
   }
 
-  EXPECT_EQ(this->s21_deque_.at(0), this->stl_deque_.at(0));
-  EXPECT_EQ(this->s21_deque_.at(1), this->stl_deque_.at(1));
-  EXPECT_EQ(this->s21_deque_.at(2), this->stl_deque_.at(2));
-  EXPECT_EQ(this->s21_deque_.at(3), this->stl_deque_.at(3));
-  EXPECT_EQ(this->s21_deque_.at(4), this->stl_deque_.at(4));
+  EXPECT_EQ(this->large_s21_deque_, this->large_stl_deque_);
 
   TypeParam value_1{};
 
-  this->s21_deque_.at(0) = value_1;
-  this->stl_deque_.at(0) = value_1;
-  EXPECT_EQ(this->s21_deque_.at(0), this->stl_deque_.at(0));
+  this->large_s21_deque_.at(0) = value_1;
+  this->large_stl_deque_.at(0) = value_1;
+  EXPECT_EQ(this->large_s21_deque_.at(0), this->large_stl_deque_.at(0));
 
   TypeParam value_2{};
 
-  this->s21_deque_.at(4) = value_2;
-  this->stl_deque_.at(4) = value_2;
-  EXPECT_EQ(this->s21_deque_.at(4), this->stl_deque_.at(4));
+  this->large_s21_deque_.at(4) = value_2;
+  this->large_stl_deque_.at(4) = value_2;
+  EXPECT_EQ(this->large_s21_deque_.at(4), this->large_stl_deque_.at(4));
 }
 
 TYPED_TEST(DequeTest, AtOutOfRange) {
@@ -228,19 +220,10 @@ TYPED_TEST(DequeTest, AtEmptyDeque) {
 
 // pop_back
 TYPED_TEST(DequeTest, PopBack_1) {
-  TypeParam value{};
-  for (size_t i = 0; i < 5; ++i) {
-    this->empty_s21_deque_.push_back(value);
-    this->empty_stl_deque_.push_back(value);
-  }
-  this->empty_stl_deque_.pop_back();
-  this->empty_s21_deque_.pop_back();
+  this->large_s21_deque_.pop_back();
+  this->large_stl_deque_.pop_back();
 
-  EXPECT_EQ(this->empty_s21_deque_.at(0), this->empty_stl_deque_.at(0));
-  EXPECT_EQ(this->empty_s21_deque_.at(1), this->empty_stl_deque_.at(1));
-  EXPECT_EQ(this->empty_s21_deque_.at(2), this->empty_stl_deque_.at(2));
-  EXPECT_EQ(this->empty_s21_deque_.at(3), this->empty_stl_deque_.at(3));
-  EXPECT_EQ(this->empty_s21_deque_.size(), this->empty_stl_deque_.size());
+  EXPECT_EQ(this->large_s21_deque_, this->large_stl_deque_);
 }
 
 TYPED_TEST(DequeTest, PopBack_2) {
@@ -254,11 +237,7 @@ TYPED_TEST(DequeTest, PopBack_2) {
   this->empty_s21_deque_.pop_back();
   this->empty_stl_deque_.pop_back();
 
-  EXPECT_EQ(this->empty_s21_deque_.at(0), this->empty_stl_deque_.at(0));
-  EXPECT_EQ(this->empty_s21_deque_.at(1), this->empty_stl_deque_.at(1));
-  EXPECT_EQ(this->empty_s21_deque_.at(2), this->empty_stl_deque_.at(2));
-  EXPECT_EQ(this->empty_s21_deque_.at(3), this->empty_stl_deque_.at(3));
-  EXPECT_EQ(this->empty_s21_deque_.size(), this->empty_stl_deque_.size());
+  EXPECT_EQ(this->empty_s21_deque_, this->empty_stl_deque_);
 }
 
 TYPED_TEST(DequeTest, PopBack_3) {
@@ -277,11 +256,7 @@ TYPED_TEST(DequeTest, PopBack_3) {
   this->empty_stl_deque_.pop_back();
   this->empty_s21_deque_.pop_back();
 
-  EXPECT_EQ(this->empty_s21_deque_.at(0), this->empty_stl_deque_.at(0));
-  EXPECT_EQ(this->empty_s21_deque_.at(1), this->empty_stl_deque_.at(1));
-  EXPECT_EQ(this->empty_s21_deque_.at(2), this->empty_stl_deque_.at(2));
-  EXPECT_EQ(this->empty_s21_deque_.at(3), this->empty_stl_deque_.at(3));
-  EXPECT_EQ(this->empty_s21_deque_.size(), this->empty_stl_deque_.size());
+  EXPECT_EQ(this->empty_s21_deque_, this->empty_stl_deque_);
 }
 
 // pop_front
@@ -294,11 +269,7 @@ TYPED_TEST(DequeTest, PopFront_1) {
   this->empty_stl_deque_.pop_front();
   this->empty_s21_deque_.pop_front();
 
-  EXPECT_EQ(this->empty_s21_deque_.at(0), this->empty_stl_deque_.at(0));
-  EXPECT_EQ(this->empty_s21_deque_.at(1), this->empty_stl_deque_.at(1));
-  EXPECT_EQ(this->empty_s21_deque_.at(2), this->empty_stl_deque_.at(2));
-  EXPECT_EQ(this->empty_s21_deque_.at(3), this->empty_stl_deque_.at(3));
-  EXPECT_EQ(this->empty_s21_deque_.size(), this->empty_stl_deque_.size());
+  EXPECT_EQ(this->empty_s21_deque_, this->empty_stl_deque_);
 }
 
 TYPED_TEST(DequeTest, PopFront_2) {
@@ -312,10 +283,7 @@ TYPED_TEST(DequeTest, PopFront_2) {
   this->empty_s21_deque_.pop_front();
   this->empty_stl_deque_.pop_front();
 
-  EXPECT_EQ(this->empty_s21_deque_.at(0), this->empty_stl_deque_.at(0));
-  EXPECT_EQ(this->empty_s21_deque_.at(1), this->empty_stl_deque_.at(1));
-  EXPECT_EQ(this->empty_s21_deque_.at(2), this->empty_stl_deque_.at(2));
-  EXPECT_EQ(this->empty_s21_deque_.at(3), this->empty_stl_deque_.at(3));
+  EXPECT_EQ(this->empty_s21_deque_, this->empty_stl_deque_);
   EXPECT_EQ(this->empty_s21_deque_.size(), this->empty_stl_deque_.size());
 }
 
@@ -335,10 +303,7 @@ TYPED_TEST(DequeTest, PopFront_3) {
   this->empty_stl_deque_.pop_front();
   this->empty_s21_deque_.pop_front();
 
-  EXPECT_EQ(this->empty_s21_deque_.at(0), this->empty_stl_deque_.at(0));
-  EXPECT_EQ(this->empty_s21_deque_.at(1), this->empty_stl_deque_.at(1));
-  EXPECT_EQ(this->empty_s21_deque_.at(2), this->empty_stl_deque_.at(2));
-  EXPECT_EQ(this->empty_s21_deque_.at(3), this->empty_stl_deque_.at(3));
+  EXPECT_EQ(this->empty_s21_deque_, this->empty_stl_deque_);
   EXPECT_EQ(this->empty_s21_deque_.size(), this->empty_stl_deque_.size());
 }
 
