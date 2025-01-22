@@ -560,6 +560,7 @@ class ListIterator {
   using iterator_category = std::forward_iterator_tag;
   using difference_type = std::ptrdiff_t;
   using reference = T&;
+  using value_type = T;
   using pointer = T*;
   using Node = typename list<T>::Node;
 
@@ -580,6 +581,7 @@ class ListIterator {
     ++(*this);
     return temp;
   }
+
   ListIterator& operator--() {
     if (current_ != nullptr) {
       current_ = current_->pre_;
@@ -599,6 +601,18 @@ class ListIterator {
     }
     return temp;
   }
+  ListIterator& operator+=(int n) {
+    if (n >= 0) {
+      for (int i = 0; i < n && current_ != nullptr; ++i) {
+        current_ = current_->next_;
+      }
+    } else {
+      for (int i = 0; i < -n && current_ != nullptr; ++i) {
+        current_ = current_->pre_;
+      }
+    }
+    return *this;
+  }
   ListIterator operator-(int n) const {
     ListIterator temp = *this;
     for (int i = 0; i < n && temp.current_ != nullptr; ++i) {
@@ -606,6 +620,7 @@ class ListIterator {
     }
     return temp;
   }
+  ListIterator& operator-=(int n) { return *this += -n; }
   reference operator[](int n) {
     ListIterator temp = *this;
     for (int i = 0; i < n && temp.current_ != nullptr; ++i) {
