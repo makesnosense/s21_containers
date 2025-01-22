@@ -322,6 +322,12 @@ class DequeIterator {
     return current_element_ < other.current_element_;
   }
 
+  bool operator>(const DequeIterator& other) const { return other < *this; }
+
+  bool operator<=(const DequeIterator& other) const { return !(other < *this); }
+
+  bool operator>=(const DequeIterator& other) const { return !(*this < other); }
+
   bool operator==(const DequeIterator& other) const {
     return container_ == other.container_ &&
            current_chunk_ == other.current_chunk_ &&
