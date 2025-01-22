@@ -8,94 +8,7 @@
 namespace s21 {
 
 template <typename T>
-class VectorIterator {
- public:
-  using iterator_category = std::random_access_iterator_tag;
-  using value_type = T;
-  using pointer = T*;
-  using reference = T&;
-  using difference_type = std::ptrdiff_t;
-
-  VectorIterator(pointer ptr) : ptr_{ptr} {}
-  VectorIterator() : ptr_(nullptr) {}
-  operator pointer() const { return ptr_; }
-  reference operator*() { return *ptr_; }
-  reference operator[](difference_type n) const { return ptr_[n]; }
-
-  VectorIterator& operator++() {
-    ++ptr_;
-    return *this;
-  }
-
-  VectorIterator operator++(int) {
-    VectorIterator tmp = *this;
-    ++ptr_;
-    return tmp;
-  }
-
-  VectorIterator& operator--() {
-    --ptr_;
-    return *this;
-  }
-  VectorIterator operator--(int) {
-    VectorIterator tmp = *this;
-    --ptr_;
-    return tmp;
-  }
-
-  VectorIterator& operator+=(difference_type n) {
-    ptr_ += n;
-    return *this;
-  }
-
-  VectorIterator operator+(difference_type n) const {
-    return VectorIterator(ptr_ + n);
-  }
-
-  friend VectorIterator operator+(difference_type n,
-                                  const VectorIterator& iter) {
-    return VectorIterator(iter.ptr_ + n);
-  }
-
-  VectorIterator& operator-=(difference_type n) {
-    ptr_ -= n;
-    return *this;
-  }
-
-  difference_type operator-(const VectorIterator& other) const {
-    return ptr_ - other.ptr_;
-  }
-
-  VectorIterator operator-(difference_type n) const {
-    return VectorIterator(ptr_ - n);
-  }
-
-  bool operator==(const VectorIterator& other) const {
-    return ptr_ == other.ptr_;
-  }
-  bool operator!=(const VectorIterator& other) const {
-    return ptr_ != other.ptr_;
-  }
-
-  bool operator<(const VectorIterator& other) const {
-    return ptr_ < other.ptr_;
-  }
-
-  bool operator>(const VectorIterator& other) const {
-    return ptr_ > other.ptr_;
-  }
-
-  bool operator<=(const VectorIterator& other) const {
-    return ptr_ <= other.ptr_;
-  }
-
-  bool operator>=(const VectorIterator& other) const {
-    return ptr_ >= other.ptr_;
-  }
-
- private:
-  pointer ptr_;
-};
+class VectorIterator;
 
 template <typename T>
 class vector {
@@ -429,6 +342,96 @@ class vector {
   size_type size_{kMinN};
   size_type capacity_{kMinN};
   static constexpr size_type kMinN{0};
+};
+
+template <typename T>
+class VectorIterator {
+ public:
+  using iterator_category = std::random_access_iterator_tag;
+  using value_type = T;
+  using pointer = T*;
+  using reference = T&;
+  using difference_type = std::ptrdiff_t;
+
+  VectorIterator(pointer ptr) : ptr_{ptr} {}
+  VectorIterator() : ptr_(nullptr) {}
+  operator pointer() const { return ptr_; }
+  reference operator*() { return *ptr_; }
+  reference operator[](difference_type n) const { return ptr_[n]; }
+
+  VectorIterator& operator++() {
+    ++ptr_;
+    return *this;
+  }
+
+  VectorIterator operator++(int) {
+    VectorIterator tmp = *this;
+    ++ptr_;
+    return tmp;
+  }
+
+  VectorIterator& operator--() {
+    --ptr_;
+    return *this;
+  }
+  VectorIterator operator--(int) {
+    VectorIterator tmp = *this;
+    --ptr_;
+    return tmp;
+  }
+
+  VectorIterator& operator+=(difference_type n) {
+    ptr_ += n;
+    return *this;
+  }
+
+  VectorIterator operator+(difference_type n) const {
+    return VectorIterator(ptr_ + n);
+  }
+
+  friend VectorIterator operator+(difference_type n,
+                                  const VectorIterator& iter) {
+    return VectorIterator(iter.ptr_ + n);
+  }
+
+  VectorIterator& operator-=(difference_type n) {
+    ptr_ -= n;
+    return *this;
+  }
+
+  difference_type operator-(const VectorIterator& other) const {
+    return ptr_ - other.ptr_;
+  }
+
+  VectorIterator operator-(difference_type n) const {
+    return VectorIterator(ptr_ - n);
+  }
+
+  bool operator==(const VectorIterator& other) const {
+    return ptr_ == other.ptr_;
+  }
+  bool operator!=(const VectorIterator& other) const {
+    return ptr_ != other.ptr_;
+  }
+
+  bool operator<(const VectorIterator& other) const {
+    return ptr_ < other.ptr_;
+  }
+
+  bool operator>(const VectorIterator& other) const {
+    return ptr_ > other.ptr_;
+  }
+
+  bool operator<=(const VectorIterator& other) const {
+    return ptr_ <= other.ptr_;
+  }
+
+  bool operator>=(const VectorIterator& other) const {
+    return ptr_ >= other.ptr_;
+  }
+
+ private:
+  pointer ptr_;
 };
 
 template <typename T>
