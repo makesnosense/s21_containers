@@ -357,7 +357,7 @@ TEST(ListTest, find_if_not) {
 }
 TEST(ListTest, find_end) {
   s21::list<int> v1{1, 2, 1, 2, 3, 4, 1, 2};
-  std::list<int> v2{1, 2};
+  s21::list<int> v2{1, 2};
 
   auto result = std::find_end(v1.begin(), v1.end(), v2.begin(), v2.end());
 
@@ -369,8 +369,8 @@ TEST(ListTest, find_end) {
   }
 }
 TEST(ListTest, find_first_of) {
-  std::list<char> v1{'f', 'c', 'e', 'd', 'b', 'a'};
-  std::list<char> v2{'D', 'F'};
+  s21::list<char> v1{'f', 'c', 'e', 'd', 'b', 'a'};
+  s21::list<char> v2{'D', 'F'};
 
   // Find the first occurrence of any character from v2 in v1
   auto result = std::find_first_of(
@@ -385,7 +385,7 @@ TEST(ListTest, find_first_of) {
   }
 }
 TEST(ListTest, adjacent_find) {
-  std::list<int> numbers = {1, 2, 3, 3, 5};
+  s21::list<int> numbers{1, 2, 3, 3, 5};
 
   // Find the first occurrence of consecutive identical elements
   auto it = std::adjacent_find(numbers.begin(), numbers.end());
@@ -395,6 +395,13 @@ TEST(ListTest, adjacent_find) {
               << std::endl;  // Output: 3
   } else {
     std::cout << "There are no consecutive identical elements." << std::endl;
+  }
+}
+TEST(ListTest, search) {
+  s21::list<int> numbers{1, 2, 3, 4};
+  auto it = std::find(numbers.begin(), numbers.end(), 3);
+  if (it != numbers.end()) {
+    std::cout << "Found: " << *it << std::endl;  // Output: Found: 3
   }
 }
 
