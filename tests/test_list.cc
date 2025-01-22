@@ -355,6 +355,19 @@ TEST(ListTest, find_if_not) {
     std::cout << "No even numbers found." << std::endl;
   }
 }
+TEST(ListTest, find_end) {
+  s21::list<int> v1{1, 2, 1, 2, 3, 4, 1, 2};
+  std::list<int> v2{1, 2};
+
+  auto result = std::find_end(v1.begin(), v1.end(), v2.begin(), v2.end());
+
+  if (result != v1.end()) {
+    std::cout << "Last sequence found at position: " << (result - v1.begin())
+              << std::endl;  // Output position index
+  } else {
+    std::cout << "Sequence not found." << std::endl;
+  }
+}
 
 #if 0
 #endif
