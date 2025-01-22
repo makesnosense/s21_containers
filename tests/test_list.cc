@@ -456,5 +456,20 @@ TEST(ListTest, equal) {
               << std::endl;  // Output: Not Equal
   }
 }
+TEST(ListTest, copyit) {
+  s21::list<int> source{1, 2, 3, 4, 5};
+  s21::list<int> destination(
+      5);  // Create a destination vector with enough space
+
+  // Copy elements from source to destination
+  std::copy(source.begin(), source.end(), destination.begin());
+
+  // Output the copied elements
+  std::cout << "Copied elements: ";
+  for (const auto& elem : destination) {
+    std::cout << elem << " ";  // Output: 1 2 3 4 5
+  }
+  std::cout << std::endl;
+}
 #if 0
 #endif
