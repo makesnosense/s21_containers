@@ -243,7 +243,7 @@ TYPED_TEST(ListTest, splice) {
   EXPECT_TRUE(ans);
 }
 
-TEST(ListTest, meeeeee) {
+TEST(ListTest, all_of) {
   s21::list<int> numberseee{2, 4, 6, 8};
 
   bool all_even = std::all_of(numberseee.begin(), numberseee.end(),
@@ -253,6 +253,19 @@ TEST(ListTest, meeeeee) {
     std::cout << "All numbers are even." << std::endl;
   } else {
     std::cout << "Not all numbers are even." << std::endl;
+  }
+}
+TEST(ListTest, any_of) {
+  s21::list<int> numbers{2, 4, 6, 8, 11};
+
+  // Check if any number is odd
+  bool result = std::any_of(numbers.begin(), numbers.end(),
+                            [](int n) { return n % 2 == 0; });
+
+  if (result) {
+    std::cout << "The vector contains at least one odd number." << std::endl;
+  } else {
+    std::cout << "All numbers are even." << std::endl;
   }
 }
 #if 0
