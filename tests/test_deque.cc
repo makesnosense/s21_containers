@@ -12,94 +12,161 @@
 template <typename T>
 class DequeTest : public testing::Test {
  protected:
-  DequeTest() : empty_stl_deque_(), empty_s21_deque_() {}
+  DequeTest()
+      : empty_stl_deque_(),
+        empty_s21_deque_(),
+        stl_deque_(),
+        s21_deque_(),
+        large_stl_deque_(),
+        large_s21_deque_() {}
 
   std::deque<T> empty_stl_deque_{};
   s21::deque<T> empty_s21_deque_{};
-  // std::deque<T> stl_vec_;
-  // s21::deque<T> s21_vec_;
-  // std::deque<T> large_stl_vec_;
-  // s21::deque<T> large_s21_vec_;
+  std::deque<T> stl_deque_;
+  s21::deque<T> s21_deque_;
+  std::deque<T> large_stl_deque_;
+  s21::deque<T> large_s21_deque_;
 };
 
-using TestedTypes = ::testing::Types<int>;
+using TestedTypes = ::testing::Types<char, int, double, DummyObject>;
 TYPED_TEST_SUITE(DequeTest, TestedTypes, );
 
 TYPED_TEST(DequeTest, First) {
+  TypeParam value{};
   for (int i{0}; i < 70; i++) {
-    (this->empty_s21_deque_).push_front(i);
+    (this->empty_s21_deque_).push_front(value);
+    (this->empty_stl_deque_).push_front(value);
   }
-  std::cout << "hey \n";
-  std::cout << this->empty_s21_deque_;
-  // s21::deque<int> d;
-  // EXPECT_EQ(this->empty_stl_vec_.size(), this->empty_s21_vec_.size());
-  // EXPECT_TRUE(this->empty_s21_vec_.empty());
+  EXPECT_EQ(this->empty_stl_deque_.size(), this->empty_s21_deque_.size());
 }
 
 TYPED_TEST(DequeTest, Second) {
+  TypeParam value{};
   for (int i{0}; i < 70; i++) {
-    (this->empty_s21_deque_).push_back(i);
+    (this->empty_s21_deque_).push_back(value);
+    (this->empty_stl_deque_).push_back(value);
   }
-  std::cout << "hey \n";
-  std::cout << this->empty_s21_deque_;
-  // s21::deque<int> d;
-  // EXPECT_EQ(this->empty_stl_vec_.size(), this->empty_s21_vec_.size());
-  // EXPECT_TRUE(this->empty_s21_vec_.empty());
+  EXPECT_EQ(this->empty_stl_deque_.size(), this->empty_s21_deque_.size());
 }
 
-// // iterartor
-// TEST(DequeTest, ComparisonOperators) {
-//   int arr[] = {1, 2, 3, 4};
-//   s21::deque<int>::iterator iter1(arr);
-//   s21::deque<int>::iterator iter2(arr + 2);
+// push_back
+TYPED_TEST(DequeTest, PushBackBasic) {
+  std::deque<int> std_q;
+  s21::deque<int> s21_q;
 
-//   EXPECT_TRUE(iter1 < iter2);
-//   EXPECT_FALSE(iter2 < iter1);
-//   EXPECT_TRUE(iter2 > iter1);
-//   EXPECT_FALSE(iter1 > iter2);
-//   EXPECT_TRUE(iter1 <= iter1);
-//   EXPECT_TRUE(iter1 <= iter2);
-//   EXPECT_FALSE(iter2 <= iter1);
-//   EXPECT_TRUE(iter2 >= iter2);
-//   EXPECT_TRUE(iter2 >= iter1);
-//   EXPECT_FALSE(iter1 >= iter2);
-// }
+  TypeParam value{};
 
-// TEST(DequeTest, ArithmeticOperators) {
-//   int arr[] = {1, 2, 3, 4};
-//   s21::deque<int>::iterator iter(arr + 1);
+  this->empty_s21_deque_.push_back(value);
+  this->empty_stl_deque_.push_back(value);
+  EXPECT_EQ(this->empty_s21_deque_.back(), this->empty_stl_deque_.back());
 
-//   EXPECT_EQ(*(iter - 1), 1);
-//   iter -= 1;
-//   EXPECT_EQ(*iter, 1);
+  this->empty_s21_deque_.push_back(value);
+  this->empty_stl_deque_.push_back(value);
+  EXPECT_EQ(this->empty_s21_deque_.back(), this->empty_stl_deque_.back());
 
-//   s21::deque<int>::iterator iter2 = 2 + iter;
-//   EXPECT_EQ(*iter2, 3);
-// }
+  this->empty_s21_deque_.push_back(value);
+  this->empty_stl_deque_.push_back(value);
+  EXPECT_EQ(this->empty_s21_deque_.back(), this->empty_stl_deque_.back());
 
-// TEST(DequeTest, PostDecrement) {
-//   int arr[] = {1, 2, 3, 4};
-//   s21::deque<int>::iterator iter(arr + 2);
+  EXPECT_EQ(this->empty_s21_deque_.size(), this->empty_stl_deque_.size());
 
-//   s21::deque<int>::iterator temp = iter--;
-//   EXPECT_EQ(*temp, 3);
-//   EXPECT_EQ(*iter, 2);
-// }
+  for (size_t i = 0; i < this->empty_stl_deque_.size(); ++i) {
+    EXPECT_EQ(this->empty_s21_deque_[i], this->empty_stl_deque_[i]);
+  }
+}
 
-// TEST(DequeTest, SubscriptOperator) {
-//   int arr[] = {10, 20, 30, 40, 50};
-//   s21::deque<int>::iterator iter(arr);
+TYPED_TEST(DequeTest, PushBackChunkOverflow) {
+  TypeParam value{};
 
-//   EXPECT_EQ(iter[0], 10);
-//   EXPECT_EQ(iter[1], 20);
-//   EXPECT_EQ(iter[2], 30);
+  for (size_t i = 0; i < 15; ++i) {
+    this->empty_s21_deque_.push_back(value);
+  }
 
-//   iter[0] = 100;
-//   EXPECT_EQ(arr[0], 100);
-// }
+  for (size_t i = 0; i < 15; ++i) {
+    EXPECT_EQ(this->empty_s21_deque_[i], value);
+  }
+
+  EXPECT_EQ(this->empty_s21_deque_.size(), 15);
+}
+
+TYPED_TEST(DequeTest, PushBackGrowMap) {
+  TypeParam value{};
+
+  for (size_t i = 0; i < 100; ++i) {
+    this->empty_s21_deque_.push_back(value);
+  }
+
+  for (size_t i = 0; i < 100; ++i) {
+    EXPECT_EQ(this->empty_s21_deque_[i], value);
+  }
+
+  EXPECT_EQ(this->empty_s21_deque_.size(), 100);
+}
+
+TYPED_TEST(DequeTest, PushBackEmptyDeque) {
+  TypeParam value{};
+
+  this->empty_s21_deque_.push_back(value);
+  EXPECT_EQ(this->empty_s21_deque_.size(), 1);
+  EXPECT_EQ(this->empty_s21_deque_.back(), value);
+  EXPECT_EQ(this->empty_s21_deque_.front(), value);
+}
+
+// iterartor
+TEST(DequeNonTyped, ComparisonOperators) {
+  s21::deque<int> arr{1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7};
+  s21::deque<int>::iterator iter1 = arr.begin();
+  s21::deque<int>::iterator iter2 = arr.begin();
+
+  iter2 += 2;
+
+  EXPECT_TRUE(iter1 < iter2);
+  EXPECT_FALSE(iter2 < iter1);
+  EXPECT_TRUE(iter2 > iter1);
+  EXPECT_FALSE(iter1 > iter2);
+  EXPECT_TRUE(iter1 <= iter1);
+  EXPECT_TRUE(iter1 <= iter2);
+  EXPECT_FALSE(iter2 <= iter1);
+  EXPECT_TRUE(iter2 >= iter2);
+  EXPECT_TRUE(iter2 >= iter1);
+  EXPECT_FALSE(iter1 >= iter2);
+}
+
+TEST(DequeNonTyped, ArithmeticOperators) {
+  s21::deque<int> arr{1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7};
+  s21::deque<int>::iterator iter = arr.begin();
+
+  iter += 2;
+  EXPECT_EQ(*(iter - 1), 2);
+  iter -= 1;
+  EXPECT_EQ(*iter, 2);
+}
+
+TEST(DequeNonTyped, PostDecrement) {
+  s21::deque<int> arr{1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7};
+  s21::deque<int>::iterator iter = arr.begin();
+
+  iter += 2;
+
+  s21::deque<int>::iterator temp = iter--;
+  EXPECT_EQ(*temp, 3);
+  EXPECT_EQ(*iter, 2);
+}
+
+TEST(DequeTest, SubscriptOperator) {
+  s21::deque<int> arr{1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7};
+  s21::deque<int>::iterator iter = arr.begin();
+
+  EXPECT_EQ(*iter, 1);
+  EXPECT_EQ(*(iter + 1), 2);
+  EXPECT_EQ(*(iter + 2), 3);
+
+  *iter = 100;
+  EXPECT_EQ(arr[0], 100);
+}
 
 // InitializerListConstructor
-TEST(DequeTest, InitializerListConstructor) {
+TEST(DequeNonTyped, InitializerListConstructor) {
   int arr[] = {10, 20, 30, 40, 50};
   s21::deque<int> q{10, 20, 30, 40, 50};
 
@@ -109,165 +176,210 @@ TEST(DequeTest, InitializerListConstructor) {
 }
 
 // at
-TEST(DequeTest, At) {
-  std::deque<int> std_q{10, 20, 30, 40, 50};
-  s21::deque<int> s21_q{10, 20, 30, 40, 50};
+TYPED_TEST(DequeTest, At_1) {
+  TypeParam value{};
 
-  EXPECT_EQ(s21_q.at(0), std_q.at(0));
-  EXPECT_EQ(s21_q.at(1), std_q.at(1));
-  EXPECT_EQ(s21_q.at(2), std_q.at(2));
+  for (size_t i = 0; i < 3; ++i) {
+    this->empty_s21_deque_.push_back(value);
+    this->empty_stl_deque_.push_back(value);
+  }
+
+  EXPECT_EQ(this->empty_s21_deque_.at(0), this->empty_stl_deque_.at(0));
+  EXPECT_EQ(this->empty_s21_deque_.at(1), this->empty_stl_deque_.at(1));
+  EXPECT_EQ(this->empty_s21_deque_.at(2), this->empty_stl_deque_.at(2));
+}
+
+TYPED_TEST(DequeTest, At_2) {
+  TypeParam value{};
+
+  for (size_t i = 0; i < 5; ++i) {
+    this->empty_s21_deque_.push_back(value);
+    this->empty_stl_deque_.push_back(value);
+  }
+
+  EXPECT_EQ(this->empty_s21_deque_.at(0), this->empty_stl_deque_.at(0));
+  EXPECT_EQ(this->empty_s21_deque_.at(1), this->empty_stl_deque_.at(1));
+  EXPECT_EQ(this->empty_s21_deque_.at(2), this->empty_stl_deque_.at(2));
+  EXPECT_EQ(this->empty_s21_deque_.at(3), this->empty_stl_deque_.at(3));
+  EXPECT_EQ(this->empty_s21_deque_.at(4), this->empty_stl_deque_.at(4));
+
+  TypeParam value_1{};
+
+  this->empty_s21_deque_.at(0) = value_1;
+  this->empty_stl_deque_.at(0) = value_1;
+  EXPECT_EQ(this->empty_s21_deque_.at(0), this->empty_stl_deque_.at(0));
+
+  TypeParam value_2{};
+
+  this->empty_s21_deque_.at(4) = value_2;
+  this->empty_stl_deque_.at(4) = value_2;
+  EXPECT_EQ(this->empty_s21_deque_.at(4), this->empty_stl_deque_.at(4));
+}
+
+TYPED_TEST(DequeTest, AtOutOfRange) {
+  TypeParam value{};
+
+  for (size_t i = 0; i < 5; ++i) {
+    this->empty_s21_deque_.push_back(value);
+  }
+
+  EXPECT_THROW(this->empty_s21_deque_.at(5), std::out_of_range);
+  EXPECT_THROW(this->empty_s21_deque_.at(10), std::out_of_range);
+  EXPECT_NO_THROW(this->empty_s21_deque_.at(4));
+}
+
+TYPED_TEST(DequeTest, AtEmptyDeque) {
+  EXPECT_THROW(this->empty_s21_deque_.at(0), std::out_of_range);
 }
 
 // pop_back
-TEST(DequeTest, PopBack_1) {
-  std::deque<int> std_q{10, 20, 30, 40, 50};
-  s21::deque<int> s21_q{10, 20, 30, 40, 50};
+TYPED_TEST(DequeTest, PopBack_1) {
+  TypeParam value{};
+  for (size_t i = 0; i < 5; ++i) {
+    this->empty_s21_deque_.push_back(value);
+    this->empty_stl_deque_.push_back(value);
+  }
+  this->empty_stl_deque_.pop_back();
+  this->empty_s21_deque_.pop_back();
 
-  std_q.pop_back();
-  s21_q.pop_back();
-
-  EXPECT_EQ(s21_q.at(0), std_q.at(0));
-  EXPECT_EQ(s21_q.at(1), std_q.at(1));
-  EXPECT_EQ(s21_q.at(2), std_q.at(2));
-  EXPECT_EQ(s21_q.at(3), std_q.at(3));
-  EXPECT_EQ(s21_q.size(), std_q.size());
+  EXPECT_EQ(this->empty_s21_deque_.at(0), this->empty_stl_deque_.at(0));
+  EXPECT_EQ(this->empty_s21_deque_.at(1), this->empty_stl_deque_.at(1));
+  EXPECT_EQ(this->empty_s21_deque_.at(2), this->empty_stl_deque_.at(2));
+  EXPECT_EQ(this->empty_s21_deque_.at(3), this->empty_stl_deque_.at(3));
+  EXPECT_EQ(this->empty_s21_deque_.size(), this->empty_stl_deque_.size());
 }
 
-TEST(DequeTest, PopBack_2) {
-  std::deque<int> std_q;
-  s21::deque<int> s21_q;
+TYPED_TEST(DequeTest, PopBack_2) {
+  TypeParam value{};
 
-  for (int i{1}; i < 6; i++) {
-    std_q.push_front(i);
-    s21_q.push_front(i);
+  for (size_t i = 0; i < 5; ++i) {
+    this->empty_s21_deque_.push_front(value);
+    this->empty_stl_deque_.push_front(value);
   }
 
-  std_q.pop_back();
-  s21_q.pop_back();
+  this->empty_s21_deque_.pop_back();
+  this->empty_stl_deque_.pop_back();
 
-  EXPECT_EQ(s21_q.at(0), std_q.at(0));
-  EXPECT_EQ(s21_q.at(1), std_q.at(1));
-  EXPECT_EQ(s21_q.at(2), std_q.at(2));
-  EXPECT_EQ(s21_q.at(3), std_q.at(3));
-  EXPECT_EQ(s21_q.size(), std_q.size());
+  EXPECT_EQ(this->empty_s21_deque_.at(0), this->empty_stl_deque_.at(0));
+  EXPECT_EQ(this->empty_s21_deque_.at(1), this->empty_stl_deque_.at(1));
+  EXPECT_EQ(this->empty_s21_deque_.at(2), this->empty_stl_deque_.at(2));
+  EXPECT_EQ(this->empty_s21_deque_.at(3), this->empty_stl_deque_.at(3));
+  EXPECT_EQ(this->empty_s21_deque_.size(), this->empty_stl_deque_.size());
 }
 
-TEST(DequeTest, PopBack_3) {
-  std::deque<int> std_q;
-  s21::deque<int> s21_q;
+TYPED_TEST(DequeTest, PopBack_3) {
+  TypeParam value{};
 
   for (int i{1}; i < 6; i++) {
     if (i % 2 == 0) {
-      std_q.push_front(i);
-      s21_q.push_front(i);
+      this->empty_s21_deque_.push_front(value);
+      this->empty_stl_deque_.push_front(value);
     } else {
-      std_q.push_back(i);
-      s21_q.push_back(i);
+      this->empty_s21_deque_.push_back(value);
+      this->empty_stl_deque_.push_back(value);
     }
   }
 
-  std_q.pop_back();
-  s21_q.pop_back();
+  this->empty_stl_deque_.pop_back();
+  this->empty_s21_deque_.pop_back();
 
-  EXPECT_EQ(s21_q.at(0), std_q.at(0));
-  EXPECT_EQ(s21_q.at(1), std_q.at(1));
-  EXPECT_EQ(s21_q.at(2), std_q.at(2));
-  EXPECT_EQ(s21_q.at(3), std_q.at(3));
-  EXPECT_EQ(s21_q.size(), std_q.size());
+  EXPECT_EQ(this->empty_s21_deque_.at(0), this->empty_stl_deque_.at(0));
+  EXPECT_EQ(this->empty_s21_deque_.at(1), this->empty_stl_deque_.at(1));
+  EXPECT_EQ(this->empty_s21_deque_.at(2), this->empty_stl_deque_.at(2));
+  EXPECT_EQ(this->empty_s21_deque_.at(3), this->empty_stl_deque_.at(3));
+  EXPECT_EQ(this->empty_s21_deque_.size(), this->empty_stl_deque_.size());
 }
 
 // pop_front
-TEST(DequeTest, PopFront_1) {
-  std::deque<int> std_q{10, 20, 30, 40, 50};
-  s21::deque<int> s21_q{10, 20, 30, 40, 50};
+TYPED_TEST(DequeTest, PopFront_1) {
+  TypeParam value{};
+  for (size_t i = 0; i < 5; ++i) {
+    this->empty_s21_deque_.push_back(value);
+    this->empty_stl_deque_.push_back(value);
+  }
+  this->empty_stl_deque_.pop_front();
+  this->empty_s21_deque_.pop_front();
 
-  std_q.pop_front();
-  s21_q.pop_front();
-
-  EXPECT_EQ(s21_q.at(0), std_q.at(0));
-  EXPECT_EQ(s21_q.at(1), std_q.at(1));
-  EXPECT_EQ(s21_q.at(2), std_q.at(2));
-  EXPECT_EQ(s21_q.at(3), std_q.at(3));
-  EXPECT_EQ(s21_q.size(), std_q.size());
+  EXPECT_EQ(this->empty_s21_deque_.at(0), this->empty_stl_deque_.at(0));
+  EXPECT_EQ(this->empty_s21_deque_.at(1), this->empty_stl_deque_.at(1));
+  EXPECT_EQ(this->empty_s21_deque_.at(2), this->empty_stl_deque_.at(2));
+  EXPECT_EQ(this->empty_s21_deque_.at(3), this->empty_stl_deque_.at(3));
+  EXPECT_EQ(this->empty_s21_deque_.size(), this->empty_stl_deque_.size());
 }
 
-TEST(DequeTest, PopFront_2) {
-  std::deque<int> std_q;
-  s21::deque<int> s21_q;
+TYPED_TEST(DequeTest, PopFront_2) {
+  TypeParam value{};
 
-  for (int i{1}; i < 6; i++) {
-    std_q.push_front(i);
-    s21_q.push_front(i);
+  for (size_t i = 0; i < 5; ++i) {
+    this->empty_s21_deque_.push_front(value);
+    this->empty_stl_deque_.push_front(value);
   }
 
-  std_q.pop_front();
-  s21_q.pop_front();
+  this->empty_s21_deque_.pop_front();
+  this->empty_stl_deque_.pop_front();
 
-  EXPECT_EQ(s21_q.at(0), std_q.at(0));
-  EXPECT_EQ(s21_q.at(1), std_q.at(1));
-  EXPECT_EQ(s21_q.at(2), std_q.at(2));
-  EXPECT_EQ(s21_q.at(3), std_q.at(3));
-  EXPECT_EQ(s21_q.size(), std_q.size());
+  EXPECT_EQ(this->empty_s21_deque_.at(0), this->empty_stl_deque_.at(0));
+  EXPECT_EQ(this->empty_s21_deque_.at(1), this->empty_stl_deque_.at(1));
+  EXPECT_EQ(this->empty_s21_deque_.at(2), this->empty_stl_deque_.at(2));
+  EXPECT_EQ(this->empty_s21_deque_.at(3), this->empty_stl_deque_.at(3));
+  EXPECT_EQ(this->empty_s21_deque_.size(), this->empty_stl_deque_.size());
 }
 
-TEST(DequeTest, PopFront_3) {
-  std::deque<int> std_q;
-  s21::deque<int> s21_q;
+TYPED_TEST(DequeTest, PopFront_3) {
+  TypeParam value{};
 
   for (int i{1}; i < 6; i++) {
     if (i % 2 == 0) {
-      std_q.push_front(i);
-      s21_q.push_front(i);
+      this->empty_s21_deque_.push_front(value);
+      this->empty_stl_deque_.push_front(value);
     } else {
-      std_q.push_back(i);
-      s21_q.push_back(i);
+      this->empty_s21_deque_.push_back(value);
+      this->empty_stl_deque_.push_back(value);
     }
   }
 
-  std_q.pop_front();
-  s21_q.pop_front();
+  this->empty_stl_deque_.pop_front();
+  this->empty_s21_deque_.pop_front();
 
-  EXPECT_EQ(s21_q.at(0), std_q.at(0));
-  EXPECT_EQ(s21_q.at(1), std_q.at(1));
-  EXPECT_EQ(s21_q.at(2), std_q.at(2));
-  EXPECT_EQ(s21_q.at(3), std_q.at(3));
-  EXPECT_EQ(s21_q.size(), std_q.size());
+  EXPECT_EQ(this->empty_s21_deque_.at(0), this->empty_stl_deque_.at(0));
+  EXPECT_EQ(this->empty_s21_deque_.at(1), this->empty_stl_deque_.at(1));
+  EXPECT_EQ(this->empty_s21_deque_.at(2), this->empty_stl_deque_.at(2));
+  EXPECT_EQ(this->empty_s21_deque_.at(3), this->empty_stl_deque_.at(3));
+  EXPECT_EQ(this->empty_s21_deque_.size(), this->empty_stl_deque_.size());
 }
 
 // back and front
-TEST(DequeTest, BackAndFront_1) {
-  std::deque<int> std_q;
-  s21::deque<int> s21_q;
+TYPED_TEST(DequeTest, BackAndFront_1) {
+  TypeParam value{};
 
   for (int i{1}; i < 6; i++) {
     if (i % 2 == 0) {
-      std_q.push_front(i);
-      s21_q.push_front(i);
+      this->empty_s21_deque_.push_front(value);
+      this->empty_stl_deque_.push_front(value);
     } else {
-      std_q.push_back(i);
-      s21_q.push_back(i);
+      this->empty_s21_deque_.push_back(value);
+      this->empty_stl_deque_.push_back(value);
     }
   }
 
-  EXPECT_EQ(s21_q.front(), std_q.front());
-  EXPECT_EQ(s21_q.back(), std_q.back());
+  EXPECT_EQ(this->empty_s21_deque_.front(), this->empty_stl_deque_.front());
+  EXPECT_EQ(this->empty_s21_deque_.back(), this->empty_stl_deque_.back());
 }
 
-TEST(DequeTest, BackAndFront_2) {
-  std::deque<int> std_q;
-  s21::deque<int> s21_q;
+TYPED_TEST(DequeTest, BackAndFront_2) {
+  TypeParam value{};
 
   for (int i{1}; i < 6; i++) {
-    std_q.push_back(i);
-    s21_q.push_back(i);
+    this->empty_s21_deque_.push_back(value);
+    this->empty_stl_deque_.push_back(value);
   }
 
-  EXPECT_EQ(s21_q.front(), std_q.front());
-  EXPECT_EQ(s21_q.back(), std_q.back());
+  EXPECT_EQ(this->empty_s21_deque_.front(), this->empty_stl_deque_.front());
+  EXPECT_EQ(this->empty_s21_deque_.back(), this->empty_stl_deque_.back());
 }
 
 // begin and end
-TEST(DequeTest, BeginAndEnd) {
+TEST(DequeNonTyped, BeginAndEnd) {
   std::deque<int> std_q;
   s21::deque<int> s21_q;
 
@@ -288,29 +400,25 @@ TEST(DequeTest, BeginAndEnd) {
 }
 
 // empty
-TEST(DequeTest, Empty_1) {
-  std::deque<int> std_q;
-  s21::deque<int> s21_q;
+TYPED_TEST(DequeTest, Empty_1) {
+  TypeParam value{};
 
   for (int i{1}; i < 6; i++) {
-    std_q.push_back(i);
-    s21_q.push_back(i);
+    this->empty_s21_deque_.push_back(value);
+    this->empty_stl_deque_.push_back(value);
   }
 
-  EXPECT_FALSE(std_q.empty());
-  EXPECT_FALSE(s21_q.empty());
+  EXPECT_FALSE(this->empty_stl_deque_.empty());
+  EXPECT_FALSE(this->empty_s21_deque_.empty());
 }
 
-TEST(DequeTest, Empty_2) {
-  std::deque<int> std_q;
-  s21::deque<int> s21_q;
-
-  EXPECT_TRUE(std_q.empty());
-  EXPECT_TRUE(s21_q.empty());
+TYPED_TEST(DequeTest, Empty_2) {
+  EXPECT_TRUE(this->empty_stl_deque_.empty());
+  EXPECT_TRUE(this->empty_s21_deque_.empty());
 }
 
 // swap
-TEST(DequeTest, Swap) {
+TEST(DequeNonTyped, Swap) {
   std::deque<int> std_q_1;
   s21::deque<int> s21_q_1;
   std::deque<int> std_q_2;
@@ -342,7 +450,7 @@ TEST(DequeTest, Swap) {
   EXPECT_EQ(s21_q_2.at(4), std_q_2.at(4));
 }
 
-TEST(DequeTest, MinMaxSort) {
+TEST(DequeNonTyped, MinMaxSort) {
   std::deque<int> std_q;
   s21::deque<int> s21_q;
 
@@ -359,18 +467,13 @@ TEST(DequeTest, MinMaxSort) {
   EXPECT_EQ(*std::min_element(s21_q.begin(), s21_q.end()),
             *std::min_element(std_q.begin(), std_q.end()));
 
-  // std::cout << s21_q << '\n';
   std::sort(s21_q.begin(), s21_q.end());
   std::sort(std_q.begin(), std_q.end());
-  // std::cout << s21_q;
   EXPECT_EQ(s21_q, std_q);
 
   EXPECT_EQ(*std::max_element(s21_q.begin(), s21_q.end()),
             *std::max_element(std_q.begin(), std_q.end()));
 
-  // auto it = s21_q.begin();  // points to first element
-
-  // std::cout << "\n\n\n" << s21_q.begin() << "\n" << s21_q.end() << "\n\n\n";
   std::shuffle(s21_q.begin(), s21_q.end(), Random::mt);
   std::shuffle(std_q.begin(), std_q.end(), Random::mt);
 
@@ -381,5 +484,40 @@ TEST(DequeTest, MinMaxSort) {
   EXPECT_EQ(std::binary_search(s21_q.begin(), s21_q.end(), s21_q[2]),
             std::binary_search(std_q.begin(), std_q.end(), s21_q[2]));
 }
+
+// copy constructor
+TEST(DequeNonTyped, CopyConstructor) {
+  s21::deque<int> original{10, 20, 30, 40, 50};
+
+  s21::deque<int> copy(original);
+
+  EXPECT_EQ(original.size(), copy.size());
+
+  for (size_t i = 0; i < original.size(); ++i) {
+    EXPECT_EQ(original[i], copy[i]);
+  }
+
+  copy.push_back(60);
+  EXPECT_NE(original.size(), copy.size());
+  EXPECT_EQ(original.back(), 50);
+  EXPECT_EQ(copy.back(), 60);
+}
+
+// move constructor
+TEST(DequeNonTyped, MoveConstructor) {
+  s21::deque<int> original{10, 20, 30, 40, 50};
+  size_t original_size = original.size();
+
+  s21::deque<int> moved(std::move(original));
+
+  EXPECT_EQ(moved.size(), original_size);
+  for (size_t i = 0; i < moved.size(); ++i) {
+    EXPECT_EQ(moved[i], 10 + i * 10);
+  }
+
+  EXPECT_EQ(original.size(), 0);
+  EXPECT_THROW(original.at(0), std::out_of_range);
+}
+
 #if 0
 #endif
