@@ -310,6 +310,13 @@ TEST(ListTest, count) {
 
   std::cout << "Number 2 appears " << count_of_twos << " times." << std::endl;
 }
+TEST(ListTest, count_if) {
+  s21::list<int> numbers{1, 2, 3, 4, 5};
 
+  auto count_of_evens = std::count_if(numbers.begin(), numbers.end(),
+                                      [](int n) { return n % 2 == 0; });
+
+  std::cout << "There are " << count_of_evens << " even numbers." << std::endl;
+}
 #if 0
 #endif
