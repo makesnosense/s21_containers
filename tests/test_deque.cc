@@ -18,8 +18,8 @@ class DequeTest : public testing::Test {
         empty_s21_deque_(),
         stl_deque_{68, 3, 86},
         s21_deque_{68, 3, 86},
-        large_stl_deque_(10000, 42),
-        large_s21_deque_(10000, 42) {}
+        large_stl_deque_(35000, 42),
+        large_s21_deque_(35000, 42) {}
 
   std::deque<T> empty_stl_deque_{};
   s21::deque<T> empty_s21_deque_{};
