@@ -566,7 +566,7 @@ class ListIterator {
   ListIterator(Node* node) : current_(node) {}
 
   reference operator*() { return current_->data_; }
-  T& operator*() { return current_->data_; }
+
   pointer operator->() { return &current_->data_; }
   Node* getCurrent() const { return current_; }
 
