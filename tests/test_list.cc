@@ -303,6 +303,13 @@ TEST(ListTest, for_each_n) {
   }
   std::cout << std::endl;
 }
+TEST(ListTest, count) {
+  s21::list<int> numbers{1, 2, 3, 4, 5};
+
+  auto count_of_twos = std::count(numbers.begin(), numbers.end(), 2);
+
+  std::cout << "Number 2 appears " << count_of_twos << " times." << std::endl;
+}
 
 #if 0
 #endif
