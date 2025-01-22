@@ -1,6 +1,8 @@
 #ifndef S21_BASE_H
 #define S21_BASE_H
 
+#include <cstddef>
+
 namespace s21 {
 
 template <typename T>
