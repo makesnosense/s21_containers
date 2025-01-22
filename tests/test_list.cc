@@ -419,5 +419,22 @@ TEST(ListTest, search_n) {
     std::cout << "No consecutive occurrences found." << std::endl;
   }
 }
+TEST(ListTest, mismatch) {
+  s21::list<int> vec1{1, 2, 3, 4, 5};
+  s21::list<int> vec2{1, 2, 0, 4, 5};  // Note: 0 differs from 3 in vec1
+
+  // Find the first mismatch between vec1 and vec2
+  auto result = std::mismatch(vec1.begin(), vec1.end(), vec2.begin());
+
+  if (result.first != vec1.end()) {
+    std::cout << "Mismatch found at position: " << (result.first - vec1.begin())
+              << std::endl;
+    std::cout << "vec1: " << *result.first << ", vec2: " << *result.second
+              << std::endl;  // Output: vec1: 3, vec2: 0
+  } else {
+    std::cout << "No mismatches found." << std::endl;
+  }
+}
+
 #if 0
 #endif
