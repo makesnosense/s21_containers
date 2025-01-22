@@ -384,6 +384,19 @@ TEST(ListTest, find_first_of) {
     std::cout << "No matches found." << std::endl;
   }
 }
+TEST(ListTest, adjacent_find) {
+  std::list<int> numbers = {1, 2, 3, 3, 5};
+
+  // Find the first occurrence of consecutive identical elements
+  auto it = std::adjacent_find(numbers.begin(), numbers.end());
+
+  if (it != numbers.end()) {
+    std::cout << "First occurrence of consecutive identical element = " << *it
+              << std::endl;  // Output: 3
+  } else {
+    std::cout << "There are no consecutive identical elements." << std::endl;
+  }
+}
 
 #if 0
 #endif
