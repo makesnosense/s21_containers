@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include <algorithm>
 #include <iostream>
 #include <list>
 
@@ -241,8 +242,18 @@ TYPED_TEST(ListTest, splice) {
 
   EXPECT_TRUE(ans);
 }
-// TYPED_TEST(ListTest, splice) {
 
-// }
+TEST(ListTest, meeeeee) {
+  s21::list<int> numberseee{2, 4, 6, 8};
+
+  bool all_even = std::all_of(numberseee.begin(), numberseee.end(),
+                              [](int n) { return n % 2 == 0; });
+
+  if (all_even) {
+    std::cout << "All numbers are even." << std::endl;
+  } else {
+    std::cout << "Not all numbers are even." << std::endl;
+  }
+}
 #if 0
 #endif
