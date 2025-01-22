@@ -27,10 +27,8 @@ class deque {
   friend class DequeIterator<T>;
 
  private:
-  // static constexpr size_type kPageSize{4096};
-  // static constexpr size_type kChunkSize{kPageSize / sizeof(value_type)};
-  // static constexpr size_type kChunkSize{64 * 2 / sizeof(T)};
-  static constexpr size_type kChunkSize{10};
+  static constexpr size_type kPageSize{4096};
+  static constexpr size_type kChunkSize{kPageSize / sizeof(value_type)};
   static constexpr size_type kInitialMapSize{10};
 
  public:
@@ -47,14 +45,49 @@ class deque {
     AddChunkAt(front_chunk_index_);
   }
 
-  deque(const deque& other) = default;
+  deque(const deque& other)
+      : map_{nullptr},
+        map_size_{other.map_size_},
+        front_chunk_index_{other.front_chunk_index_},
+        back_chunk_index_{other.back_chunk_index_},
+        front_element_index_{other.front_element_index_},
+        back_vacant_index_{other.back_vacant_index_},
+        size_{other.size_} {
+    map_ = new Chunk* [map_size_] {};
 
-  // deque(deque&& other) noexcept
-  //     : data_{other.data_}, size_{other.size_}, capacity_{other.capacity_} {
-  //   other.data_ = nullptr;
-  //   other.size_ = 0;
-  //   other.capacity_ = 0;
-  // }
+    for (size_type i = front_chunk_index_; i <= back_chunk_index_; ++i) {
+      if (other.map_[i]) {
+        map_[i] = new Chunk();
+        std::copy(std::begin(other.map_[i]->data_),
+                  std::end(other.map_[i]->data_), std::begin(map_[i]->data_));
+      }
+    }
+  }
+
+  deque(deque&& other) noexcept
+      : map_{nullptr},
+        map_size_{0},
+        front_chunk_index_{0},
+        back_chunk_index_{0},
+        front_element_index_{0},
+        back_vacant_index_{0},
+        size_{0} {
+    map_ = other.map_;
+    map_size_ = other.map_size_;
+    front_chunk_index_ = other.front_chunk_index_;
+    back_chunk_index_ = other.back_chunk_index_;
+    front_element_index_ = other.front_element_index_;
+    back_vacant_index_ = other.back_vacant_index_;
+    size_ = other.size_;
+
+    other.map_ = nullptr;
+    other.map_size_ = 0;
+    other.front_chunk_index_ = 0;
+    other.back_chunk_index_ = 0;
+    other.front_element_index_ = 0;
+    other.back_vacant_index_ = 0;
+    other.size_ = 0;
+  }
 
   explicit deque(std::initializer_list<value_type> init) : deque() {
     for (const auto& i : init) {
