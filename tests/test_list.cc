@@ -435,6 +435,26 @@ TEST(ListTest, mismatch) {
     std::cout << "No mismatches found." << std::endl;
   }
 }
+TEST(ListTest, equal) {
+  s21::list<int> vec1{1, 2, 3, 4, 5};
+  s21::list<int> vec2{1, 2, 3, 4, 5};  // Equal to vec1
+  s21::list<int> vec3{1, 2, 3, 4};     // Not equal to vec1
 
+  // Check if vec1 and vec2 are equal
+  if (std::equal(vec1.begin(), vec1.end(), vec2.begin())) {
+    std::cout << "vec1 and vec2 are equal." << std::endl;  // Output: Equal
+  } else {
+    std::cout << "vec1 and vec2 are not equal." << std::endl;
+  }
+
+  // Check if vec1 and vec3 are equal
+  if (vec1.size() == vec3.size() &&
+      std::equal(vec1.begin(), vec1.end(), vec3.begin())) {
+    std::cout << "vec1 and vec3 are equal." << std::endl;
+  } else {
+    std::cout << "vec1 and vec3 are not equal."
+              << std::endl;  // Output: Not Equal
+  }
+}
 #if 0
 #endif
