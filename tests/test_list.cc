@@ -231,12 +231,18 @@ TYPED_TEST(ListTest, splice) {
   this->s21_list_.splice(it, this->empty_s21_list_);
   this->stl_list_.splice(it2, this->empty_stl_list_);
 
-  auto stl_it = this->stl_list_.begin();
-  for (auto i = this->s21_list_.begin(); i != this->s21_list_.end(); ++i) {
-    EXPECT_EQ(*i, *stl_it);
+  // auto stl_it = this->stl_list_.begin();
+  // for (auto i = this->s21_list_.begin(); i != this->s21_list_.end(); ++i) {
+  //   EXPECT_EQ(*i, *stl_it);
 
-    ++stl_it;
-  }
+  //   ++stl_it;
+  // }
+  bool ans = this->s21_list_ == this->stl_list_;
+
+  EXPECT_TRUE(ans);
 }
+// TYPED_TEST(ListTest, splice) {
+
+// }
 #if 0
 #endif
