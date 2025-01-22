@@ -405,5 +405,19 @@ TEST(ListTest, search) {
   }
 }
 
+TEST(ListTest, search_n) {
+  s21::list<int> numbers{1, 2, 3, 3, 3, 4, 5};
+
+  // Search for two consecutive occurrences of the number 3
+  auto result = std::search_n(numbers.begin(), numbers.end(), 2, 3);
+
+  if (result != numbers.end()) {
+    std::cout << "Found two consecutive 3s at index: "
+              << (result - numbers.begin())
+              << std::endl;  // Output: Found two consecutive 3s at index: 2
+  } else {
+    std::cout << "No consecutive occurrences found." << std::endl;
+  }
+}
 #if 0
 #endif
