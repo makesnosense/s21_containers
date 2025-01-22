@@ -205,34 +205,6 @@ class deque {
     ++size_;
   }
 
-  void GrowMap(bool to_the_front) {
-    size_type new_size_map{map_size_ * 2};
-    Chunk** new_map = new Chunk* [new_size_map] {};
-
-    size_type new_front_chunk_index{};
-    size_type new_back_chunk_index{};
-
-    if (to_the_front == true) {
-      new_front_chunk_index = map_size_;
-      new_back_chunk_index = map_size_ + back_chunk_index_;
-
-      std::move(map_, map_ + map_size_, new_map + map_size_);
-
-    } else {
-      new_front_chunk_index = front_chunk_index_;
-      new_back_chunk_index = back_chunk_index_;
-
-      std::move(map_, map_ + map_size_, new_map);
-    }
-    delete[] map_;
-    front_chunk_index_ = new_front_chunk_index;
-    back_chunk_index_ = new_back_chunk_index;
-    map_size_ = new_size_map;
-    map_ = new_map;
-  }
-
-  void AddChunkAt(size_type chunk_index) { map_[chunk_index] = new Chunk(); }
-
   reference at(size_type position) {
     if (position >= size_) {
       throw std::out_of_range("Deque index out of range");
@@ -339,6 +311,34 @@ class deque {
   size_type front_element_index_{0};  // Index within front chunk
   size_type back_vacant_index_{0};    // Index within back chunk
   size_type size_{0};                 // Total number of elements
+
+  void AddChunkAt(size_type chunk_index) { map_[chunk_index] = new Chunk(); }
+
+  void GrowMap(bool to_the_front) {
+    size_type new_size_map{map_size_ * 2};
+    Chunk** new_map = new Chunk* [new_size_map] {};
+
+    size_type new_front_chunk_index{};
+    size_type new_back_chunk_index{};
+
+    if (to_the_front == true) {
+      new_front_chunk_index = map_size_;
+      new_back_chunk_index = map_size_ + back_chunk_index_;
+
+      std::move(map_, map_ + map_size_, new_map + map_size_);
+
+    } else {
+      new_front_chunk_index = front_chunk_index_;
+      new_back_chunk_index = back_chunk_index_;
+
+      std::move(map_, map_ + map_size_, new_map);
+    }
+    delete[] map_;
+    front_chunk_index_ = new_front_chunk_index;
+    back_chunk_index_ = new_back_chunk_index;
+    map_size_ = new_size_map;
+    map_ = new_map;
+  }
 };
 
 template <typename T>
