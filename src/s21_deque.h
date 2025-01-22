@@ -216,6 +216,7 @@ class deque {
 
     return map_[chunk_index]->data_[element_index_in_chunk];
   }
+
   void pop_front() {
     if (size_ > 0) {
       --size_;
@@ -228,6 +229,7 @@ class deque {
       }
     }
   }
+
   void pop_back() {
     if (size_ > 0) {
       --size_;
@@ -244,6 +246,7 @@ class deque {
   }
 
   size_type size() const { return size_; }
+
   bool empty() {
     if (size() == 0) {
       return true;
