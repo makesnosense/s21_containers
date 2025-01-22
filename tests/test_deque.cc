@@ -87,7 +87,7 @@ TYPED_TEST(DequeTest, PushBackChunkOverflow) {
     EXPECT_EQ(this->empty_s21_deque_[i], value);
   }
 
-  EXPECT_EQ(this->empty_s21_deque_.size(), 15);
+  EXPECT_EQ(this->empty_s21_deque_.size(), size_t{15});
 }
 
 TYPED_TEST(DequeTest, PushBackGrowMap) {
@@ -101,14 +101,14 @@ TYPED_TEST(DequeTest, PushBackGrowMap) {
     EXPECT_EQ(this->empty_s21_deque_[i], value);
   }
 
-  EXPECT_EQ(this->empty_s21_deque_.size(), 100);
+  EXPECT_EQ(this->empty_s21_deque_.size(), size_t{100});
 }
 
 TYPED_TEST(DequeTest, PushBackEmptyDeque) {
   TypeParam value{};
 
   this->empty_s21_deque_.push_back(value);
-  EXPECT_EQ(this->empty_s21_deque_.size(), 1);
+  EXPECT_EQ(this->empty_s21_deque_.size(), size_t{1});
   EXPECT_EQ(this->empty_s21_deque_.back(), value);
   EXPECT_EQ(this->empty_s21_deque_.front(), value);
 }
@@ -469,10 +469,10 @@ TEST(DequeNonTyped, MoveConstructor) {
 
   EXPECT_EQ(moved.size(), original_size);
   for (size_t i = 0; i < moved.size(); ++i) {
-    EXPECT_EQ(moved[i], 10 + i * 10);
+    EXPECT_EQ(moved[i], static_cast<int>(10 + i * 10));
   }
 
-  EXPECT_EQ(original.size(), 0);
+  EXPECT_EQ(original.size(), size_t{0});
   EXPECT_THROW(original.at(0), std::out_of_range);
 }
 
@@ -500,19 +500,19 @@ TEST(DequeTest, MoveAssignmentOperator) {
 
   moved = std::move(original);
 
-  EXPECT_EQ(moved.size(), 5);
+  EXPECT_EQ(moved.size(), size_t{5});
   EXPECT_EQ(moved[0], 10);
   EXPECT_EQ(moved[1], 20);
   EXPECT_EQ(moved[2], 30);
   EXPECT_EQ(moved[3], 40);
   EXPECT_EQ(moved[4], 50);
 
-  EXPECT_EQ(original.size(), 0);
+  EXPECT_EQ(original.size(), size_t{0});
   EXPECT_THROW(original.at(0), std::out_of_range);
 
   s21::deque<int> empty;
   moved = std::move(empty);
-  EXPECT_EQ(moved.size(), 0);
+  EXPECT_EQ(moved.size(), size_t{0});
   EXPECT_THROW(moved.at(0), std::out_of_range);
 }
 
