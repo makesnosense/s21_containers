@@ -103,7 +103,55 @@ class deque {
     delete[] map_;
   };
 
-  deque& operator=(const deque& other) = default;
+  deque& operator=(deque&& other) noexcept {
+    if (this != &other) {
+      for (size_type i = 0; i < map_size_; ++i) {
+        delete map_[i];
+      }
+      delete[] map_;
+
+      map_ = other.map_;
+      map_size_ = other.map_size_;
+      front_chunk_index_ = other.front_chunk_index_;
+      back_chunk_index_ = other.back_chunk_index_;
+      front_element_index_ = other.front_element_index_;
+      back_vacant_index_ = other.back_vacant_index_;
+      size_ = other.size_;
+
+      other.map_ = nullptr;
+      other.map_size_ = 0;
+      other.front_chunk_index_ = 0;
+      other.back_chunk_index_ = 0;
+      other.front_element_index_ = 0;
+      other.back_vacant_index_ = 0;
+      other.size_ = 0;
+    }
+    return *this;
+  }
+
+  deque& operator=(const deque& other) {
+    if (this != &other) {
+      for (size_type i = 0; i < map_size_; ++i) {
+        delete map_[i];
+      }
+      delete[] map_;
+
+      map_size_ = other.map_size_;
+      front_chunk_index_ = other.front_chunk_index_;
+      back_chunk_index_ = other.back_chunk_index_;
+      front_element_index_ = other.front_element_index_;
+      back_vacant_index_ = other.back_vacant_index_;
+      size_ = other.size_;
+
+      map_ = new Chunk* [map_size_] {};
+      for (size_type i = 0; i < map_size_; ++i) {
+        if (other.map_[i]) {
+          map_[i] = new Chunk(*other.map_[i]);
+        }
+      }
+    }
+    return *this;
+  }
 
   void push_front(const_reference value) {
     if (front_element_index_ == 0) {
