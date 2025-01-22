@@ -29,7 +29,7 @@ class deque {
  private:
   static constexpr size_type kPageSize{4096};
   static constexpr size_type kChunkSize{kPageSize / sizeof(value_type)};
-  static constexpr size_type kInitialMapSize{10};
+  static constexpr size_type kInitialMapSize{8};
 
  public:
   struct Chunk {
@@ -43,6 +43,12 @@ class deque {
     front_element_index_ = back_vacant_index_ = kChunkSize / 2;
 
     AddChunkAt(front_chunk_index_);
+  }
+
+  deque(size_type n, const value_type& value) : deque() {
+    for (size_type i{0}; i < n; i++) {
+      push_back(value);
+    }
   }
 
   deque(const deque& other)
