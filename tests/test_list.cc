@@ -268,5 +268,17 @@ TEST(ListTest, any_of) {
     std::cout << "All numbers are even." << std::endl;
   }
 }
+TEST(ListTest, none_of) {
+  s21::list<int> numbers{2, 4, 6, 8, 11};
+
+  bool result =
+      std::none_of(numbers.begin(), numbers.end(), [](int n) { return n < 0; });
+
+  if (result) {
+    std::cout << "All numbers are non-negative." << std::endl;
+  } else {
+    std::cout << "There are negative numbers in the vector." << std::endl;
+  }
+}
 #if 0
 #endif
