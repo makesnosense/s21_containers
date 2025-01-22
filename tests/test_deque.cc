@@ -16,17 +16,17 @@ class DequeTest : public testing::Test {
   DequeTest()
       : empty_stl_deque_(),
         empty_s21_deque_(),
-        stl_deque_(),
-        s21_deque_(),
-        large_stl_deque_(),
-        large_s21_deque_() {}
+        stl_deque_{68, 3, 86},
+        s21_deque_{68, 3, 86},
+        large_stl_deque_{110, 29, 54},
+        large_s21_deque_{110, 29, 54} {}
 
   std::deque<T> empty_stl_deque_{};
   s21::deque<T> empty_s21_deque_{};
-  std::deque<T> stl_deque_;
-  s21::deque<T> s21_deque_;
-  std::deque<T> large_stl_deque_;
-  s21::deque<T> large_s21_deque_;
+  std::deque<T> stl_deque_{};
+  s21::deque<T> s21_deque_{};
+  std::deque<T> large_stl_deque_{};
+  s21::deque<T> large_s21_deque_{};
 };
 
 using TestedTypes = ::testing::Types<char, int, double, DummyObject>;
@@ -178,43 +178,36 @@ TEST(DequeNonTyped, InitializerListConstructor) {
 
 // at
 TYPED_TEST(DequeTest, At_1) {
-  TypeParam value{};
-
-  for (size_t i = 0; i < 3; ++i) {
-    this->empty_s21_deque_.push_back(value);
-    this->empty_stl_deque_.push_back(value);
-  }
-
-  EXPECT_EQ(this->empty_s21_deque_.at(0), this->empty_stl_deque_.at(0));
-  EXPECT_EQ(this->empty_s21_deque_.at(1), this->empty_stl_deque_.at(1));
-  EXPECT_EQ(this->empty_s21_deque_.at(2), this->empty_stl_deque_.at(2));
+  EXPECT_EQ(this->s21_deque_.at(0), this->stl_deque_.at(0));
+  EXPECT_EQ(this->s21_deque_.at(1), this->stl_deque_.at(1));
+  EXPECT_EQ(this->s21_deque_.at(2), this->stl_deque_.at(2));
 }
 
 TYPED_TEST(DequeTest, At_2) {
   TypeParam value{};
 
-  for (size_t i = 0; i < 5; ++i) {
-    this->empty_s21_deque_.push_back(value);
-    this->empty_stl_deque_.push_back(value);
+  for (size_t i = 0; i < 2; ++i) {
+    this->s21_deque_.push_back(value);
+    this->stl_deque_.push_back(value);
   }
 
-  EXPECT_EQ(this->empty_s21_deque_.at(0), this->empty_stl_deque_.at(0));
-  EXPECT_EQ(this->empty_s21_deque_.at(1), this->empty_stl_deque_.at(1));
-  EXPECT_EQ(this->empty_s21_deque_.at(2), this->empty_stl_deque_.at(2));
-  EXPECT_EQ(this->empty_s21_deque_.at(3), this->empty_stl_deque_.at(3));
-  EXPECT_EQ(this->empty_s21_deque_.at(4), this->empty_stl_deque_.at(4));
+  EXPECT_EQ(this->s21_deque_.at(0), this->stl_deque_.at(0));
+  EXPECT_EQ(this->s21_deque_.at(1), this->stl_deque_.at(1));
+  EXPECT_EQ(this->s21_deque_.at(2), this->stl_deque_.at(2));
+  EXPECT_EQ(this->s21_deque_.at(3), this->stl_deque_.at(3));
+  EXPECT_EQ(this->s21_deque_.at(4), this->stl_deque_.at(4));
 
   TypeParam value_1{};
 
-  this->empty_s21_deque_.at(0) = value_1;
-  this->empty_stl_deque_.at(0) = value_1;
-  EXPECT_EQ(this->empty_s21_deque_.at(0), this->empty_stl_deque_.at(0));
+  this->s21_deque_.at(0) = value_1;
+  this->stl_deque_.at(0) = value_1;
+  EXPECT_EQ(this->s21_deque_.at(0), this->stl_deque_.at(0));
 
   TypeParam value_2{};
 
-  this->empty_s21_deque_.at(4) = value_2;
-  this->empty_stl_deque_.at(4) = value_2;
-  EXPECT_EQ(this->empty_s21_deque_.at(4), this->empty_stl_deque_.at(4));
+  this->s21_deque_.at(4) = value_2;
+  this->stl_deque_.at(4) = value_2;
+  EXPECT_EQ(this->s21_deque_.at(4), this->stl_deque_.at(4));
 }
 
 TYPED_TEST(DequeTest, AtOutOfRange) {
@@ -487,20 +480,18 @@ TEST(DequeNonTyped, MinMaxSort) {
 }
 
 // copy constructor
-TEST(DequeNonTyped, CopyConstructor) {
-  s21::deque<int> original{10, 20, 30, 40, 50};
+TYPED_TEST(DequeTest, CopyConstructor) {
+  s21::deque<TypeParam> copy(this->s21_deque_);
 
-  s21::deque<int> copy(original);
+  EXPECT_EQ(this->s21_deque_.size(), copy.size());
 
-  EXPECT_EQ(original.size(), copy.size());
-
-  for (size_t i = 0; i < original.size(); ++i) {
-    EXPECT_EQ(original[i], copy[i]);
+  for (size_t i = 0; i < this->s21_deque_.size(); ++i) {
+    EXPECT_EQ(this->s21_deque_[i], copy[i]);
   }
 
   copy.push_back(60);
-  EXPECT_NE(original.size(), copy.size());
-  EXPECT_EQ(original.back(), 50);
+  EXPECT_NE(this->s21_deque_.size(), copy.size());
+  EXPECT_EQ(this->s21_deque_.back(), 86);
   EXPECT_EQ(copy.back(), 60);
 }
 
@@ -518,6 +509,46 @@ TEST(DequeNonTyped, MoveConstructor) {
 
   EXPECT_EQ(original.size(), 0);
   EXPECT_THROW(original.at(0), std::out_of_range);
+}
+
+TEST(DequeTest, CopyAssignment) {
+  s21::deque<int> d1{10, 20, 30, 40, 50};
+  s21::deque<int> d2;
+  d2.push_back(100);
+  d2.push_back(200);
+
+  d2 = d1;
+
+  EXPECT_EQ(d2.size(), d1.size());
+
+  for (size_t i = 0; i < d1.size(); ++i) {
+    EXPECT_EQ(d2[i], d1[i]);
+  }
+
+  d2.push_back(60);
+  EXPECT_NE(d2.size(), d1.size());
+}
+
+TEST(DequeTest, MoveAssignmentOperator) {
+  s21::deque<int> original{10, 20, 30, 40, 50};
+  s21::deque<int> moved;
+
+  moved = std::move(original);
+
+  EXPECT_EQ(moved.size(), 5);
+  EXPECT_EQ(moved[0], 10);
+  EXPECT_EQ(moved[1], 20);
+  EXPECT_EQ(moved[2], 30);
+  EXPECT_EQ(moved[3], 40);
+  EXPECT_EQ(moved[4], 50);
+
+  EXPECT_EQ(original.size(), 0);
+  EXPECT_THROW(original.at(0), std::out_of_range);
+
+  s21::deque<int> empty;
+  moved = std::move(empty);
+  EXPECT_EQ(moved.size(), 0);
+  EXPECT_THROW(moved.at(0), std::out_of_range);
 }
 
 #if 0
