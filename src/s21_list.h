@@ -510,6 +510,24 @@ class list {
     }
     return *this;
   }
+  bool operator==(const std::list<T>& first) {
+    if (first.size() != this->size()) {
+      return false;
+    }
+
+    auto it1 = first.begin();
+    auto it2 = this->begin();
+
+    while (it1 != first.end() && it2 != this->end()) {
+      if (*it1 != *it2) {
+        return false;
+      }
+      ++it1;
+      ++it2;
+    }
+
+    return true;
+  }
   /////////////////////////
   iterator begin() { return iterator(head_); }
   iterator end() { return nullptr; }
@@ -601,6 +619,7 @@ class ListIterator {
     return current_ == other.current_;
   }
   bool operator!=(const ListIterator& other) const { return !(*this == other); }
+
   ~ListIterator() = default;
 
  private:
