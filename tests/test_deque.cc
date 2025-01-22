@@ -217,7 +217,7 @@ TEST(DequeNonTyped, PostDecrement) {
   EXPECT_EQ(*iter, 2);
 }
 
-TEST(DequeTest, SubscriptOperator) {
+TEST(DequeNonTyped, SubscriptOperator) {
   s21::deque<int> arr{1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7};
   s21::deque<int>::iterator iter = arr.begin();
 
@@ -227,6 +227,18 @@ TEST(DequeTest, SubscriptOperator) {
 
   *iter = 100;
   EXPECT_EQ(arr[0], 100);
+}
+
+TEST(DequeNonTyped, DefaultConstructorIterator) {
+  s21::deque<int>::iterator it1;
+  s21::deque<int>::iterator it2;
+
+  EXPECT_EQ(it1, it2);
+
+  s21::deque<int> d{1, 2, 3};
+  it1 = d.begin();
+
+  EXPECT_NE(it1, it2);
 }
 
 // InitializerListConstructor
