@@ -318,5 +318,15 @@ TEST(ListTest, count_if) {
 
   std::cout << "There are " << count_of_evens << " even numbers." << std::endl;
 }
+TEST(ListTest, find) {
+  s21::list<int> v{1, 2, 3, 4, 5};
+
+  auto it = std::find(v.begin(), v.end(), 3);
+  if (it != v.end()) {
+    std::cout << "Found: " << *it << std::endl;  // Output: Found: 3
+  } else {
+    std::cout << "Not found" << std::endl;
+  }
+}
 #if 0
 #endif
