@@ -113,6 +113,69 @@ TYPED_TEST(DequeTest, PushBackEmptyDeque) {
   EXPECT_EQ(this->empty_s21_deque_.front(), value);
 }
 
+// push_front
+TYPED_TEST(DequeTest, PushFrontBasic) {
+  std::deque<int> std_q;
+  s21::deque<int> s21_q;
+
+  TypeParam value{};
+
+  this->empty_s21_deque_.push_front(value);
+  this->empty_stl_deque_.push_front(value);
+  EXPECT_EQ(this->empty_s21_deque_.front(), this->empty_stl_deque_.front());
+
+  this->empty_s21_deque_.push_front(value);
+  this->empty_stl_deque_.push_front(value);
+  EXPECT_EQ(this->empty_s21_deque_.front(), this->empty_stl_deque_.front());
+
+  this->empty_s21_deque_.push_front(value);
+  this->empty_stl_deque_.push_front(value);
+  EXPECT_EQ(this->empty_s21_deque_.front(), this->empty_stl_deque_.front());
+
+  EXPECT_EQ(this->empty_s21_deque_.size(), this->empty_stl_deque_.size());
+
+  for (size_t i = 0; i < this->empty_stl_deque_.size(); ++i) {
+    EXPECT_EQ(this->empty_s21_deque_[i], this->empty_stl_deque_[i]);
+  }
+}
+
+TYPED_TEST(DequeTest, PushFrontChunkOverflow) {
+  TypeParam value{};
+
+  for (size_t i = 0; i < 10000; ++i) {
+    this->empty_s21_deque_.push_front(value);
+  }
+
+  for (size_t i = 0; i < 1000; ++i) {
+    EXPECT_EQ(this->empty_s21_deque_[i], value);
+  }
+
+  EXPECT_EQ(this->empty_s21_deque_.size(), size_t{10000});
+}
+
+TYPED_TEST(DequeTest, PushFrontGrowMap) {
+  TypeParam value{};
+
+  for (size_t i = 0; i < 100; ++i) {
+    this->empty_s21_deque_.push_front(value);
+  }
+
+  for (size_t i = 0; i < 100; ++i) {
+    EXPECT_EQ(this->empty_s21_deque_[i], value);
+  }
+
+  EXPECT_EQ(this->empty_s21_deque_.size(), size_t{100});
+}
+
+TYPED_TEST(DequeTest, PushFrontEmptyDeque) {
+  TypeParam value{};
+
+  this->empty_s21_deque_.push_front(value);
+  EXPECT_EQ(this->empty_s21_deque_.size(), size_t{1});
+  EXPECT_EQ(this->empty_s21_deque_.back(), value);
+  EXPECT_EQ(this->empty_s21_deque_.front(), value);
+}
+
 // iterartor
 TEST(DequeNonTyped, ComparisonOperators) {
   s21::deque<int> arr{1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7};
@@ -229,13 +292,15 @@ TYPED_TEST(DequeTest, PopBack_1) {
 TYPED_TEST(DequeTest, PopBack_2) {
   TypeParam value{};
 
-  for (size_t i = 0; i < 5; ++i) {
+  for (size_t i = 0; i < 10000; ++i) {
     this->empty_s21_deque_.push_front(value);
     this->empty_stl_deque_.push_front(value);
   }
 
-  this->empty_s21_deque_.pop_back();
-  this->empty_stl_deque_.pop_back();
+  for (size_t i = 0; i < 1000; ++i) {
+    this->empty_s21_deque_.pop_back();
+    this->empty_stl_deque_.pop_back();
+  }
 
   EXPECT_EQ(this->empty_s21_deque_, this->empty_stl_deque_);
 }
@@ -288,6 +353,23 @@ TYPED_TEST(DequeTest, PopFront_2) {
 }
 
 TYPED_TEST(DequeTest, PopFront_3) {
+  TypeParam value{};
+
+  for (size_t i = 0; i < 10000; ++i) {
+    this->empty_s21_deque_.push_front(value);
+    this->empty_stl_deque_.push_front(value);
+  }
+
+  for (size_t i = 0; i < 1000; ++i) {
+    this->empty_s21_deque_.pop_front();
+    this->empty_stl_deque_.pop_front();
+  }
+
+  EXPECT_EQ(this->empty_s21_deque_, this->empty_stl_deque_);
+  EXPECT_EQ(this->empty_s21_deque_.size(), this->empty_stl_deque_.size());
+}
+
+TYPED_TEST(DequeTest, PopFront_4) {
   TypeParam value{};
 
   for (int i{1}; i < 6; i++) {
