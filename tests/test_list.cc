@@ -250,9 +250,9 @@ TEST(ListTest, all_of) {
                               [](int n) { return n % 2 == 0; });
 
   if (all_even) {
-    std::cout << "All numbers are even." << std::endl;
+    std::cout << "All numbers are even." << "\n";
   } else {
-    std::cout << "Not all numbers are even." << std::endl;
+    std::cout << "Not all numbers are even." << "\n";
   }
 }
 TEST(ListTest, any_of) {
@@ -263,9 +263,9 @@ TEST(ListTest, any_of) {
                             [](int n) { return n % 2 == 0; });
 
   if (result) {
-    std::cout << "The vector contains at least one odd number." << std::endl;
+    std::cout << "The vector contains at least one odd number." << "\n";
   } else {
-    std::cout << "All numbers are even." << std::endl;
+    std::cout << "All numbers are even." << "\n";
   }
 }
 TEST(ListTest, none_of) {
@@ -275,10 +275,36 @@ TEST(ListTest, none_of) {
       std::none_of(numbers.begin(), numbers.end(), [](int n) { return n < 0; });
 
   if (result) {
-    std::cout << "All numbers are non-negative." << std::endl;
+    std::cout << "All numbers are non-negative." << "\n";
   } else {
-    std::cout << "There are negative numbers in the vector." << std::endl;
+    std::cout << "There are negative numbers in the vector." << "\n";
   }
+}
+TEST(ListTest, for_each) {
+  s21::list<int> numbers{1, 2, 3, 4, 5};
+
+  std::for_each(numbers.begin(), numbers.end(),
+                [](int n) { std::cout << n << " "; });
+
+  std::cout << "\n";
+
+  // Using std::for_each with a lambda expression
+  std::for_each(numbers.begin(), numbers.end(),
+                [](int n) { std::cout << n * 2 << " "; });
+  std::cout << "\n";
+}
+TEST(ListTest, for_each) {
+  s21::list<int> numbers{1, 2, 3, 4, 5};
+
+  std::for_each(numbers.begin(), numbers.end(),
+                [](int n) { std::cout << n << " "; });
+
+  std::cout << "\n";
+
+  // Using std::for_each with a lambda expression
+  std::for_each(numbers.begin(), numbers.end(),
+                [](int n) { std::cout << n * 2 << " "; });
+  std::cout << "\n";
 }
 #if 0
 #endif
