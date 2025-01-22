@@ -293,18 +293,16 @@ TEST(ListTest, for_each) {
                 [](int n) { std::cout << n * 2 << " "; });
   std::cout << "\n";
 }
-TEST(ListTest, for_each) {
+TEST(ListTest, for_each_n) {
   s21::list<int> numbers{1, 2, 3, 4, 5};
 
-  std::for_each(numbers.begin(), numbers.end(),
-                [](int n) { std::cout << n << " "; });
+  std::for_each_n(numbers.begin(), 3, [](int& n) { n *= 2; });
 
-  std::cout << "\n";
-
-  // Using std::for_each with a lambda expression
-  std::for_each(numbers.begin(), numbers.end(),
-                [](int n) { std::cout << n * 2 << " "; });
-  std::cout << "\n";
+  for (const auto& num : numbers) {
+    std::cout << num << " ";
+  }
+  std::cout << std::endl;
 }
+
 #if 0
 #endif
