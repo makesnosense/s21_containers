@@ -341,5 +341,20 @@ TEST(ListTest, find_if) {
     std::cout << "No even numbers found." << std::endl;
   }
 }
+TEST(ListTest, find_if_not) {
+  s21::list<int> numbers{1, 3, 5, 7, 8, 10};
+
+  // Use std::find_if_not to find the first even number
+  auto it = std::find_if_not(numbers.begin(), numbers.end(),
+                             [](int n) { return n % 2 != 0; });
+
+  if (it != numbers.end()) {
+    std::cout << "The first even number is " << *it
+              << std::endl;  // Output: The first even number is 6
+  } else {
+    std::cout << "No even numbers found." << std::endl;
+  }
+}
+
 #if 0
 #endif
