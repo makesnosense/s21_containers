@@ -368,6 +368,22 @@ TEST(ListTest, find_end) {
     std::cout << "Sequence not found." << std::endl;
   }
 }
+TEST(ListTest, find_first_of) {
+  std::list<char> v1{'f', 'c', 'e', 'd', 'b', 'a'};
+  std::list<char> v2{'D', 'F'};
+
+  // Find the first occurrence of any character from v2 in v1
+  auto result = std::find_first_of(
+      v1.begin(), v1.end(), v2.begin(), v2.end(),
+      [](char a, char b) { return tolower(a) == tolower(b); });
+
+  if (result != v1.end()) {
+    std::cout << "Found first match at location: "
+              << std::distance(v1.begin(), result) << std::endl;  ////not -
+  } else {
+    std::cout << "No matches found." << std::endl;
+  }
+}
 
 #if 0
 #endif
