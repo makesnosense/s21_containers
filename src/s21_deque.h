@@ -102,7 +102,7 @@ class deque {
   }
 
   ~deque() {
-    for (size_type i{front_chunk_index_}; i < map_size_; ++i) {
+    for (size_type i{0}; i < map_size_; ++i) {
       delete map_[i];
     }
 
