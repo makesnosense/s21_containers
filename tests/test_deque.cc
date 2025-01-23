@@ -206,6 +206,31 @@ TEST(DequeNonTyped, ArithmeticOperators) {
   EXPECT_EQ(*iter, 2);
 }
 
+TEST(DequeNonTyped, Const_iterarar) {
+  s21::deque<int> arr{1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7};
+  s21::deque<int>::iterator iter = arr.begin();
+
+  s21::deque<int>::iterator const_iter{iter};
+  s21::deque<int>::iterator iter_2{const_iter};
+
+  // std::deque<int> arr_std{1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7};
+  // std::deque<int>::iterator iter_std = arr_std.begin();
+
+  // const std::deque<int>::iterator const_iter_std = iter_std;
+  // s21::deque<int>::iterator iter_2_std{iter_std};
+
+  std::cout << "\n\n\n\n" << iter_2 << "\n\n\n\n";
+
+  iter_2 += 2;
+
+  std::cout << "\n\n\n\n" << iter_2 << "\n\n\n\n";
+
+  iter += 2;
+  EXPECT_EQ(*(iter - 1), 2);
+  iter -= 1;
+  EXPECT_EQ(*iter, 2);
+}
+
 TEST(DequeNonTyped, PostDecrement) {
   s21::deque<int> arr{1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7};
   s21::deque<int>::iterator iter = arr.begin();
