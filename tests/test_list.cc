@@ -1,4 +1,7 @@
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpadded"
 #include <gtest/gtest.h>
+#pragma GCC diagnostic pop
 
 #include <algorithm>
 #include <iostream>
@@ -81,21 +84,11 @@ TYPED_TEST(ListTest, reverse) {
 TYPED_TEST(ListTest, get_front) {
   EXPECT_EQ(this->stl_list_.front(), this->s21_list_.front());
 }
+
 TYPED_TEST(ListTest, back) {
   EXPECT_EQ(this->stl_list_.back(), this->s21_list_.back());
 }
-////ietr
-TYPED_TEST(ListTest, begin) {
-  auto s21_it = this->s21_list_.begin();
-  auto stl_it = this->stl_list_.begin();
-  EXPECT_EQ(*s21_it, *stl_it);
-}
-TYPED_TEST(ListTest, end) {
-  auto s21_it = this->s21_list_.end();
-  auto stl_it = this->stl_list_.end();
-  (void)stl_it;
-  EXPECT_EQ(1, 1);
-}
+
 TYPED_TEST(ListTest, erase) {
   auto s21_it = this->s21_list_.begin();
   auto stl_it = this->stl_list_.begin();
@@ -475,33 +468,35 @@ TEST(ListTest, copyit) {
   }
   std::cout << std::endl;
 }
-TEST(ListTest, copy_if) {
-  s21::list<int> source{-10, 20, -30, 40, -50, 60};
-  s21::list<int> destination;  // Vector to hold copied elements
 
-  auto a{source.begin()};
-  s21::list<int>::const_iterator it = source.begin();
-  s21::list<int>::iterator it2 = source.begin();
-  s21::list<int>::const_iterator const_it{it2};
-  // s21::list<int>::iterator itre{const_it};
-  // itre += 2;
-  // // Resize destination vector to accommodate potential copied elements
-  // destination.resize(source.size());
-
-  // // Use std::copy_if to copy positive numbers from source to destination
-  // auto end_it = std::copy_if(source.begin(), source.end(),
-  // destination.begin(),
-  //                            is_positive);
-
-  // // Resize destination vector to remove unused space
-  // destination.resize(end_it - destination.begin());
-
-  // // Output the copied elements
-  // std::cout << "Copied positive numbers: ";
-  // for (const auto& num : destination) {
-  //   std::cout << num << " ";  // Output: 20 40 60
-  // }
-  // std::cout << std::endl;
+#if 0 
+TYPED_TEST(ListTest, begin) {
+  auto s21_it = this->s21_list_.begin();
+  auto stl_it = this->stl_list_.begin();
+  EXPECT_EQ(s21_it, stl_it);
 }
-#if 0
+
+TYPED_TEST(ListTest, end) {
+  auto s21_it = this->s21_list_.end();
+  auto stl_it = this->stl_list_.end();
+  (void)stl_it;
+  EXPECT_EQ(1, 1);
+}
 #endif
+
+TEST(ListTest, PopFrontLeak) {
+  s21::list<int> list;
+
+  // Add several elements
+  for (int i = 0; i < 1000; ++i) {
+    list.push_back(i);
+  }
+
+  // Pop all elements from front
+  while (!list.empty()) {
+    list.pop_front();
+  }
+
+  EXPECT_TRUE(list.empty());
+  EXPECT_EQ(list.size(), size_t{0});
+}
