@@ -9,12 +9,13 @@
 #include "s21_base.h"
 namespace s21 {
 
-template <typename T>
+template <typename T, bool is_const>
 class ListIterator;
 template <typename T>
 class list {
  public:
-  friend class ListIterator<T>;
+  friend class ListIterator<T, false>;
+  friend class ListIterator<T, true>;
   using traits = container_traits<T>;
   using value_type = typename traits::value_type;
   using reference = typename traits::reference;
@@ -43,7 +44,7 @@ class list {
 #pragma GCC diagnostic pop
 #endif
 
-  std::pair<Node*, Node*> split(Node* head) {
+  std::pair<Node*, Node*> Split(Node* head) {
     Node* slow = head;
     Node* fast = head->next_;
 
@@ -52,30 +53,30 @@ class list {
       fast = fast->next_->next_;
     }
 
-    Node* secondHalf = slow->next_;
+    Node* second_half = slow->next_;
     slow->next_ = nullptr;
-    if (secondHalf != nullptr) {
-      secondHalf->pre_ = nullptr;
+    if (second_half != nullptr) {
+      second_half->pre_ = nullptr;
     }
 
-    return {head, secondHalf};
+    return {head, second_half};
   }
 
-  Node* merge(Node* first, Node* second) {
+  Node* MergeForSortr(Node* first, Node* second) {
     if (first == nullptr) return second;
     if (second == nullptr) return first;
 
-    Node* mergedHead = nullptr;
+    Node* merged_head = nullptr;
 
     if (first->data_ <= second->data_) {
-      mergedHead = first;
+      merged_head = first;
       first = first->next_;
     } else {
-      mergedHead = second;
+      merged_head = second;
       second = second->next_;
     }
 
-    Node* current = mergedHead;
+    Node* current = merged_head;
 
     while (first != nullptr && second != nullptr) {
       if (first->data_ <= second->data_) {
@@ -98,26 +99,26 @@ class list {
       second->pre_ = current;
     }
 
-    return mergedHead;
+    return merged_head;
   }
 
-  Node* mergeSort(Node* head) {
+  Node* MergeSort(Node* head) {
     if (head == nullptr || head->next_ == nullptr) {
       return head;
     }
 
-    auto [firstHalf, secondHalf] = split(head);
+    auto [first_half, second_half] = Split(head);
 
-    firstHalf = mergeSort(firstHalf);
-    secondHalf = mergeSort(secondHalf);
+    first_half = MergeSort(first_half);
+    second_half = MergeSort(second_half);
 
-    return merge(firstHalf, secondHalf);
+    return MergeForSortr(first_half, second_half);
   }
 
  public:
-  using iterator = ListIterator<T>;
+  using iterator = ListIterator<T, false>;
   // using reverse_iterator = ListIterator<T>;
-  using const_iterator = const ListIterator<T>;
+  using const_iterator = const ListIterator<T, true>;
   using size_type = typename traits::size_type;
 
   list() : head_{nullptr}, tail_{nullptr}, size_{0} {}
@@ -153,7 +154,7 @@ class list {
       size_++;
     }
   }
-  list(const s21::list<T>& other) : head_(nullptr), tail_(nullptr), size_(0) {
+  list(const list& other) : head_(nullptr), tail_(nullptr), size_(0) {
     if (other.head_ != nullptr) {
       Node* current = other.head_;
       while (current != nullptr) {
@@ -167,55 +168,72 @@ class list {
     l.tail_ = nullptr;
     l.size_ = 0;
   }
-  iterator insert(iterator pos, const_reference value) {
-    Node* newNode = new Node(value);
-
-    if (pos.getCurrent() == nullptr) {
-      if (tail_ != nullptr) {
-        tail_->next_ = newNode;
-        newNode->pre_ = tail_;
-        tail_ = newNode;
+  explicit list(size_type n, const value_type& value)
+      : head_{nullptr}, tail_{nullptr}, size_{0} {
+    for (size_type i = 0; i < n; ++i) {
+      Node* new_node =
+          new Node(value);  // Create a new node initialized with 'value'
+      if (!head_) {
+        head_ = new_node;  // If the list is empty, set head and tail to the new
+                           // node
+        tail_ = new_node;
       } else {
-        head_ = newNode;
-        tail_ = newNode;
+        tail_->next_ = new_node;  // Link the new node at the end of the list
+        new_node->pre_ = tail_;
+        tail_ = new_node;  // Update the tail pointer
+      }
+      size_++;  // Increment the size of the list
+    }
+  }
+  iterator insert(iterator pos, const_reference value) {
+    Node* new_node = new Node(value);
+
+    if (pos.GetCurrent() == nullptr) {
+      if (tail_ != nullptr) {
+        tail_->next_ = new_node;
+        new_node->pre_ = tail_;
+        tail_ = new_node;
+      } else {
+        head_ = new_node;
+        tail_ = new_node;
       }
     } else {
-      Node* currentNode = pos.getCurrent();
+      Node* current_node = pos.GetCurrent();
 
-      if (currentNode->pre_ != nullptr) {
-        currentNode->pre_->next_ = newNode;
-        newNode->pre_ = currentNode->pre_;
+      if (current_node->pre_ != nullptr) {
+        current_node->pre_->next_ = new_node;
+        new_node->pre_ = current_node->pre_;
       } else {
-        head_ = newNode;
+        head_ = new_node;
       }
 
-      newNode->next_ = currentNode;
-      currentNode->pre_ = newNode;
+      new_node->next_ = current_node;
+      current_node->pre_ = new_node;
     }
 
     size_++;
-    return iterator(newNode);
+    return iterator(new_node);
   }
 
   void splice(const_iterator pos, list& other) {
     if (other.empty()) return;
 
-    Node* posNode = pos.getCurrent();
-    Node* otherHead = other.head_;
-    Node* otherTail = other.tail_;
+    Node* pos_node = const_cast<Node*>(pos.GetCurrent());
+    Node* other_head = other.head_;
+    Node* other_tail = other.tail_;
 
-    if (posNode == head_) {
-      head_ = otherHead;
+    if (pos_node == head_) {
+      head_ = other_head;
     } else {
-      posNode->pre_->next_ = otherHead;
-      otherHead->pre_ = posNode->pre_;
+      pos_node->pre_->next_ = other_head;
+      other_head->pre_ = pos_node->pre_;
     }
 
-    if (posNode != nullptr) {
-      otherTail->next_ = posNode;
-      posNode->pre_ = otherTail;
+    if (pos_node != nullptr) {
+      other_tail->next_ = pos_node;
+      pos_node->pre_ = other_tail;
     } else {
-      tail_ = otherTail;
+      tail_ = other_tail;
     }
 
     size_ += other.size_;
@@ -243,43 +261,43 @@ class list {
 
     Node* current1 = head_;
     Node* current2 = other.head_;
-    Node* mergedHead = nullptr;
-    Node* mergedTail = nullptr;
+    Node* merged_head = nullptr;
+    Node* merged_tail = nullptr;
 
     if (current1->data_ <= current2->data_) {
-      mergedHead = current1;
+      merged_head = current1;
       current1 = current1->next_;
     } else {
-      mergedHead = current2;
+      merged_head = current2;
       current2 = current2->next_;
     }
 
-    mergedTail = mergedHead;
+    merged_tail = merged_head;
 
     while (current1 != nullptr && current2 != nullptr) {
       if (current1->data_ <= current2->data_) {
-        mergedTail->next_ = current1;
-        current1->pre_ = mergedTail;
-        mergedTail = current1;
+        merged_tail->next_ = current1;
+        current1->pre_ = merged_tail;
+        merged_tail = current1;
         current1 = current1->next_;
       } else {
-        mergedTail->next_ = current2;
-        current2->pre_ = mergedTail;
-        mergedTail = current2;
+        merged_tail->next_ = current2;
+        current2->pre_ = merged_tail;
+        merged_tail = current2;
         current2 = current2->next_;
       }
     }
 
     if (current1 != nullptr) {
-      mergedTail->next_ = current1;
-      current1->pre_ = mergedTail;
+      merged_tail->next_ = current1;
+      current1->pre_ = merged_tail;
     } else if (current2 != nullptr) {
-      mergedTail->next_ = current2;
-      current2->pre_ = mergedTail;
+      merged_tail->next_ = current2;
+      current2->pre_ = merged_tail;
     }
 
-    head_ = mergedHead;
-    tail_ = mergedTail;
+    head_ = merged_head;
+    tail_ = merged_tail;
     size_ += other.size_;
 
     other.head_ = nullptr;
@@ -300,19 +318,19 @@ class list {
     Node* current = head_;
 
     while (current != nullptr) {
-      Node* nextNode = current->next_;
+      Node* next_node = current->next_;
 
-      while (nextNode != nullptr && nextNode->data_ == current->data_) {
-        Node* duplicateNode = nextNode;
-        nextNode = nextNode->next_;
+      while (next_node != nullptr && next_node->data_ == current->data_) {
+        Node* duplicate_node = next_node;
+        next_node = next_node->next_;
         size_--;
 
-        delete duplicateNode;
+        delete duplicate_node;
       }
 
-      current->next_ = nextNode;
-      if (nextNode != nullptr) {
-        nextNode->pre_ = current;
+      current->next_ = next_node;
+      if (next_node != nullptr) {
+        next_node->pre_ = current;
       } else {
         tail_ = current;
       }
@@ -325,31 +343,31 @@ class list {
       return;
     }
 
-    head_ = mergeSort(head_);
+    head_ = MergeSort(head_);
 
     tail_ = head_;
     while (tail_->next_ != nullptr) {
       tail_ = tail_->next_;
     }
   }
-  void erase(ListIterator<T> pos) {
-    if (pos.getCurrent() == nullptr) return;
+  void erase(iterator pos) {
+    if (pos.GetCurrent() == nullptr) return;
 
-    Node* nodeToDelete = pos.getCurrent();
+    Node* node_to_delete = pos.GetCurrent();
 
-    if (nodeToDelete->pre_) {
-      nodeToDelete->pre_->next_ = nodeToDelete->next_;
+    if (node_to_delete->pre_) {
+      node_to_delete->pre_->next_ = node_to_delete->next_;
     } else {
-      head_ = nodeToDelete->next_;
+      head_ = node_to_delete->next_;
     }
 
-    if (nodeToDelete->next_) {
-      nodeToDelete->next_->pre_ = nodeToDelete->pre_;
+    if (node_to_delete->next_) {
+      node_to_delete->next_->pre_ = node_to_delete->pre_;
     } else {
-      tail_ = nodeToDelete->pre_;
+      tail_ = node_to_delete->pre_;
     }
 
-    delete nodeToDelete;
+    delete node_to_delete;
     size_--;
   }
 
@@ -438,7 +456,7 @@ class list {
     return (std::numeric_limits<size_type>::max() / sizeof(value_type));
   }
 
-  reference get_element(size_type index) {
+  reference GetElement(size_type index) {
     if (index >= size_) {
       throw std::out_of_range("Index out of range");
     }
@@ -538,9 +556,9 @@ class list {
   void clear() {
     Node* current = head_;
     while (current != nullptr) {
-      Node* nextNode = current->next_;
+      Node* next_node = current->next_;
       delete current;
-      current = nextNode;
+      current = next_node;
     }
     head_ = nullptr;
     tail_ = nullptr;
@@ -554,22 +572,29 @@ class list {
   Node* tail_;
   size_type size_;
 };
-template <typename T>
+template <typename T, bool is_const>
 class ListIterator {
  public:
   using iterator_category = std::forward_iterator_tag;
   using difference_type = std::ptrdiff_t;
-  using reference = T&;
+  using reference = std::conditional_t<is_const, const T&, T&>;
   using value_type = T;
-  using pointer = T*;
-  using Node = typename list<T>::Node;
-
-  ListIterator(Node* node) : current_(node) {}
+  using pointer = std::conditional_t<is_const, const T*, T*>;
+  using node = typename list<T>::Node;
+  using node_pointer = std::conditional_t<is_const, const node*, node*>;
+  template <typename U, bool other_is_const>
+  friend class ListIterator;
+  ListIterator() = default;
+  ListIterator(node_pointer node) : current_(node) {}
+  template <bool other_is_const,
+            typename = std::enable_if_t<is_const || !other_is_const>>
+  ListIterator(const ListIterator<T, other_is_const>& other)
+      : current_(other.current_) {}
 
   reference operator*() { return current_->data_; }
 
   pointer operator->() { return &current_->data_; }
-  Node* getCurrent() const { return current_; }
+  node_pointer GetCurrent() const { return current_; }
 
   ListIterator& operator++() {
     current_ = current_->next_;
@@ -620,6 +645,24 @@ class ListIterator {
     }
     return temp;
   }
+  difference_type operator-(const ListIterator& other) const {
+    // Check if both iterators are equal
+    if (current_ == other.current_) {
+      return 0;  // Same position, distance is zero
+    }
+
+    difference_type distance = 0;
+    ListIterator temp = other;
+
+    // Move temp until it reaches the current position
+    while (temp != *this) {
+      ++distance;
+      ++temp;
+    }
+
+    return distance;  // Return the number of steps between the two iterators
+  }
+
   ListIterator& operator-=(int n) { return *this += -n; }
   reference operator[](int n) {
     ListIterator temp = *this;
@@ -639,7 +682,7 @@ class ListIterator {
   ~ListIterator() = default;
 
  private:
-  Node* current_;
+  node_pointer current_;
 };
 
 }  // namespace s21
