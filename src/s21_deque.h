@@ -271,6 +271,14 @@ class deque {
     return iterator(this, back_chunk_index_, back_vacant_index_);
   }
 
+  const_iterator begin() const {
+    return const_iterator(this, front_chunk_index_, front_element_index_);
+  }
+
+  const_iterator end() const {
+    return const_iterator(this, back_chunk_index_, back_vacant_index_);
+  }
+
   const_reference front() const {
     return map_[front_chunk_index_]->data_[front_element_index_];
   }
@@ -353,36 +361,41 @@ class DequeIterator {
   using reference = std::conditional_t<IsConst, const T&, T&>;
   using difference_type = std::ptrdiff_t;
 
+  template <typename U, bool OtherIsConst>
+  friend class DequeIterator;
   /////////
-  using container_pointer =
-      std::conditional_t<IsConst, const deque<T>*, deque<T>*>;
+  using container_type = std::conditional_t<IsConst, const deque<T>, deque<T>>;
+  using container_pointer = container_type*;
   /////////
 
   DequeIterator() = default;
-  DequeIterator(deque<T>* container, size_type current_chunk,
+
+  DequeIterator(container_pointer container, size_type current_chunk,
                 size_type current_element)
       : container_{container},
         current_chunk_(current_chunk),
         current_element_(current_element) {}
 
-  operator pointer() const {
-    return &(container_->map_[current_chunk_]->data_[current_element_]);
-  }
-
   template <bool OtherIsConst,
             typename = std::enable_if_t<(IsConst || !OtherIsConst)>>
-  explicit DequeIterator(const DequeIterator<T, OtherIsConst>& other)
-      : container_(other.container_),
+  DequeIterator(const DequeIterator<T, OtherIsConst>& other)
+      : container_{other.container_},
         current_chunk_(other.current_chunk_),
-        current_element_(other.current_element_) {
-    static_assert(IsConst >= OtherIsConst,
-                  "Cannot convert const_iterator to iterator!");
+        current_element_(other.current_element_) {}
+
+  operator pointer() const {
+    return &(container_->map_[current_chunk_]->data_[current_element_]);
   }
 
   reference operator*() {
     return container_->map_[current_chunk_]->data_[current_element_];
   }
-  reference operator[](difference_type n) {
+
+  reference operator*() const {
+    return container_->map_[current_chunk_]->data_[current_element_];
+  }
+
+  reference operator[](difference_type n) const {
     size_type chunk_offset{(n + current_element_) / container_->kChunkSize};
     size_type element_index{(n + current_element_) % container_->kChunkSize};
     return container_->map_[current_chunk_ + chunk_offset]
@@ -498,6 +511,13 @@ class DequeIterator {
   size_type current_chunk_{};
   size_type current_element_{};
 };
+
+template <typename T, bool IsConst>
+DequeIterator<T, IsConst> operator+(
+    typename DequeIterator<T, IsConst>::difference_type n,
+    const DequeIterator<T, IsConst>& it) {
+  return it + n;
+}
 
 template <typename T>
 std::ostream& operator<<(std::ostream& out, deque<T>& q) {
