@@ -5,7 +5,7 @@
 
 namespace s21 {
 
-template <typename T>
+template <typename T, bool IsConst>
 class DequeIterator;
 
 template <typename T>
@@ -19,12 +19,11 @@ class deque {
   using const_reference = typename traits::const_reference;
   using size_type = typename traits::size_type;
 
-  using iterator = DequeIterator<T>;
-  using const_iterator = const DequeIterator<T>;
-  using reverse_iterator = DequeIterator<T>;
-  using const_reverse_iterator = const DequeIterator<T>;
+  using iterator = DequeIterator<T, false>;
+  using const_iterator = DequeIterator<T, true>;
 
-  friend class DequeIterator<T>;
+  friend class DequeIterator<T, true>;
+  friend class DequeIterator<T, false>;
 
  private:
   static constexpr size_type kPageSize{4096};
@@ -344,15 +343,20 @@ class deque {
   }
 };
 
-template <typename T>
+template <typename T, bool IsConst>
 class DequeIterator {
  public:
   using iterator_category = std::random_access_iterator_tag;
   using size_type = typename deque<T>::size_type;
   using value_type = T;
-  using pointer = T*;
-  using reference = T&;
+  using pointer = std::conditional_t<IsConst, const T*, T*>;
+  using reference = std::conditional_t<IsConst, const T&, T&>;
   using difference_type = std::ptrdiff_t;
+
+  /////////
+  using container_pointer =
+      std::conditional_t<IsConst, const deque<T>*, deque<T>*>;
+  /////////
 
   DequeIterator() = default;
   DequeIterator(deque<T>* container, size_type current_chunk,
@@ -363,6 +367,16 @@ class DequeIterator {
 
   operator pointer() const {
     return &(container_->map_[current_chunk_]->data_[current_element_]);
+  }
+
+  template <bool OtherIsConst,
+            typename = std::enable_if_t<(IsConst || !OtherIsConst)>>
+  explicit DequeIterator(const DequeIterator<T, OtherIsConst>& other)
+      : container_(other.container_),
+        current_chunk_(other.current_chunk_),
+        current_element_(other.current_element_) {
+    static_assert(IsConst >= OtherIsConst,
+                  "Cannot convert const_iterator to iterator!");
   }
 
   reference operator*() {
@@ -480,7 +494,7 @@ class DequeIterator {
   }
 
  private:
-  deque<T>* container_{nullptr};
+  container_pointer container_{nullptr};
   size_type current_chunk_{};
   size_type current_element_{};
 };
