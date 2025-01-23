@@ -7,7 +7,7 @@
 
 namespace s21 {
 
-template <typename T>
+template <typename T, bool is_const>
 class VectorIterator;
 
 template <typename T>
@@ -16,10 +16,11 @@ class vector {
   using traits = container_traits<T>;
   using value_type = typename traits::value_type;
   using reference = typename traits::reference;
-  using const_reference = typename traits::reference;
-  using iterator = VectorIterator<T>;
+  using const_reference = typename traits::const_reference;
+  using iterator = VectorIterator<T, false>;
+  using const_iterator = const VectorIterator<T, true>;
+
   using reverse_iterator = std::reverse_iterator<iterator>;
-  using const_iterator = const VectorIterator<T>;
   using size_type = typename traits::size_type;
 
   explicit vector(size_type n = kMinN)
@@ -72,7 +73,7 @@ class vector {
   }
   ~vector() { delete[] data_; }
 
-  reference at(size_type position) {
+  reference at(size_type position) const {
     if (position >= size_ || position < 0) {
       throw std::out_of_range("Vector index out of range");
     }
@@ -85,20 +86,27 @@ class vector {
 
   iterator end() { return iterator(data_ + size_); }
 
+  const_iterator begin() const { return const_iterator(data_); }
+
+  const_iterator end() const { return const_iterator(data_ + size_); }
+
+  const_iterator cbegin() const { return const_iterator(data_); }
+  const_iterator cend() const { return const_iterator(data_ + size_); }
+
   reverse_iterator rbegin() {
     return reverse_iterator(iterator(data_ + size_));
   }
   reverse_iterator rend() { return reverse_iterator(iterator(data_)); }
 
-  reference front() { return data_[0]; }
+  reference front() const { return data_[0]; }
 
-  reference back() { return data_[size_ - 1]; }
+  reference back() const { return data_[size_ - 1]; }
 
   bool empty() const noexcept { return size_ == 0; }
 
   size_type size() const { return size_; }
 
-  value_type* data() { return data_; }
+  value_type* data() const { return data_; }
 
   size_type max_size() const noexcept {
     return std::numeric_limits<size_type>::max() / sizeof(value_type);
@@ -185,7 +193,7 @@ class vector {
   }
 
   iterator insert(const_iterator position, const value_type& value) {
-    size_type index = static_cast<size_type>(std::distance(begin(), position));
+    size_type index = static_cast<size_type>(std::distance(cbegin(), position));
     resize(size() + 1);
 
     for (size_type i = size() - 1; i > index; --i) {
@@ -216,7 +224,7 @@ class vector {
 
   void insert(const_iterator position, size_type count,
               const value_type& value) {
-    size_type index = static_cast<size_type>(std::distance(begin(), position));
+    size_type index = static_cast<size_type>(std::distance(cbegin(), position));
 
     resize(size() + count);
 
@@ -255,8 +263,8 @@ class vector {
   iterator erase(const_iterator first, const_iterator last) {
     if (size_ == 0) return end();
     size_type start_index =
-        static_cast<size_type>(std::distance(begin(), first));
-    size_type end_index = static_cast<size_type>(std::distance(begin(), last));
+        static_cast<size_type>(std::distance(cbegin(), first));
+    size_type end_index = static_cast<size_type>(std::distance(cbegin(), last));
     size_type count = end_index - start_index;
 
     if (count == 0) {
@@ -344,17 +352,27 @@ class vector {
   static constexpr size_type kMinN{0};
 };
 
-template <typename T>
+template <typename T, bool is_const>
 class VectorIterator {
  public:
   using iterator_category = std::random_access_iterator_tag;
   using value_type = T;
-  using pointer = T*;
-  using reference = T&;
+  using pointer = std::conditional_t<is_const, const T*, T*>;
+  using reference = std::conditional_t<is_const, const T&, T&>;
+
   using difference_type = std::ptrdiff_t;
+
+  template <typename U, bool other_is_const>
+  friend class VectorIterator;
 
   VectorIterator(pointer ptr) : ptr_{ptr} {}
   VectorIterator() : ptr_(nullptr) {}
+
+  template <bool other_is_const,
+            typename = std::enable_if_t<(is_const || !other_is_const)>>
+  VectorIterator(const VectorIterator<T, other_is_const>& other)
+      : ptr_{other.ptr_} {}
+
   operator pointer() const { return ptr_; }
   reference operator*() { return *ptr_; }
   reference operator[](difference_type n) const { return ptr_[n]; }
