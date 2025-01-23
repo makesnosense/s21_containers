@@ -238,63 +238,58 @@ TEST(ListTest, any_of) {
 }
 TEST(ListTest, none_of) {
   s21::list<int> numbers{2, 4, 6, 8, 11};
+  std::list<int> numbers1{2, 4, 6, 8, 11};
 
   bool result =
       std::none_of(numbers.begin(), numbers.end(), [](int n) { return n < 0; });
-
-  if (result) {
-    std::cout << "All numbers are non-negative." << "\n";
-  } else {
-    std::cout << "There are negative numbers in the vector." << "\n";
-  }
+  bool result1 = std::none_of(numbers1.begin(), numbers1.end(),
+                              [](int n) { return n < 0; });
+  EXPECT_EQ(result, result1);
 }
 TEST(ListTest, for_each) {
   s21::list<int> numbers{1, 2, 3, 4, 5};
+  std::list<int> numbers1{1, 2, 3, 4, 5};
 
-  std::for_each(numbers.begin(), numbers.end(),
-                [](int n) { std::cout << n << " "; });
+  std::for_each(numbers.begin(), numbers.end(), [](int& n) { ++n; });
 
-  std::cout << "\n";
-
-  // Using std::for_each with a lambda expression
-  std::for_each(numbers.begin(), numbers.end(),
-                [](int n) { std::cout << n * 2 << " "; });
-  std::cout << "\n";
+  std::for_each(numbers1.begin(), numbers1.end(), [](int& n) { ++n; });
+  EXPECT_TRUE(numbers == numbers1);
 }
 TEST(ListTest, for_each_n) {
   s21::list<int> numbers{1, 2, 3, 4, 5};
+  std::list<int> numbers1{1, 2, 3, 4, 5};
 
   std::for_each_n(numbers.begin(), 3, [](int& n) { n *= 2; });
+  std::for_each_n(numbers1.begin(), 3, [](int& n) { n *= 2; });
 
-  for (const auto& num : numbers) {
-    std::cout << num << " ";
-  }
-  std::cout << std::endl;
+  EXPECT_TRUE(numbers == numbers1);
 }
 TEST(ListTest, count) {
   s21::list<int> numbers{1, 2, 3, 4, 5};
+  std::list<int> numbers1{1, 2, 3, 4, 5};
 
   auto count_of_twos = std::count(numbers.begin(), numbers.end(), 2);
+  auto count_of_twos1 = std::count(numbers1.begin(), numbers1.end(), 2);
 
-  std::cout << "Number 2 appears " << count_of_twos << " times." << std::endl;
+  EXPECT_EQ(count_of_twos, count_of_twos1);
 }
 TEST(ListTest, count_if) {
   s21::list<int> numbers{1, 2, 3, 4, 5};
-
+  std::list<int> numbers1{1, 2, 3, 4, 5};
   auto count_of_evens = std::count_if(numbers.begin(), numbers.end(),
                                       [](int n) { return n % 2 == 0; });
+  auto count_of_evens1 = std::count_if(numbers1.begin(), numbers1.end(),
+                                       [](int n) { return n % 2 == 0; });
 
-  std::cout << "There are " << count_of_evens << " even numbers." << std::endl;
+  EXPECT_EQ(count_of_evens, count_of_evens1);
 }
 TEST(ListTest, find) {
   s21::list<int> v{1, 2, 3, 4, 5};
+  std::list<int> v1{1, 2, 3, 4, 5};
 
   auto it = std::find(v.begin(), v.end(), 3);
-  if (it != v.end()) {
-    std::cout << "Found: " << *it << std::endl;  // Output: Found: 3
-  } else {
-    std::cout << "Not found" << std::endl;
-  }
+  auto it1 = std::find(v1.begin(), v1.end(), 3);
+  EXPECT_EQ(*it, *it1);
 }
 TEST(ListTest, find_if) {
   s21::list<int> numbers{1, 3, 5, 7, 8, 10};
