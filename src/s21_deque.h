@@ -5,7 +5,7 @@
 
 namespace s21 {
 
-template <typename T, bool IsConst>
+template <typename T, bool is_const>
 class DequeIterator;
 
 template <typename T>
@@ -351,20 +351,20 @@ class deque {
   }
 };
 
-template <typename T, bool IsConst>
+template <typename T, bool is_const>
 class DequeIterator {
  public:
   using iterator_category = std::random_access_iterator_tag;
   using size_type = typename deque<T>::size_type;
   using value_type = T;
-  using pointer = std::conditional_t<IsConst, const T*, T*>;
-  using reference = std::conditional_t<IsConst, const T&, T&>;
+  using pointer = std::conditional_t<is_const, const T*, T*>;
+  using reference = std::conditional_t<is_const, const T&, T&>;
   using difference_type = std::ptrdiff_t;
 
-  template <typename U, bool OtherIsConst>
+  template <typename U, bool other_is_const>
   friend class DequeIterator;
   /////////
-  using container_type = std::conditional_t<IsConst, const deque<T>, deque<T>>;
+  using container_type = std::conditional_t<is_const, const deque<T>, deque<T>>;
   using container_pointer = container_type*;
   /////////
 
@@ -376,9 +376,9 @@ class DequeIterator {
         current_chunk_(current_chunk),
         current_element_(current_element) {}
 
-  template <bool OtherIsConst,
-            typename = std::enable_if_t<(IsConst || !OtherIsConst)>>
-  DequeIterator(const DequeIterator<T, OtherIsConst>& other)
+  template <bool other_is_const,
+            typename = std::enable_if_t<(is_const || !other_is_const)>>
+  DequeIterator(const DequeIterator<T, other_is_const>& other)
       : container_{other.container_},
         current_chunk_(other.current_chunk_),
         current_element_(other.current_element_) {}
@@ -512,10 +512,10 @@ class DequeIterator {
   size_type current_element_{};
 };
 
-template <typename T, bool IsConst>
-DequeIterator<T, IsConst> operator+(
-    typename DequeIterator<T, IsConst>::difference_type n,
-    const DequeIterator<T, IsConst>& it) {
+template <typename T, bool is_const>
+DequeIterator<T, is_const> operator+(
+    typename DequeIterator<T, is_const>::difference_type n,
+    const DequeIterator<T, is_const>& it) {
   return it + n;
 }
 
