@@ -222,13 +222,13 @@ TEST(ListTest, all_of) {
   bool all_even = std::all_of(numberseee.begin(), numberseee.end(),
                               [](int n) { return n % 2 == 0; });
   bool all_even2 = std::all_of(numberseee1.begin(), numberseee1.end(),
-                              [](int n) { return n % 2 == 0; });
+                               [](int n) { return n % 2 == 0; });
 
   EXPECT_EQ(all_even2, all_even);
 }
 TEST(ListTest, any_of) {
   s21::list<int> numbers{2, 4, 6, 8, 11};
-  s21::list<int> numbers1{2, 4, 6, 8, 11};
+  std::list<int> numbers1{2, 4, 6, 8, 11};
 
   bool result = std::any_of(numbers.begin(), numbers.end(),
                             [](int n) { return n % 2 == 0; });
