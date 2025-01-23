@@ -24,17 +24,14 @@ class ListTest : public testing::Test {
         large_s21_list_(1000, 42),
         list_(3),
         alist_(3) {}
-  // stl_list_for_copy(stl_list_){},
-  // s21_list_for_copy(s21_list_) {}
-  /// как сделвть cp
+
   std::list<T> empty_stl_list_;
   s21::list<T> empty_s21_list_;
   std::list<T> stl_list_;
   s21::list<T> s21_list_;
   std::list<T> stl_list_for_swap;
   s21::list<T> s21_list_for_swap;
-  // std::list<T> stl_list_for_copy(stl_list_){};
-  // s21::list<T> s21_list_for_copy(s21_list_){};
+
   std::list<T> large_stl_list_;
   s21::list<T> large_s21_list_;
   std::list<T> list_;
@@ -74,9 +71,8 @@ TYPED_TEST(ListTest, reverse) {
   this->stl_list_.reverse();
   auto it2 = this->stl_list_.begin();
   for (auto it = this->s21_list_.begin(); it != this->s21_list_.end(); ++it) {
-    // std::cout << *it << " " << *it2 << " ";
     EXPECT_EQ(*it, *it2);
-    // std::cout << "\n";
+
     ++it2;
   }
 }
@@ -188,16 +184,6 @@ TYPED_TEST(ListTest, insert) {
   }
 }
 TYPED_TEST(ListTest, copy) {
-  // s21::list<int> vec1{1, 2, 3};
-  // s21::list<int> vec2(vec1);
-
-  //   for (size_t i = 0; i < vec1.size(); i++) {
-  //   std::cout << "\n" << vec1.get_element(i) << "\ngg";
-  // }
-
-  // for (size_t i = 0; i < vec2.size(); i++) {
-  //   std::cout << "\n" << vec2.get_element(i) << "\n";
-  // }
   EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
 }
 TYPED_TEST(ListTest, movedList) {
@@ -208,12 +194,6 @@ TYPED_TEST(ListTest, movedList) {
 
   s21::list<int> movedList(std::move(originalList));
 
-  std::cout << "Contents of movedList: ";
-  for (size_t i = 0; i < movedList.size(); ++i) {
-    std::cout << movedList.GetElement(i) << " ";
-  }
-
-  std::cout << "\nOriginal list size after move: " << originalList.size();
   EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
 }
 TYPED_TEST(ListTest, splice) {
@@ -230,12 +210,6 @@ TYPED_TEST(ListTest, splice) {
   this->s21_list_.splice(it, this->empty_s21_list_);
   this->stl_list_.splice(it2, this->empty_stl_list_);
 
-  // auto stl_it = this->stl_list_.begin();
-  // for (auto i = this->s21_list_.begin(); i != this->s21_list_.end(); ++i) {
-  //   EXPECT_EQ(*i, *stl_it);
-
-  //   ++stl_it;
-  // }
   bool ans = this->s21_list_ == this->stl_list_;
 
   EXPECT_TRUE(ans);
@@ -243,28 +217,24 @@ TYPED_TEST(ListTest, splice) {
 
 TEST(ListTest, all_of) {
   s21::list<int> numberseee{2, 4, 6, 8};
+  std::list<int> numberseee1{2, 4, 6, 8};
 
   bool all_even = std::all_of(numberseee.begin(), numberseee.end(),
                               [](int n) { return n % 2 == 0; });
+  bool all_even2 = std::all_of(numberseee1.begin(), numberseee1.end(),
+                              [](int n) { return n % 2 == 0; });
 
-  if (all_even) {
-    std::cout << "All numbers are even." << "\n";
-  } else {
-    std::cout << "Not all numbers are even." << "\n";
-  }
+  EXPECT_EQ(all_even2, all_even);
 }
 TEST(ListTest, any_of) {
   s21::list<int> numbers{2, 4, 6, 8, 11};
+  s21::list<int> numbers1{2, 4, 6, 8, 11};
 
-  // Check if any number is odd
   bool result = std::any_of(numbers.begin(), numbers.end(),
                             [](int n) { return n % 2 == 0; });
-
-  if (result) {
-    std::cout << "The vector contains at least one odd number." << "\n";
-  } else {
-    std::cout << "All numbers are even." << "\n";
-  }
+  bool result1 = std::any_of(numbers.begin(), numbers.end(),
+                             [](int n) { return n % 2 == 0; });
+  EXPECT_EQ(result, result1);
 }
 TEST(ListTest, none_of) {
   s21::list<int> numbers{2, 4, 6, 8, 11};
