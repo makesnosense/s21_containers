@@ -17,6 +17,8 @@ class ListTest : public testing::Test {
         s21_list_{65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75},
         stl_list_for_swap{1, 2, 3, 4, 5, 6, 7, 8, 9},
         s21_list_for_swap{1, 2, 3, 4, 5, 6, 7, 8, 9},
+        large_stl_list_(1000, 42),
+        large_s21_list_(1000, 42),
         list_(3),
         alist_(3) {}
   // stl_list_for_copy(stl_list_){},
@@ -30,16 +32,19 @@ class ListTest : public testing::Test {
   s21::list<T> s21_list_for_swap;
   // std::list<T> stl_list_for_copy(stl_list_){};
   // s21::list<T> s21_list_for_copy(s21_list_){};
+  std::list<T> large_stl_list_;
+  s21::list<T> large_s21_list_;
   std::list<T> list_;
   s21::list<T> alist_;
 };
 using TestedTypes = ::testing::Types<char, int, double, DummyObject>;
-TYPED_TEST_SUITE(ListTest, TestedTypes);
+TYPED_TEST_SUITE(ListTest, TestedTypes, );
 
 TYPED_TEST(ListTest, DefaultConstructor) {
   EXPECT_EQ(this->empty_stl_list_.size(), this->empty_s21_list_.size());
   EXPECT_TRUE(this->empty_s21_list_.empty());
 }
+
 TYPED_TEST(ListTest, push_back) {
   this->empty_stl_list_.push_back(3);
   this->empty_s21_list_.push_back(3);
@@ -212,7 +217,7 @@ TYPED_TEST(ListTest, movedList) {
 
   std::cout << "Contents of movedList: ";
   for (size_t i = 0; i < movedList.size(); ++i) {
-    std::cout << movedList.get_element(i) << " ";
+    std::cout << movedList.GetElement(i) << " ";
   }
 
   std::cout << "\nOriginal list size after move: " << originalList.size();
@@ -458,8 +463,7 @@ TEST(ListTest, equal) {
 }
 TEST(ListTest, copyit) {
   s21::list<int> source{1, 2, 3, 4, 5};
-  s21::list<int> destination(
-      5);  // Create a destination vector with enough space
+  s21::list<int> destination(5);
 
   // Copy elements from source to destination
   std::copy(source.begin(), source.end(), destination.begin());
@@ -470,6 +474,34 @@ TEST(ListTest, copyit) {
     std::cout << elem << " ";  // Output: 1 2 3 4 5
   }
   std::cout << std::endl;
+}
+TEST(ListTest, copy_if) {
+  s21::list<int> source{-10, 20, -30, 40, -50, 60};
+  s21::list<int> destination;  // Vector to hold copied elements
+
+  auto a{source.begin()};
+  s21::list<int>::const_iterator it = source.begin();
+  s21::list<int>::iterator it2 = source.begin();
+  s21::list<int>::const_iterator const_it{it2};
+  // s21::list<int>::iterator itre{const_it};
+  // itre += 2;
+  // // Resize destination vector to accommodate potential copied elements
+  // destination.resize(source.size());
+
+  // // Use std::copy_if to copy positive numbers from source to destination
+  // auto end_it = std::copy_if(source.begin(), source.end(),
+  // destination.begin(),
+  //                            is_positive);
+
+  // // Resize destination vector to remove unused space
+  // destination.resize(end_it - destination.begin());
+
+  // // Output the copied elements
+  // std::cout << "Copied positive numbers: ";
+  // for (const auto& num : destination) {
+  //   std::cout << num << " ";  // Output: 20 40 60
+  // }
+  // std::cout << std::endl;
 }
 #if 0
 #endif
