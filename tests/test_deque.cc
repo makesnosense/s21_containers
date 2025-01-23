@@ -205,30 +205,83 @@ TEST(DequeNonTyped, ArithmeticOperators) {
   iter -= 1;
   EXPECT_EQ(*iter, 2);
 }
-
-TEST(DequeNonTyped, Const_iterarar) {
+// #if 0
+TEST(DequeNonTyped, ConstIterator) {
   s21::deque<int> arr{1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7};
   s21::deque<int>::iterator iter = arr.begin();
 
-  s21::deque<int>::iterator const_iter{iter};
+  const s21::deque<int>::iterator const_iter{iter};
+
   s21::deque<int>::iterator iter_2{const_iter};
 
-  // std::deque<int> arr_std{1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7};
-  // std::deque<int>::iterator iter_std = arr_std.begin();
+  std::deque<int> arr_std{1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7};
+  std::deque<int>::iterator iter_std = arr_std.begin();
 
-  // const std::deque<int>::iterator const_iter_std = iter_std;
-  // s21::deque<int>::iterator iter_2_std{iter_std};
-
-  std::cout << "\n\n\n\n" << iter_2 << "\n\n\n\n";
+  const std::deque<int>::iterator const_iter_std = iter_std;
+  std::deque<int>::iterator iter_2_std{iter_std};
 
   iter_2 += 2;
-
-  std::cout << "\n\n\n\n" << iter_2 << "\n\n\n\n";
 
   iter += 2;
   EXPECT_EQ(*(iter - 1), 2);
   iter -= 1;
   EXPECT_EQ(*iter, 2);
+  (void)const_iter_std;
+  (void)iter_2_std;
+}
+// #endif
+TEST(DequeNonTyped, Const_iterarar2) {  // Test 1: Const deque operations
+  const s21::deque<int> const_deque{1, 2, 3, 4, 5};
+  s21::deque<int> non_const_deque{1, 2, 3, 4, 5};
+
+  // This should compile (reading from const deque)
+  int first = const_deque[0];
+  int last = const_deque.back();
+
+  // These should NOT compile (uncommenting should give errors):
+  // const_deque[0] = 1;  // Error: cannot modify const deque
+  // const_deque.push_back(6);  // Error: cannot modify const deque
+
+  // Test 2: Iterator constness
+  s21::deque<int>::const_iterator const_it = const_deque.begin();
+  s21::deque<int>::iterator non_const_it = non_const_deque.begin();
+
+  // These should compile:
+  int value1 = *const_it;
+  int value2 = *non_const_it;
+  *non_const_it = 10;
+
+  // This should NOT compile (uncommenting should give error):
+  // *const_it = 20;  // Error: cannot modify through const_iterator
+
+  // Test 3: Iterator conversion
+  // This should compile (non-const to const conversion)
+  s21::deque<int>::const_iterator converted_to_const = non_const_it;
+
+  // This should NOT compile (uncommenting should give error):
+  // s21::deque<int>::iterator converted_from_const = const_it;  // Error:
+  // cannot convert const to non-const
+
+  // Test 4: Range-based for loop with const deque
+  for (const auto& element : const_deque) {
+    // This should compile (reading)
+    int value = element;
+    (void)value;  // Suppress unused variable warning
+
+    // This should NOT compile (uncommenting should give error):
+    // element = 42;  // Error: cannot modify element in const deque
+  }
+
+  // Test 5: Const iterator arithmetic
+  const_it + 1;                           // Should compile
+  const_it - 1;                           // Should compile
+  auto diff = const_it - (const_it + 1);  // Should compile
+  (void)diff;                             // Suppress unused variable warning
+  (void)first;
+  (void)last;
+  (void)value1;
+  (void)value2;
+  (void)converted_to_const;
 }
 
 TEST(DequeNonTyped, PostDecrement) {
