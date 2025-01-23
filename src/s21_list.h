@@ -449,6 +449,7 @@ class list {
       return;
     }
     head_ = head_->next_;
+    delete head_->pre_;
     head_->pre_ = nullptr;
   }
 
