@@ -483,10 +483,10 @@ TEST(VectorTestNonTyped, SwapLargeVectors) {
 }
 
 // iterator
-TEST(VectorTestNonTyped, ComparisonOperators) {
-  int arr[] = {1, 2, 3, 4};
-  s21::vector<int>::iterator iter1(arr);
-  s21::vector<int>::iterator iter2(arr + 2);
+TYPED_TEST(VectorTest, ComparisonOperators) {
+  typename s21::vector<TypeParam>::iterator iter1(this->large_s21_vec_.begin());
+  typename s21::vector<TypeParam>::iterator iter2(this->large_s21_vec_.begin() +
+                                                  2);
 
   EXPECT_TRUE(iter1 < iter2);
   EXPECT_FALSE(iter2 < iter1);
@@ -498,6 +498,23 @@ TEST(VectorTestNonTyped, ComparisonOperators) {
   EXPECT_TRUE(iter2 >= iter2);
   EXPECT_TRUE(iter2 >= iter1);
   EXPECT_FALSE(iter1 >= iter2);
+}
+
+TYPED_TEST(VectorTest, ComparisonOperators2) {
+  typename s21::vector<TypeParam>::iterator iter1(this->large_s21_vec_.end());
+  typename s21::vector<TypeParam>::iterator iter2(this->large_s21_vec_.end() -
+                                                  2);
+
+  EXPECT_TRUE(iter1 > iter2);
+  EXPECT_FALSE(iter2 > iter1);
+  EXPECT_TRUE(iter2 < iter1);
+  EXPECT_FALSE(iter1 < iter2);
+  EXPECT_TRUE(iter1 >= iter1);
+  EXPECT_TRUE(iter1 >= iter2);
+  EXPECT_FALSE(iter2 >= iter1);
+  EXPECT_TRUE(iter2 <= iter2);
+  EXPECT_TRUE(iter2 <= iter1);
+  EXPECT_FALSE(iter1 <= iter2);
 }
 
 TEST(VectorTestNonTyped, ArithmeticOperators) {
