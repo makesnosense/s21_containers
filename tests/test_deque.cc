@@ -206,7 +206,7 @@ TEST(DequeNonTyped, ArithmeticOperators) {
   EXPECT_EQ(*iter, 2);
 }
 // #if 0
-TEST(DequeNonTyped, ConstIterator) {
+TEST(DequeNonTyped, ConstIterator_1) {
   s21::deque<int> arr{1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7};
   s21::deque<int>::iterator iter = arr.begin();
 
@@ -230,58 +230,147 @@ TEST(DequeNonTyped, ConstIterator) {
   (void)iter_2_std;
 }
 // #endif
-TEST(DequeNonTyped, Const_iterarar2) {  // Test 1: Const deque operations
-  const s21::deque<int> const_deque{1, 2, 3, 4, 5};
-  s21::deque<int> non_const_deque{1, 2, 3, 4, 5};
 
-  // This should compile (reading from const deque)
-  int first = const_deque[0];
-  int last = const_deque.back();
+TYPED_TEST(DequeTest, Dereference) {
+  typename s21::deque<TypeParam>::const_iterator iter =
+      this->large_s21_deque_.begin();
 
-  // These should NOT compile (uncommenting should give errors):
-  // const_deque[0] = 1;  // Error: cannot modify const deque
-  // const_deque.push_back(6);  // Error: cannot modify const deque
+  ASSERT_EQ(*iter, 42);
+}
 
-  // Test 2: Iterator constness
-  s21::deque<int>::const_iterator const_it = const_deque.begin();
-  s21::deque<int>::iterator non_const_it = non_const_deque.begin();
+TYPED_TEST(DequeTest, Increment) {
+  typename s21::deque<TypeParam>::const_iterator iter =
+      this->large_s21_deque_.begin();
 
-  // These should compile:
-  int value1 = *const_it;
-  int value2 = *non_const_it;
-  *non_const_it = 10;
+  ++iter;
+  ASSERT_EQ(*iter, 42);
 
-  // This should NOT compile (uncommenting should give error):
-  // *const_it = 20;  // Error: cannot modify through const_iterator
+  iter++;
+  ASSERT_EQ(*iter, 42);
+}
 
-  // Test 3: Iterator conversion
-  // This should compile (non-const to const conversion)
-  s21::deque<int>::const_iterator converted_to_const = non_const_it;
+TYPED_TEST(DequeTest, Decrement) {
+  typename s21::deque<TypeParam>::const_iterator iter =
+      this->large_s21_deque_.end();
+  --iter;
+  ASSERT_EQ(*iter, 42);
 
-  // This should NOT compile (uncommenting should give error):
-  // s21::deque<int>::iterator converted_from_const = const_it;  // Error:
-  // cannot convert const to non-const
+  iter--;
+  ASSERT_EQ(*iter, 42);
+}
 
-  // Test 4: Range-based for loop with const deque
-  for (const auto& element : const_deque) {
-    // This should compile (reading)
-    int value = element;
-    (void)value;  // Suppress unused variable warning
+TYPED_TEST(DequeTest, ArithmeticOperations) {
+  typename s21::deque<TypeParam>::const_iterator iter =
+      this->large_s21_deque_.begin();
 
-    // This should NOT compile (uncommenting should give error):
-    // element = 42;  // Error: cannot modify element in const deque
-  }
+  iter += 2;
+  ASSERT_EQ(*iter, 42);
 
-  // Test 5: Const iterator arithmetic
-  const_it + 1;                           // Should compile
-  const_it - 1;                           // Should compile
-  auto diff = const_it - (const_it + 1);  // Should compile
-  (void)diff;                             // Suppress unused variable warning
-  (void)first;
-  (void)last;
-  (void)value1;
-  (void)value2;
-  (void)converted_to_const;
+  iter -= 1;
+  ASSERT_EQ(*iter, 42);
+
+  typename s21::deque<TypeParam>::const_iterator iter2 = iter + 2;
+  ASSERT_EQ(*iter2, 42);
+
+  typename s21::deque<TypeParam>::const_iterator iter3 = iter2 - 1;
+  ASSERT_EQ(*iter3, 42);
+}
+
+TYPED_TEST(DequeTest, Comparison1) {
+  typename s21::deque<TypeParam>::const_iterator iter1 =
+      this->large_s21_deque_.begin();
+  typename s21::deque<TypeParam>::const_iterator iter2 =
+      this->large_s21_deque_.begin() + 2;
+
+  ASSERT_TRUE(iter1 < iter2);
+  ASSERT_TRUE(iter2 > iter1);
+  ASSERT_TRUE(iter1 <= iter2);
+  ASSERT_TRUE(iter2 >= iter1);
+  ASSERT_TRUE(iter1 != iter2);
+  ASSERT_FALSE(iter1 == iter2);
+}
+
+TYPED_TEST(DequeTest, Comparison2) {
+  const typename s21::deque<TypeParam>& const_deque = this->large_s21_deque_;
+
+  const typename s21::deque<TypeParam>::const_iterator iter1 =
+      const_deque.begin();
+  const typename s21::deque<TypeParam>::const_iterator iter2 =
+      const_deque.begin() + 2;
+
+  ASSERT_TRUE(iter1 < iter2);
+  ASSERT_TRUE(iter2 > iter1);
+  ASSERT_TRUE(iter1 <= iter2);
+  ASSERT_TRUE(iter2 >= iter1);
+  ASSERT_TRUE(iter1 != iter2);
+  ASSERT_FALSE(iter1 == iter2);
+}
+
+TYPED_TEST(DequeTest, Comparison3) {
+  const typename s21::deque<TypeParam>& const_deque = this->large_s21_deque_;
+
+  const typename s21::deque<TypeParam>::const_iterator iter1 =
+      const_deque.end();
+  const typename s21::deque<TypeParam>::const_iterator iter2 =
+      const_deque.end() - 2;
+
+  ASSERT_TRUE(iter1 > iter2);
+  ASSERT_TRUE(iter2 < iter1);
+  ASSERT_TRUE(iter1 >= iter2);
+  ASSERT_TRUE(iter2 <= iter1);
+  ASSERT_TRUE(iter1 != iter2);
+  ASSERT_FALSE(iter1 == iter2);
+}
+
+TYPED_TEST(DequeTest, NonConstDereferenceOperator) {
+  ASSERT_FALSE(this->large_s21_deque_.empty());
+
+  auto iter = this->large_s21_deque_.begin();
+
+  TypeParam& value = *iter;
+  ASSERT_EQ(value, this->large_s21_deque_.front());
+
+  TypeParam new_value = static_cast<TypeParam>(999);
+  *iter = new_value;
+
+  ASSERT_EQ(this->large_s21_deque_.front(), new_value);
+  ASSERT_EQ(*iter, new_value);
+}
+
+TYPED_TEST(DequeTest, ConstDereferenceOperator) {
+  ASSERT_FALSE(this->large_s21_deque_.empty());
+
+  const auto iter = this->large_s21_deque_.begin();
+
+  const TypeParam& value = *iter;
+  ASSERT_EQ(value, this->large_s21_deque_.front());
+}
+
+TYPED_TEST(DequeTest, Difference) {
+  typename s21::deque<TypeParam>::const_iterator iter1 =
+      this->large_s21_deque_.begin();
+  typename s21::deque<TypeParam>::const_iterator iter2 =
+      this->large_s21_deque_.end();
+
+  ASSERT_EQ(iter2 - iter1,
+            static_cast<std::ptrdiff_t>(this->large_s21_deque_.size()));
+}
+
+TEST(DequeIteratorTest, PointerOperator) {
+  s21::deque<int> d;
+  d.push_back(10);
+  d.push_back(20);
+  d.push_back(30);
+
+  auto it = d.begin();
+  ++it;
+
+  int* ptr = it;
+
+  EXPECT_EQ(*ptr, 20);
+
+  *ptr = 50;
+  EXPECT_EQ(d[1], 50);
 }
 
 TEST(DequeNonTyped, PostDecrement) {
