@@ -293,145 +293,114 @@ TEST(ListTest, find) {
 }
 TEST(ListTest, find_if) {
   s21::list<int> numbers{1, 3, 5, 7, 8, 10};
+  std::list<int> numbers1{1, 3, 5, 7, 8, 10};
 
   auto it = std::find_if(numbers.begin(), numbers.end(),
                          [](int n) { return n % 2 == 0; });
+  auto it1 = std::find_if(numbers1.begin(), numbers1.end(),
+                          [](int n) { return n % 2 == 0; });
 
-  if (it != numbers.end()) {
-    std::cout << "The first even number is " << *it
-              << std::endl;  // Output: The first even number is 8
-  } else {
-    std::cout << "No even numbers found." << std::endl;
-  }
+  EXPECT_EQ(*it, *it1);
 }
 TEST(ListTest, find_if_not) {
   s21::list<int> numbers{1, 3, 5, 7, 8, 10};
+  std::list<int> numbers1{1, 3, 5, 7, 8, 10};
 
-  // Use std::find_if_not to find the first even number
   auto it = std::find_if_not(numbers.begin(), numbers.end(),
                              [](int n) { return n % 2 != 0; });
+  auto it1 = std::find_if_not(numbers1.begin(), numbers1.end(),
+                              [](int n) { return n % 2 != 0; });
 
-  if (it != numbers.end()) {
-    std::cout << "The first even number is " << *it
-              << std::endl;  // Output: The first even number is 6
-  } else {
-    std::cout << "No even numbers found." << std::endl;
-  }
+  EXPECT_EQ(*it, *it1);
 }
 TEST(ListTest, find_end) {
   s21::list<int> v1{1, 2, 1, 2, 3, 4, 1, 2};
   s21::list<int> v2{1, 2};
+  std::list<int> v11{1, 2, 1, 2, 3, 4, 1, 2};
+  std::list<int> v21{1, 2};
 
   auto result = std::find_end(v1.begin(), v1.end(), v2.begin(), v2.end());
+  auto result1 = std::find_end(v11.begin(), v11.end(), v21.begin(), v21.end());
 
-  if (result != v1.end()) {
-    std::cout << "Last sequence found at position: " << (result - v1.begin())
-              << std::endl;  // Output position index
-  } else {
-    std::cout << "Sequence not found." << std::endl;
-  }
+  EXPECT_EQ(*result, *result1);
 }
 TEST(ListTest, find_first_of) {
   s21::list<char> v1{'f', 'c', 'e', 'd', 'b', 'a'};
   s21::list<char> v2{'D', 'F'};
+  std::list<char> v11{'f', 'c', 'e', 'd', 'b', 'a'};
+  std::list<char> v21{'D', 'F'};
 
   // Find the first occurrence of any character from v2 in v1
   auto result = std::find_first_of(
       v1.begin(), v1.end(), v2.begin(), v2.end(),
       [](char a, char b) { return tolower(a) == tolower(b); });
+  auto result1 = std::find_first_of(
+      v11.begin(), v11.end(), v21.begin(), v21.end(),
+      [](char a, char b) { return tolower(a) == tolower(b); });
 
-  if (result != v1.end()) {
-    std::cout << "Found first match at location: "
-              << std::distance(v1.begin(), result) << std::endl;  ////not -
-  } else {
-    std::cout << "No matches found." << std::endl;
-  }
+  EXPECT_EQ(*result, *result1);
 }
 TEST(ListTest, adjacent_find) {
   s21::list<int> numbers{1, 2, 3, 3, 5};
+  std::list<int> numbers1{1, 2, 3, 3, 5};
 
   // Find the first occurrence of consecutive identical elements
   auto it = std::adjacent_find(numbers.begin(), numbers.end());
-
-  if (it != numbers.end()) {
-    std::cout << "First occurrence of consecutive identical element = " << *it
-              << std::endl;  // Output: 3
-  } else {
-    std::cout << "There are no consecutive identical elements." << std::endl;
-  }
+  auto it1 = std::adjacent_find(numbers1.begin(), numbers1.end());
+  EXPECT_EQ(*it, *it1);
 }
 TEST(ListTest, search) {
   s21::list<int> numbers{1, 2, 3, 4};
+  std::list<int> numbers1{1, 2, 3, 4};
   auto it = std::find(numbers.begin(), numbers.end(), 3);
-  if (it != numbers.end()) {
-    std::cout << "Found: " << *it << std::endl;  // Output: Found: 3
-  }
+  auto it1 = std::find(numbers1.begin(), numbers1.end(), 3);
+  EXPECT_EQ(*it, *it1);
 }
 
 TEST(ListTest, search_n) {
   s21::list<int> numbers{1, 2, 3, 3, 3, 4, 5};
+  std::list<int> numbers1{1, 2, 3, 3, 3, 4, 5};
 
   // Search for two consecutive occurrences of the number 3
   auto result = std::search_n(numbers.begin(), numbers.end(), 2, 3);
+  auto result1 = std::search_n(numbers1.begin(), numbers1.end(), 2, 3);
 
-  if (result != numbers.end()) {
-    std::cout << "Found two consecutive 3s at index: "
-              << (result - numbers.begin())
-              << std::endl;  // Output: Found two consecutive 3s at index: 2
-  } else {
-    std::cout << "No consecutive occurrences found." << std::endl;
-  }
+  EXPECT_EQ(*result, *result1);
 }
 TEST(ListTest, mismatch) {
   s21::list<int> vec1{1, 2, 3, 4, 5};
-  s21::list<int> vec2{1, 2, 0, 4, 5};  // Note: 0 differs from 3 in vec1
+  s21::list<int> vec2{1, 2, 0, 4, 5};
 
-  // Find the first mismatch between vec1 and vec2
   auto result = std::mismatch(vec1.begin(), vec1.end(), vec2.begin());
+  (void)result;
 
-  if (result.first != vec1.end()) {
-    std::cout << "Mismatch found at position: " << (result.first - vec1.begin())
-              << std::endl;
-    std::cout << "vec1: " << *result.first << ", vec2: " << *result.second
-              << std::endl;  // Output: vec1: 3, vec2: 0
-  } else {
-    std::cout << "No mismatches found." << std::endl;
-  }
+  EXPECT_TRUE(*result.first);
 }
 TEST(ListTest, equal) {
   s21::list<int> vec1{1, 2, 3, 4, 5};
-  s21::list<int> vec2{1, 2, 3, 4, 5};  // Equal to vec1
-  s21::list<int> vec3{1, 2, 3, 4};     // Not equal to vec1
-
-  // Check if vec1 and vec2 are equal
-  if (std::equal(vec1.begin(), vec1.end(), vec2.begin())) {
-    std::cout << "vec1 and vec2 are equal." << std::endl;  // Output: Equal
-  } else {
-    std::cout << "vec1 and vec2 are not equal." << std::endl;
-  }
-
-  // Check if vec1 and vec3 are equal
-  if (vec1.size() == vec3.size() &&
-      std::equal(vec1.begin(), vec1.end(), vec3.begin())) {
-    std::cout << "vec1 and vec3 are equal." << std::endl;
-  } else {
-    std::cout << "vec1 and vec3 are not equal."
-              << std::endl;  // Output: Not Equal
-  }
+  s21::list<int> vec2{1, 2, 3, 4, 5};
+  s21::list<int> vec3{1, 2, 3, 4};
+  std::list<int> vec11{1, 2, 3, 4, 5};
+  std::list<int> vec21{1, 2, 3, 4, 5};
+  std::list<int> vec31{1, 2, 3, 4};
+  EXPECT_TRUE(std::equal(vec1.begin(), vec1.end(), vec2.begin()));
+  bool a = vec1.size() == vec3.size() &&
+           std::equal(vec1.begin(), vec1.end(), vec3.begin());
+  EXPECT_TRUE(!(a));
+  EXPECT_TRUE(std::equal(vec11.begin(), vec11.end(), vec21.begin()));
+  EXPECT_TRUE(!(vec11.size() == vec31.size() &&
+                std::equal(vec11.begin(), vec11.end(), vec31.begin())));
 }
 TEST(ListTest, copyit) {
   s21::list<int> source{1, 2, 3, 4, 5};
   s21::list<int> destination(5);
+  std::list<int> source1{1, 2, 3, 4, 5};
+  std::list<int> destination1(5);
 
-  // Copy elements from source to destination
   std::copy(source.begin(), source.end(), destination.begin());
+  std::copy(source1.begin(), source1.end(), destination1.begin());
 
-  // Output the copied elements
-  std::cout << "Copied elements: ";
-  for (const auto& elem : destination) {
-    std::cout << elem << " ";  // Output: 1 2 3 4 5
-  }
-  std::cout << std::endl;
+  EXPECT_TRUE(destination == destination1);
 }
 
 #if 0 
