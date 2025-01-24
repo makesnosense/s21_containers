@@ -314,14 +314,6 @@ class deque {
   }
 
  private:
-  Chunk** map_{nullptr};              // Pointer to array of chunk pointers
-  size_type map_size_{0};             // Current size of the map array
-  size_type front_chunk_index_{0};    // Index of the first chunk in map
-  size_type back_chunk_index_{0};     // Index of the last chunk in map
-  size_type front_element_index_{0};  // Index within front chunk
-  size_type back_vacant_index_{0};    // Index within back chunk
-  size_type size_{0};                 // Total number of elements
-
   void AddChunkAt(size_type chunk_index) { map_[chunk_index] = new Chunk(); }
 
   void GrowMap(bool to_the_front) {
@@ -349,6 +341,14 @@ class deque {
     map_size_ = new_size_map;
     map_ = new_map;
   }
+
+  Chunk** map_{nullptr};              // Pointer to array of chunk pointers
+  size_type map_size_{0};             // Current size of the map array
+  size_type front_chunk_index_{0};    // Index of the first chunk in map
+  size_type back_chunk_index_{0};     // Index of the last chunk in map
+  size_type front_element_index_{0};  // Index within front chunk
+  size_type back_vacant_index_{0};    // Index within back chunk
+  size_type size_{0};                 // Total number of elements
 };
 
 template <typename T, bool is_const>
