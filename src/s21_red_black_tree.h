@@ -73,6 +73,7 @@ class Tree {
         if (value.first < current->data_.first) {
           if (current->left_ == nullptr) {
             current->left_ = new node(value.first, value.second);
+            current->left_->color_ = NodeColor::BLACK;
             current->left_->parent_ = current;
             ++size_;
             return {current->left_, true};
@@ -97,18 +98,30 @@ class Tree {
   node* root_;
   size_type size_;
 };
+
+namespace print_color {  // Anonymous namespace for color codes
+const char* RED = "\033[1;31m";
+const char* BLACK = "\033[2;37m";
+const char* RESET = "\033[0m";
+}  // namespace print_color
+
 template <typename KeyType, typename ValueType>
 void print_tree_helper(const Node<KeyType, ValueType>* root,
                        std::string prefix = "", std::string child_prefix = "") {
   if (!root) {
-    std::cout << prefix << "null\n";
+    std::cout << print_color::BLACK << prefix << "null" << print_color::RESET
+              << '\n';
     return;
   }
 
-  std::cout << prefix << root->data_.first << "("
-            << (root->color_ == NodeColor::RED ? "R" : "B") << ")\n";
+  std::cout << prefix;
+  std::cout << (root->color_ == NodeColor::RED ? print_color::RED
+                                               : print_color::BLACK)
+            << root->data_.first << "("
+            << (root->color_ == NodeColor::RED ? "R" : "B") << ")"
+            << print_color::RESET << "\n";
 
-  if (root->right_ || root->left_) {  // if at least one child exists
+  if (root->right_ || root->left_) {
     std::cout << child_prefix << "│\n";
     std::cout << child_prefix << "├── RIGHT: ";
     print_tree_helper(root->right_, "", child_prefix + "│   ");
