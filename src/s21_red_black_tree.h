@@ -51,12 +51,6 @@ class Tree {
   Tree(Tree&& other) = delete;
   Tree& operator=(Tree&& other) = delete;
 
-  void print() const {
-    std::cout << "\nTree contents:\n";
-    print_tree_vertical(root_);
-    std::cout << "Size: " << size_ << "\n\n";
-  }
-
  private:
   node* root_;
   size_type size_;
