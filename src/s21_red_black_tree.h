@@ -100,20 +100,19 @@ class Tree {
 template <typename KeyType, typename ValueType>
 void print_tree_helper(const Node<KeyType, ValueType>* root,
                        std::string prefix = "", std::string child_prefix = "") {
-  if (!root) return;
+  if (!root) {
+    std::cout << prefix << "null\n";
+    return;
+  }
 
   std::cout << prefix << root->data_.first << "("
             << (root->color_ == NodeColor::RED ? "R" : "B") << ")\n";
 
-  if (root->right_) {
-    bool has_left = (root->left_ != nullptr);
+  if (root->right_ || root->left_) {  // if at least one child exists
     std::cout << child_prefix << "│\n";
     std::cout << child_prefix << "├── RIGHT: ";
-    print_tree_helper(root->right_, "",
-                      child_prefix + (has_left ? "│   " : "    "));
-  }
+    print_tree_helper(root->right_, "", child_prefix + "│   ");
 
-  if (root->left_) {
     std::cout << child_prefix << "│\n";
     std::cout << child_prefix << "└── LEFT: ";
     print_tree_helper(root->left_, "", child_prefix + "    ");
