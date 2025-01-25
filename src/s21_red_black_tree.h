@@ -146,7 +146,6 @@ class Tree {
 
   bool IsRoot(node* us) { return us -> parent_ == nullptr };
   bool GrandFatherExists(node* us) { return us->parent_->parent_ != nullptr; }
-  // bool FatherExists(node* us) { return us->parent_ != nullptr; }
 
   node* GetUncle(node* us) {
     node* father{us->parent_};
