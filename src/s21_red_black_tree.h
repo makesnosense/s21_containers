@@ -264,7 +264,9 @@ class Tree {
   bool IsRightChild(node* us) { return !IsLeftChild(us); };
 
   bool IsRoot(node* us) { return us->parent_ == nullptr; };
-  bool GrandFatherExists(node* us) { return us->parent_->parent_ != nullptr; }
+  bool GrandFatherExists(node* us) {
+    return us && us->parent_ && us->parent_->parent_;
+  }
 
   node* GetUncle(node* us) {
     node* father{us->parent_};
