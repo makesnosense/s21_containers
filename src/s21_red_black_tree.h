@@ -120,31 +120,30 @@ class Tree {
 
   bool IsInnerChild(node* us) {
     return (IsLeftChild(us) && IsLeftChild(GetUncle(us))) ||
-           (IsRightChild(us) && IsRightChild(GetUncle(us)))
+           (IsRightChild(us) && IsRightChild(GetUncle(us)));
   }
   void TreatInnerChild(node* us) {
-    if (IsLeftChild(us){
+    if (IsLeftChild(us)) {
       // MinorRotation(us);
-  }
-  else {
+    } else {
       // OtherMinorRotation(us);
-  }
+    }
   }
 
   void TreatOuterChild(node* us) {
     if (IsLeftChild(us)) {
     }
     {
-        }
+    }
     // MinorRotation(us);
   }
 
   bool IsLeftChild(node* us) {
     return us->parent_ && (us == us->parent_->left_);
   }
-  bool IsRightChild(node* us) { return !IsLeftChild(us) };
+  bool IsRightChild(node* us) { return !IsLeftChild(us); };
 
-  bool IsRoot(node* us) { return us -> parent_ == nullptr };
+  bool IsRoot(node* us) { return us->parent_ == nullptr; };
   bool GrandFatherExists(node* us) { return us->parent_->parent_ != nullptr; }
 
   node* GetUncle(node* us) {
