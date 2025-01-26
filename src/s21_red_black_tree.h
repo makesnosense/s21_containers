@@ -35,7 +35,7 @@ class Tree {
  public:
   using node = Node<Key, T>;
   using value_type = std::pair<const Key, T>;
-  // using key_type = Key;
+  using key_type = Key;
   // using mapped_type = T;
   // using value_type = typename traits::value_type;
   // using pointer = T*;
@@ -74,9 +74,10 @@ class Tree {
       if (value.first < current->data_.first) {
         if (current->left_ == nullptr) {
           current->left_ = new node(value.first, value.second);
-          current->left_->color_ = NodeColor::BLACK;
           current->left_->parent_ = current;
           ++size_;
+          EnsureValidity(current->left_);
+
           return {current->left_, true};
         }
         current = current->left_;
@@ -85,6 +86,7 @@ class Tree {
           current->right_ = new node(value.first, value.second);
           current->right_->parent_ = current;
           ++size_;
+          EnsureValidity(current->right_);
           return {current->right_, true};
         }
         current = current->right_;
@@ -93,6 +95,7 @@ class Tree {
       }
     }
   }
+
   void RotateLeft(node* us) {
     bool us_is_root{root_ == us};
 
@@ -123,6 +126,7 @@ class Tree {
 
     if (us_is_root) {
       root_ = right_child;
+      root_->color_ = NodeColor::BLACK;
     }
   }
 
@@ -159,25 +163,61 @@ class Tree {
     }
   }
 
+  node* FindNode(const key_type& key) {
+    if (root_ == nullptr) {
+      return nullptr;
+    }
+
+    node* current{root_};
+    while (true) {
+      if (key < current->data_.first) {
+        if (current->left_ == nullptr) {
+          return nullptr;
+        }
+        current = current->left_;
+      } else if (key > current->data_.first) {
+        if (current->right_ == nullptr) {
+          return nullptr;
+        }
+        current = current->right_;
+      } else {
+        return current;
+      }
+    }
+  }
+
+  void RecolorFatherUncleGrandpa(node* us) {
+    node* uncle(GetUncle(us));
+    node* father{us->parent_};
+    node* grandfather{father->parent_};
+
+    father->color_ = NodeColor::BLACK;
+    if (uncle) {
+      uncle->color_ = NodeColor::BLACK;
+    }
+    if (IsRoot(grandfather) == false) {
+      grandfather->color_ = NodeColor::RED;
+    }
+  }
+
   node* get_root() { return root_; }
 
  private:
-  void CheckValidity(node* us) {
+  void EnsureValidity(node* us) {
     if (IsRoot(us)) {
       return;
     }
-    if (us->parent_->color_ == NodeColor::RED) {
+    if (us->parent_->color_ == NodeColor::BLACK) {
       return;
     }
-
     if (GrandFatherExists(us)) {
-      node* uncle{GetUncle(us)};
-      if (uncle->color_ == NodeColor::RED) {
-        // Recolor(us);
+      if (UncleIsRed(us)) {
+        RecolorFatherUncleGrandpa(us);
       } else {
         // uncle color is black
         if (IsInnerChild(us)) {
-          TreatInnerChild(us);
+          // TreatInnerChild(us);
+          // RotateLeft(us->parent_);
         }
 
         TreatOuterChild(us);
@@ -185,9 +225,18 @@ class Tree {
     }
   }
 
+  bool UncleIsRed(node* us) {
+    node* uncle{GetUncle(us)};
+    if (uncle == nullptr) {
+      return false;
+    }
+    return uncle->color_ == NodeColor::RED;
+  }
+
   bool IsInnerChild(node* us) {
-    return (IsLeftChild(us) && IsLeftChild(GetUncle(us))) ||
-           (IsRightChild(us) && IsRightChild(GetUncle(us)));
+    node* father{us->parent_};
+    return (IsLeftChild(us) && IsRightChild(father)) ||
+           (IsRightChild(us) && IsLeftChild(father));
   }
   void TreatInnerChild(node* us) {
     if (IsLeftChild(us)) {
@@ -201,6 +250,10 @@ class Tree {
     if (IsLeftChild(us)) {
     }
     {
+      node* grandfather{us->parent_->parent_};
+
+      RotateLeft(grandfather);
+      // std::cout << "sdfgdfgdfg";
     }
     // MinorRotation(us);
   }
