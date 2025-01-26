@@ -93,6 +93,73 @@ class Tree {
       }
     }
   }
+  void RotateLeft(node* us) {
+    bool us_is_root{root_ == us};
+
+    node* right_child{us->right_};
+    node* displaced_left_child{right_child->left_};
+
+    // right_child moves up, becoming parent of us
+    right_child->parent_ = us->parent_;
+
+    // if we had parent, update its child pointer
+    if (us_is_root == false) {
+      if (IsLeftChild(us)) {
+        us->parent_->left_ = right_child;
+      } else {
+        us->parent_->right_ = right_child;
+      }
+    }
+
+    // changing core rotation connections
+    right_child->left_ = us;
+    us->parent_ = right_child;
+
+    // Reattach the displaced subtree
+    us->right_ = displaced_left_child;
+    if (displaced_left_child) {
+      displaced_left_child->parent_ = us;
+    }
+
+    if (us_is_root) {
+      root_ = right_child;
+    }
+  }
+
+  void RotateRight(node* us) {
+    bool us_is_root{root_ == us};
+
+    node* left_child{us->left_};
+    node* displaced_right_child{left_child->right_};
+
+    // left_child moves up, becoming parent of us
+    left_child->parent_ = us->parent_;
+
+    // // if we had parent, update its child pointer
+    if (us_is_root == false) {
+      if (IsLeftChild(us)) {
+        us->parent_->left_ = left_child;
+      } else {
+        us->parent_->right_ = left_child;
+      }
+    }
+
+    // changing core rotation connections
+    left_child->right_ = us;
+    us->parent_ = left_child;
+
+    // Reattach the displaced subtree
+    us->left_ = displaced_right_child;
+    if (displaced_right_child) {
+      displaced_right_child->parent_ = us;
+    }
+
+    if (us_is_root) {
+      root_ = left_child;
+    }
+  }
+
+  node* get_root() { return root_; }
 
  private:
   void CheckValidity(node* us) {

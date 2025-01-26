@@ -6,16 +6,18 @@
 
 TEST(RedBlackTreeTest, Meow) {
   s21::Tree<int, int> meow;
-  meow.insert({33, 999});
+  meow.insert({5, 999});
 
-  meow.insert({65, 999});
-  meow.insert({77, 999});
+  meow.insert({2, 999});
+  meow.insert({10, 999});
+  meow.insert({8, 999});
   meow.insert({12, 999});
+  meow.insert({6, 999});
+  meow.insert({9, 999});
 
-  meow.insert({1, 999});
-  meow.insert({42, 999});
-
-  meow.insert({55, 999});
-  meow.insert({66, 999});
+  print_tree(meow);
+  meow.RotateLeft(meow.get_root());
+  print_tree(meow);
+  meow.RotateRight(meow.get_root());
   print_tree(meow);
 }
