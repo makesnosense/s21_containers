@@ -81,7 +81,7 @@ class RedBlackTree {
           current->left_ = new node(value.first, value.second);
           current->left_->parent_ = current;
           ++size_;
-          EnsureValidity(current->left_);
+          InsertFixUp(current->left_);
 
           return {current->left_, true};
         }
@@ -91,7 +91,7 @@ class RedBlackTree {
           current->right_ = new node(value.first, value.second);
           current->right_->parent_ = current;
           ++size_;
-          EnsureValidity(current->right_);
+          InsertFixUp(current->right_);
           return {current->right_, true};
         }
         current = current->right_;
@@ -99,45 +99,6 @@ class RedBlackTree {
         return {current, false};
       }
     }
-  }
-
-  void erase(const Key& key) {
-    node* current = FindNode(key);
-    if (current == nullptr) {
-      return;
-    }
-
-    node* replacement_node{nullptr};
-
-    // if node have one child or have no children
-    if (current->left_ == nullptr) {
-      replacement_node = current->right_;
-      ReplaceNode(current, current->right_);
-    } else if (current->right_ == nullptr) {
-      replacement_node = current->left_;
-      ReplaceNode(current, current->left_);
-    } else {
-      // if node have two children
-      node* min_in_right_subtree = GetMin(current->right_);
-      replacement_node = min_in_right_subtree->right_;
-
-      if (min_in_right_subtree->parent_ != current) {
-        ReplaceNode(min_in_right_subtree, replacement_node);
-        min_in_right_subtree->right_ = current->right_;
-        min_in_right_subtree->right_->parent_ = min_in_right_subtree;
-      }
-      ReplaceNode(current, min_in_right_subtree);
-      min_in_right_subtree->left_ = current->left_;
-      min_in_right_subtree->left_->parent_ = min_in_right_subtree;
-      min_in_right_subtree->color_ = current->color_;
-    }
-
-    delete current;
-    --size_;
-
-    // if (original_color == NodeColor::BLACK) {
-    //     EnsureValidityAfterDelete(replacement_node);
-    // }
   }
 
   void RotateLeft(node* us) {
@@ -229,10 +190,81 @@ class RedBlackTree {
     }
   }
 
+  void erase(const Key& key) {
+    node* current = FindNode(key);
+    if (current == nullptr) {
+      return;
+    }
+
+    node* replacement_node{nullptr};
+
+    // if node have one child or have no children
+    if (current->left_ == nullptr) {
+      replacement_node = current->right_;
+      Transplant(current, current->right_);
+    } else if (current->right_ == nullptr) {
+      replacement_node = current->left_;
+      Transplant(current, current->left_);
+    } else {
+      // if node have two children
+      node* min_in_right_subtree = GetMin(current->right_);
+      replacement_node = min_in_right_subtree->right_;
+
+      if (min_in_right_subtree->parent_ != current) {
+        Transplant(min_in_right_subtree, replacement_node);
+        min_in_right_subtree->right_ = current->right_;
+        min_in_right_subtree->right_->parent_ = min_in_right_subtree;
+      }
+      Transplant(current, min_in_right_subtree);
+      min_in_right_subtree->left_ = current->left_;
+      min_in_right_subtree->left_->parent_ = min_in_right_subtree;
+      min_in_right_subtree->color_ = current->color_;
+    }
+
+    delete current;
+    --size_;
+
+    // if (original_color == NodeColor::BLACK) {
+    //     EnsureValidityAfterDelete(replacement_node);
+    // }
+  }
+
   node* get_root() const { return root_; }
 
  private:
-  void EnsureValidity(node* us) {
+  void Transplant(node* old_node, node* new_node) {
+    if (IsRoot(old_node)) {
+      root_ = new_node;
+    } else {
+      if (IsLeftChild(old_node)) {
+        old_node->parent_->left_ = new_node;
+      } else {
+        old_node->parent_->right_ = new_node;
+      }
+    }
+
+    if (new_node != nullptr) {
+      new_node->parent_ = old_node->parent_;
+    }
+  }
+
+  node* GetMin(node* us) {
+    node* current = us;
+    while (current->left_ != nullptr) {
+      current = current->left_;
+    }
+    return current;
+  }
+
+  node* GetMax(node* us) {
+    node* current = us;
+    while (current->right_ != nullptr) {
+      current = current->right_;
+    }
+    return current;
+  }
+
+  void InsertFixUp(node* us) {
     if (IsRoot(us)) {
       us->color_ = NodeColor::BLACK;
       return;
@@ -254,20 +286,20 @@ class RedBlackTree {
     if (UncleIsRed(us)) {
       // father and uncle are red
       RecolorFatherUncleGrandpa(us);
-      EnsureValidity(grandfather);
+      InsertFixUp(grandfather);
     } else {
       // uncle color is black
       if (IsInnerChild(us)) {
-        TreatInnerChild(us);
+        InsertFixUpTreatInnerChild(us);
       } else {
-        TreatOuterChild(us);
+        InsertFixUpTreatOuterChild(us);
       }
     }
     // Ensure root remains black after any modifications
     root_->color_ = NodeColor::BLACK;
   }
 
-  void TreatOuterChild(node* us) {
+  void InsertFixUpTreatOuterChild(node* us) {
     node* father{us->parent_};
     node* grandfather{us->parent_->parent_};
 
@@ -279,14 +311,14 @@ class RedBlackTree {
     }
   }
 
-  void TreatInnerChild(node* us) {
+  void InsertFixUpTreatInnerChild(node* us) {
     node* father{us->parent_};
     if (IsLeftChild(father)) {
       RotateLeft(father);
-      TreatOuterChild(us->left_);
+      InsertFixUpTreatOuterChild(us->left_);
     } else {
       RotateRight(father);
-      TreatOuterChild(us->right_);
+      InsertFixUpTreatOuterChild(us->right_);
     }
   }
 
@@ -345,38 +377,6 @@ class RedBlackTree {
       uncle->color_ = NodeColor::BLACK;
     }
     grandfather->color_ = NodeColor::RED;
-  }
-
-  void ReplaceNode(node* old_node, node* new_node) {
-    if (IsRoot(old_node)) {
-      root_ = new_node;
-    } else {
-      if (IsLeftChild(old_node)) {
-        old_node->parent_->left_ = new_node;
-      } else {
-        old_node->parent_->right_ = new_node;
-      }
-    }
-
-    if (new_node != nullptr) {
-      new_node->parent_ = old_node->parent_;
-    }
-  }
-
-  node* GetMin(node* us) {
-    node* current = us;
-    while (current->left_ != nullptr) {
-      current = current->left_;
-    }
-    return current;
-  }
-
-  node* GetMax(node* us) {
-    node* current = us;
-    while (current->right_ != nullptr) {
-      current = current->right_;
-    }
-    return current;
   }
 
   void DeleteSubtree(node* n) {
