@@ -211,3 +211,40 @@ TEST(RedBlackTreeTest, DescendingInsertions) {
     EXPECT_TRUE(ValidateRedBlackTree(tree));
   }
 }
+
+TEST(RedBlackTreeTest, Erase) {
+  s21::RedBlackTree<int, int> tree;
+  tree.insert({50, 999});
+  tree.insert({25, 999});
+  tree.insert({75, 999});
+  tree.insert({10, 999});
+  tree.insert({30, 999});
+  tree.insert({5, 999});
+  tree.insert({15, 999});
+
+  s21::print_tree(tree);
+
+  tree.erase(10);
+
+  s21::print_tree(tree);
+}
+
+TEST(RedBlackTreeTest, Erase2) {
+  s21::RedBlackTree<int, int> tree;
+  tree.insert({50, 999});
+  tree.insert({25, 999});
+  tree.insert({75, 999});
+
+  tree.insert({80, 999});
+  tree.insert({78, 999});
+  tree.insert({10, 999});
+  tree.insert({30, 999});
+  tree.insert({5, 999});
+  tree.insert({15, 999});
+  tree.insert({76, 999});
+  s21::print_tree(tree);
+
+  tree.erase(50);
+
+  s21::print_tree(tree);
+}
