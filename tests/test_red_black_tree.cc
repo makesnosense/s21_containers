@@ -74,34 +74,140 @@ bool ValidateProperties(const s21::Node<Key, T>* node, int& black_height) {
   return true;
 }
 
-TEST(RedBlackTreeTest, Meow) {
-  s21::RedBlackTree<int, int> meow;
-  meow.insert({10, 999});
-  meow.insert({5, 999});
-  print_tree(meow);
-  meow.insert({2, 999});
+TEST(RedBlackTreeTest, BlackUncleOuterChild) {
+  s21::RedBlackTree<int, int> tree;
+  tree.insert({10, 999});
+  tree.insert({5, 999});
+  tree.insert({2, 999});
 
-  print_tree(meow);
-  // meow.insert({5, 999});
+  EXPECT_TRUE(ValidateRedBlackTree(tree));
+}
 
-  // meow.insert({2, 999});
-  // meow.insert({10, 999});
+TEST(RedBlackTreeTest, BlackUncleOuterChild2) {
+  s21::RedBlackTree<int, int> tree;
+  tree.insert({10, 999});
+  tree.insert({20, 999});
+  tree.insert({30, 999});
+  EXPECT_TRUE(ValidateRedBlackTree(tree));
+}
 
-  // meow.insert({8, 999});
-  // print_tree(meow);
-  // meow.insert({12, 999});
-  // print_tree(meow);
-  // meow.insert({6, 999});
-  // meow.insert({9, 999});
+TEST(RedBlackTreeTest, BlackUncleInnerChild) {
+  s21::RedBlackTree<int, int> tree;
+  tree.insert({10, 999});
 
-  // meow.RotateLeft(meow.FindNode(10));
-  // print_tree(meow);
-  // meow.RotateLeft(meow.FindNode(5));
-  // print_tree(meow);
+  tree.insert({15, 999});
+  tree.insert({14, 999});
+  tree.insert({20, 999});
+  tree.insert({2, 999});
 
-  // int height = 0;
-  // bool is_valid = ValidateBlackHeight(meow.get_root(), height);
-  EXPECT_TRUE(ValidateRedBlackTree(meow));
-  // meow.RotateRight(meow.get_root());
-  // print_tree(meow);
+  tree.insert({1, 999});
+
+  // tree.insert({5, 999});
+
+  EXPECT_TRUE(ValidateRedBlackTree(tree));
+}
+TEST(RedBlackTreeTest, EmptyAndSingleNode) {
+  s21::RedBlackTree<int, int> tree;
+  EXPECT_TRUE(ValidateRedBlackTree(tree));  // Empty tree
+
+  tree.insert({1, 999});
+  EXPECT_TRUE(ValidateRedBlackTree(tree));  // Single black root
+}
+
+TEST(RedBlackTreeTest, SimpleLeftRotation) {
+  s21::RedBlackTree<int, int> tree;
+  tree.insert({10, 999});
+  tree.insert({15, 999});
+  tree.insert({20, 999});  // Should trigger left rotation
+  EXPECT_TRUE(ValidateRedBlackTree(tree));
+}
+
+TEST(RedBlackTreeTest, SimpleRightRotation) {
+  s21::RedBlackTree<int, int> tree;
+  tree.insert({20, 999});
+  tree.insert({15, 999});
+  tree.insert({10, 999});  // Should trigger right rotation
+  EXPECT_TRUE(ValidateRedBlackTree(tree));
+}
+
+TEST(RedBlackTreeTest, LeftRightRotation) {
+  s21::RedBlackTree<int, int> tree;
+  tree.insert({20, 999});
+  tree.insert({10, 999});
+  tree.insert({15, 999});  // Should trigger left-right rotation
+  EXPECT_TRUE(ValidateRedBlackTree(tree));
+}
+
+TEST(RedBlackTreeTest, RightLeftRotation) {
+  s21::RedBlackTree<int, int> tree;
+  tree.insert({10, 999});
+  tree.insert({20, 999});
+  tree.insert({15, 999});  // Should trigger right-left rotation
+  EXPECT_TRUE(ValidateRedBlackTree(tree));
+}
+
+TEST(RedBlackTreeTest, RecoloringCase) {
+  s21::RedBlackTree<int, int> tree;
+  tree.insert({10, 999});
+  tree.insert({5, 999});
+  tree.insert({15, 999});
+  tree.insert({3, 999});  // Should trigger recoloring
+  EXPECT_TRUE(ValidateRedBlackTree(tree));
+}
+
+TEST(RedBlackTreeTest, ComplexLeftSubtree) {
+  s21::RedBlackTree<int, int> tree;
+  tree.insert({50, 999});
+  tree.insert({25, 999});
+  tree.insert({75, 999});
+  tree.insert({10, 999});
+  tree.insert({30, 999});
+  tree.insert({5, 999});
+  tree.insert({15, 999});
+  EXPECT_TRUE(ValidateRedBlackTree(tree));
+}
+
+TEST(RedBlackTreeTest, ComplexRightSubtree) {
+  s21::RedBlackTree<int, int> tree;
+  tree.insert({50, 999});
+  tree.insert({25, 999});
+  tree.insert({75, 999});
+  tree.insert({60, 999});
+  tree.insert({90, 999});
+  tree.insert({95, 999});
+  tree.insert({85, 999});
+  EXPECT_TRUE(ValidateRedBlackTree(tree));
+}
+
+TEST(RedBlackTreeTest, AlternatingInsertions) {
+  s21::RedBlackTree<int, int> tree;
+  tree.insert({50, 999});
+  tree.insert({25, 999});
+  tree.insert({75, 999});
+  tree.insert({12, 999});
+  tree.insert({37, 999});
+  tree.insert({62, 999});
+  tree.insert({87, 999});
+  EXPECT_TRUE(ValidateRedBlackTree(tree));
+}
+
+TEST(RedBlackTreeTest, AscendingInsertions) {
+  s21::RedBlackTree<int, int> tree;
+  for (int i = 1; i <= 10; i++) {
+    tree.insert({i, 999});
+    print_tree(tree);
+    if (ValidateRedBlackTree(tree) == false) {
+      EXPECT_TRUE(ValidateRedBlackTree(tree));
+      return;
+    }
+  }
+}
+
+TEST(RedBlackTreeTest, DescendingInsertions) {
+  s21::RedBlackTree<int, int> tree;
+  for (int i = 10; i >= 1; i--) {
+    tree.insert({i, 999});
+
+    EXPECT_TRUE(ValidateRedBlackTree(tree));
+  }
 }
