@@ -47,8 +47,13 @@ class RedBlackTree {
 
   RedBlackTree() : root_(nullptr), size_(0) {}
   RedBlackTree(const RedBlackTree&) = delete;
-  RedBlackTree& operator=(const RedBlackTree&) = delete;
   RedBlackTree(RedBlackTree&& other) = delete;
+  ~RedBlackTree() {
+    DeleteSubtree(root_);
+    root_ = nullptr;
+    size_ = 0;
+  }
+  RedBlackTree& operator=(const RedBlackTree&) = delete;
   RedBlackTree& operator=(RedBlackTree&& other) = delete;
 
   // void insert(const Key& key, const T& obj) {
@@ -301,6 +306,14 @@ class RedBlackTree {
       uncle->color_ = NodeColor::BLACK;
     }
     grandfather->color_ = NodeColor::RED;
+  }
+
+  void DeleteSubtree(node* n) {
+    if (n) {
+      DeleteSubtree(n->left_);
+      DeleteSubtree(n->right_);
+      delete n;
+    }
   }
 
   node* root_;
