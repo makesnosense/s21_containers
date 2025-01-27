@@ -195,7 +195,6 @@ TEST(RedBlackTreeTest, AscendingInsertions) {
   s21::RedBlackTree<int, int> tree;
   for (int i = 1; i <= 10; i++) {
     tree.insert({i, 999});
-    print_tree(tree);
     if (ValidateRedBlackTree(tree) == false) {
       EXPECT_TRUE(ValidateRedBlackTree(tree));
       return;
@@ -207,7 +206,6 @@ TEST(RedBlackTreeTest, DescendingInsertions) {
   s21::RedBlackTree<int, int> tree;
   for (int i = 10; i >= 1; i--) {
     tree.insert({i, 999});
-
     EXPECT_TRUE(ValidateRedBlackTree(tree));
   }
 }
