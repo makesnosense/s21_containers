@@ -107,29 +107,26 @@ class RedBlackTree {
       return;
     }
 
-    node* replacement_node = nullptr;
+    node* replacement_node{nullptr};
 
     // if node have one child or have no children
     if (current->left_ == nullptr) {
       replacement_node = current->right_;
-      SwapNode(current, current->right_);
+      ReplaceNode(current, current->right_);
     } else if (current->right_ == nullptr) {
       replacement_node = current->left_;
-      SwapNode(current, current->left_);
+      ReplaceNode(current, current->left_);
     } else {
       // if node have two children
       node* min_in_right_subtree = GetMin(current->right_);
       replacement_node = min_in_right_subtree->right_;
-      if (min_in_right_subtree->parent_ == current) {
-        if (replacement_node != nullptr) {
-          replacement_node->parent_ = min_in_right_subtree;
-        }
-      } else {
-        SwapNode(min_in_right_subtree, min_in_right_subtree->right_);
+
+      if (min_in_right_subtree->parent_ != current) {
+        ReplaceNode(min_in_right_subtree, replacement_node);
         min_in_right_subtree->right_ = current->right_;
         min_in_right_subtree->right_->parent_ = min_in_right_subtree;
       }
-      SwapNode(current, min_in_right_subtree);
+      ReplaceNode(current, min_in_right_subtree);
       min_in_right_subtree->left_ = current->left_;
       min_in_right_subtree->left_->parent_ = min_in_right_subtree;
       min_in_right_subtree->color_ = current->color_;
@@ -350,17 +347,19 @@ class RedBlackTree {
     grandfather->color_ = NodeColor::RED;
   }
 
-  void SwapNode(node* one, node* other) {
-    if (IsRoot(one)) {
-      root_ = other;
-    } else if (one == one->parent_->left_) {
-      one->parent_->left_ = other;
+  void ReplaceNode(node* old_node, node* new_node) {
+    if (IsRoot(old_node)) {
+      root_ = new_node;
     } else {
-      one->parent_->right_ = other;
+      if (IsLeftChild(old_node)) {
+        old_node->parent_->left_ = new_node;
+      } else {
+        old_node->parent_->right_ = new_node;
+      }
     }
 
-    if (other != nullptr) {
-      other->parent_ = one->parent_;
+    if (new_node != nullptr) {
+      new_node->parent_ = old_node->parent_;
     }
   }
 
