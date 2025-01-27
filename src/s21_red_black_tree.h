@@ -235,16 +235,18 @@ class RedBlackTree {
   void Transplant(node* old_node, node* new_node) {
     if (IsRoot(old_node)) {
       root_ = new_node;
+      return;
+    }
+
+    node* father{old_node->parent_};
+    if (IsLeftChild(old_node)) {
+      father->left_ = new_node;
     } else {
-      if (IsLeftChild(old_node)) {
-        old_node->parent_->left_ = new_node;
-      } else {
-        old_node->parent_->right_ = new_node;
-      }
+      father->right_ = new_node;
     }
 
     if (new_node != nullptr) {
-      new_node->parent_ = old_node->parent_;
+      new_node->parent_ = father;
     }
   }
 
