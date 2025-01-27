@@ -35,7 +35,7 @@ class RedBlackTree {
  public:
   using node = Node<Key, T>;
   using value_type = std::pair<const Key, T>;
-  using key_type = Key;
+  // using key_type = Key;
   // using mapped_type = T;
   // using value_type = typename traits::value_type;
   // using pointer = T*;
@@ -99,6 +99,48 @@ class RedBlackTree {
         return {current, false};
       }
     }
+  }
+
+  void erase(const Key& key) {
+    node* current = FindNode(key);
+    if (current == nullptr) {
+      return;
+    }
+
+    node* replacement_node = nullptr;
+
+    // if node have one child or have no children
+    if (current->left_ == nullptr) {
+      replacement_node = current->right_;
+      SwapNode(current, current->right_);
+    } else if (current->right_ == nullptr) {
+      replacement_node = current->left_;
+      SwapNode(current, current->left_);
+    } else {
+      // if node have two children
+      node* min_in_right_subtree = GetMin(current->right_);
+      replacement_node = min_in_right_subtree->right_;
+      if (min_in_right_subtree->parent_ == current) {
+        if (replacement_node != nullptr) {
+          replacement_node->parent_ = min_in_right_subtree;
+        }
+      } else {
+        SwapNode(min_in_right_subtree, min_in_right_subtree->right_);
+        min_in_right_subtree->right_ = current->right_;
+        min_in_right_subtree->right_->parent_ = min_in_right_subtree;
+      }
+      SwapNode(current, min_in_right_subtree);
+      min_in_right_subtree->left_ = current->left_;
+      min_in_right_subtree->left_->parent_ = min_in_right_subtree;
+      min_in_right_subtree->color_ = current->color_;
+    }
+
+    delete current;
+    --size_;
+
+    // if (original_color == NodeColor::BLACK) {
+    //     EnsureValidityAfterDelete(replacement_node);
+    // }
   }
 
   void RotateLeft(node* us) {
@@ -167,7 +209,7 @@ class RedBlackTree {
     }
   }
 
-  node* FindNode(const key_type& key) {
+  node* FindNode(const Key& key) {
     if (root_ == nullptr) {
       return nullptr;
     }
@@ -306,6 +348,36 @@ class RedBlackTree {
       uncle->color_ = NodeColor::BLACK;
     }
     grandfather->color_ = NodeColor::RED;
+  }
+
+  void SwapNode(node* one, node* other) {
+    if (IsRoot(one)) {
+      root_ = other;
+    } else if (one == one->parent_->left_) {
+      one->parent_->left_ = other;
+    } else {
+      one->parent_->right_ = other;
+    }
+
+    if (other != nullptr) {
+      other->parent_ = one->parent_;
+    }
+  }
+
+  node* GetMin(node* us) {
+    node* current = us;
+    while (current->left_ != nullptr) {
+      current = current->left_;
+    }
+    return current;
+  }
+
+  node* GetMax(node* us) {
+    node* current = us;
+    while (current->right_ != nullptr) {
+      current = current->right_;
+    }
+    return current;
   }
 
   void DeleteSubtree(node* n) {
