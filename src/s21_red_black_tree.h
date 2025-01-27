@@ -25,13 +25,13 @@ class Node {
 #pragma GCC diagnostic pop
 
 template <typename Key, typename T>
-class Tree;
+class RedBlackTree;
 
 template <typename Key, typename T>
-void print_tree(const Tree<Key, T>& tree);
+void print_tree(const RedBlackTree<Key, T>& tree);
 
 template <typename Key, typename T>
-class Tree {
+class RedBlackTree {
  public:
   using node = Node<Key, T>;
   using value_type = std::pair<const Key, T>;
@@ -43,13 +43,13 @@ class Tree {
   // using reference = typename traits::reference;
   // using const_reference = typename traits::const_reference;
   using size_type = std::size_t;
-  friend void print_tree<Key, T>(const Tree<Key, T>&);
+  friend void print_tree<Key, T>(const RedBlackTree<Key, T>&);
 
-  Tree() : root_(nullptr), size_(0) {}
-  Tree(const Tree&) = delete;
-  Tree& operator=(const Tree&) = delete;
-  Tree(Tree&& other) = delete;
-  Tree& operator=(Tree&& other) = delete;
+  RedBlackTree() : root_(nullptr), size_(0) {}
+  RedBlackTree(const RedBlackTree&) = delete;
+  RedBlackTree& operator=(const RedBlackTree&) = delete;
+  RedBlackTree(RedBlackTree&& other) = delete;
+  RedBlackTree& operator=(RedBlackTree&& other) = delete;
 
   // void insert(const Key& key, const T& obj) {
   //   if (root_ == nullptr) {
@@ -126,7 +126,6 @@ class Tree {
 
     if (us_is_root) {
       root_ = right_child;
-      root_->color_ = NodeColor::BLACK;
     }
   }
 
@@ -186,43 +185,71 @@ class Tree {
     }
   }
 
-  void RecolorFatherUncleGrandpa(node* us) {
-    node* uncle(GetUncle(us));
-    node* father{us->parent_};
-    node* grandfather{father->parent_};
-
-    father->color_ = NodeColor::BLACK;
-    if (uncle) {
-      uncle->color_ = NodeColor::BLACK;
-    }
-    if (IsRoot(grandfather) == false) {
-      grandfather->color_ = NodeColor::RED;
-    }
-  }
-
-  node* get_root() { return root_; }
+  node* get_root() const { return root_; }
 
  private:
   void EnsureValidity(node* us) {
     if (IsRoot(us)) {
+      us->color_ = NodeColor::BLACK;
       return;
     }
     if (us->parent_->color_ == NodeColor::BLACK) {
       return;
     }
-    if (GrandFatherExists(us)) {
-      if (UncleIsRed(us)) {
-        RecolorFatherUncleGrandpa(us);
-      } else {
-        // uncle color is black
-        if (IsInnerChild(us)) {
-          // TreatInnerChild(us);
-          // RotateLeft(us->parent_);
-        }
+    if (GrandFatherExists(us) == false) {
+      us->parent_->color_ = NodeColor::BLACK;
+      return;
+    }
+    // At this point we know:
+    // 1. Node is not root
+    // 2. Parent is red
+    // 3. Grandfather exists
 
+    node* grandfather = us->parent_->parent_;
+
+    if (UncleIsRed(us)) {
+      // father and uncle are red
+      RecolorFatherUncleGrandpa(us);
+      EnsureValidity(grandfather);
+    } else {
+      // uncle color is black
+      if (IsInnerChild(us)) {
+        TreatInnerChild(us);
+      } else {
         TreatOuterChild(us);
       }
     }
+    // Ensure root remains black after any modifications
+    root_->color_ = NodeColor::BLACK;
+  }
+
+  void TreatOuterChild(node* us) {
+    node* father{us->parent_};
+    node* grandfather{us->parent_->parent_};
+
+    SwapColors(father, grandfather);
+    if (IsLeftChild(father)) {
+      RotateRight(grandfather);
+    } else {
+      RotateLeft(grandfather);
+    }
+  }
+
+  void TreatInnerChild(node* us) {
+    node* father{us->parent_};
+    if (IsLeftChild(father)) {
+      RotateLeft(father);
+      TreatOuterChild(us->left_);
+    } else {
+      RotateRight(father);
+      TreatOuterChild(us->right_);
+    }
+  }
+
+  void SwapColors(node* first, node* other) {
+    NodeColor temp{first->color_};
+    first->color_ = other->color_;
+    other->color_ = temp;
   }
 
   bool UncleIsRed(node* us) {
@@ -237,25 +264,6 @@ class Tree {
     node* father{us->parent_};
     return (IsLeftChild(us) && IsRightChild(father)) ||
            (IsRightChild(us) && IsLeftChild(father));
-  }
-  void TreatInnerChild(node* us) {
-    if (IsLeftChild(us)) {
-      // MinorRotation(us);
-    } else {
-      // OtherMinorRotation(us);
-    }
-  }
-
-  void TreatOuterChild(node* us) {
-    if (IsLeftChild(us)) {
-    }
-    {
-      node* grandfather{us->parent_->parent_};
-
-      RotateLeft(grandfather);
-      // std::cout << "sdfgdfgdfg";
-    }
-    // MinorRotation(us);
   }
 
   bool IsLeftChild(node* us) {
@@ -277,19 +285,37 @@ class Tree {
     }
   }
 
+  void RecolorFatherUncleGrandpa(node* us) {
+    if (GrandFatherExists(us) == false) {
+      if (us->parent_) {
+        us->parent_->color_ = NodeColor::BLACK;
+      }
+      return;
+    }
+    node* uncle{GetUncle(us)};
+    node* father{us->parent_};
+    node* grandfather{father->parent_};
+
+    father->color_ = NodeColor::BLACK;
+    if (uncle) {
+      uncle->color_ = NodeColor::BLACK;
+    }
+    grandfather->color_ = NodeColor::RED;
+  }
+
   node* root_;
   size_type size_;
 };
 
-namespace print_color {  // Anonymous namespace for color codes
+namespace print_color {
 const char* RED = "\033[1;31m";
 const char* BLACK = "\033[2;37m";
 const char* RESET = "\033[0m";
 }  // namespace print_color
 
-template <typename KeyType, typename ValueType>
-void print_tree_helper(const Node<KeyType, ValueType>* root,
-                       std::string prefix = "", std::string child_prefix = "") {
+template <typename Key, typename T>
+void print_tree_helper(const Node<Key, T>* root, std::string prefix = "",
+                       std::string child_prefix = "") {
   if (!root) {
     std::cout << print_color::BLACK << prefix << "null" << print_color::RESET
               << '\n';
@@ -316,7 +342,7 @@ void print_tree_helper(const Node<KeyType, ValueType>* root,
 
 // Main print function
 template <typename Key, typename T>
-void print_tree(const Tree<Key, T>& tree) {
+void print_tree(const RedBlackTree<Key, T>& tree) {
   std::cout << "\nTree contents:\n";
   print_tree_helper(tree.root_);
   std::cout << "Size: " << tree.size_ << "\n\n";
