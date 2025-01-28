@@ -262,66 +262,64 @@ class RedBlackTree {
   }
 
   void RemovalFixup(node* x, node* parent_of_x) {
-    if (IsRoot(x)) {
-      x->color_ = NodeColor::BLACK;
-      return;
-    }
-    node* sibling{GetSibling(x, parent_of_x)};
-    // print_tree(*this);
+    // if (IsRoot(x)) {
+    //   x->color_ = NodeColor::BLACK;
+    //   return;
+    // }
 
-    // case 3
-    if (SiblingIsBlack(x, parent_of_x) &&
-        IsBlack(GetSibling(x, parent_of_x)->left_) &&
-        IsBlack(GetSibling(x, parent_of_x)->right_)) {
-      sibling->color_ = NodeColor::RED;
-      x = parent_of_x;
-      parent_of_x = parent_of_x->parent_;
-      return;
-    }
-    // case 4
-    if (SiblingIsRed(x, parent_of_x)) {
-      SwapColors(parent_of_x, sibling);
+    while (x != root_ && IsBlack(x)) {
+      node* sibling{GetSibling(x, parent_of_x)};
 
-      if (IsRightChild(sibling)) {
-        RotateLeft(parent_of_x);
-      } else {
-        RotateRight(parent_of_x);
+      // case 4: red sibling
+      if (SiblingIsRed(x, parent_of_x)) {
+        SwapColors(parent_of_x, sibling);
+
+        if (IsRightChild(sibling)) {
+          RotateLeft(parent_of_x);
+        } else {
+          RotateRight(parent_of_x);
+        }
+        sibling = GetSibling(x, parent_of_x);
+      } else {  // black sibling
+
+        node* siblings_child_near_to_x{IsRightChild(sibling) ? sibling->left_
+                                                             : sibling->right_};
+        node* siblings_child_far_from_x{IsRightChild(sibling) ? sibling->right_
+                                                              : sibling->left_};
+
+        // case 3: black sibling and both children black
+        if (IsBlack(siblings_child_near_to_x) &&
+            IsBlack(siblings_child_far_from_x)) {
+          sibling->color_ = NodeColor::RED;
+          x = parent_of_x;
+          parent_of_x = parent_of_x->parent_;
+        }
+        // red child present
+        else {
+          // case 5 black sibling and near child red
+          if (IsBlack(siblings_child_far_from_x) && siblings_child_near_to_x &&
+              siblings_child_near_to_x->color_ == NodeColor::RED) {
+            SwapColors(sibling, siblings_child_near_to_x);
+
+            IsRightChild(sibling) ? RotateRight(sibling) : RotateLeft(sibling);
+
+            // updating
+            sibling = GetSibling(x, parent_of_x);
+            siblings_child_near_to_x =
+                IsRightChild(sibling) ? sibling->left_ : sibling->right_;
+            siblings_child_far_from_x =
+                IsRightChild(sibling) ? sibling->right_ : sibling->left_;
+          }
+          // case 6 black sibling and far child red
+          SwapColors(parent_of_x, sibling);
+          IsRightChild(sibling) ? RotateLeft(parent_of_x)
+                                : RotateRight(parent_of_x);
+          siblings_child_far_from_x->color_ = NodeColor::BLACK;
+          x = root_;
+        }
       }
-      sibling = GetSibling(x, parent_of_x);
-    }
-
-    node* siblings_child_near_to_x{IsRightChild(sibling) ? sibling->left_
-                                                         : sibling->right_};
-    node* siblings_child_far_from_x{IsRightChild(sibling) ? sibling->right_
-                                                          : sibling->left_};
-    // case 5
-
-    if (SiblingIsBlack(x, parent_of_x) && IsBlack(siblings_child_far_from_x) &&
-        siblings_child_near_to_x &&
-        siblings_child_near_to_x->color_ == NodeColor::RED) {
-      SwapColors(sibling, siblings_child_near_to_x);
-
-      IsRightChild(sibling) ? RotateRight(sibling) : RotateLeft(sibling);
-      sibling = GetSibling(x, parent_of_x);
-    }
-
-    siblings_child_near_to_x =
-        IsRightChild(sibling) ? sibling->left_ : sibling->right_;
-    siblings_child_far_from_x =
-        IsRightChild(sibling) ? sibling->right_ : sibling->left_;
-
-    // case 6
-    if (SiblingIsBlack(x, parent_of_x) && IsBlack(siblings_child_near_to_x) &&
-        siblings_child_far_from_x &&
-        siblings_child_far_from_x->color_ == NodeColor::RED) {
-      SwapColors(parent_of_x, sibling);
-      IsRightChild(sibling) ? RotateLeft(parent_of_x)
-                            : RotateRight(parent_of_x);
-      siblings_child_far_from_x->color_ = NodeColor::BLACK;
-      return;
     }
   }
-
 #if 0
   void RemovalFixup2(node* x, node* parent_of_x) {
     // x might be nullptr, representing a "double black" node
