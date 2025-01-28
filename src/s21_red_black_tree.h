@@ -245,14 +245,166 @@ class RedBlackTree {
       replacement->left_ = removal_target->left_;
       replacement->left_->parent_ = replacement;
       replacement->color_ = removal_target->color_;
+    }
 
-      delete removal_target;
-      --size_;
-      if (removed_node_original_color == NodeColor::BLACK) {
-        RemovalFixup(node_to_fixup, parent_of_node_to_fixup);
-      }
+    delete removal_target;
+    --size_;
+    if (removed_node_original_color == NodeColor::BLACK) {
+      RemovalFixup(node_to_fixup, parent_of_node_to_fixup);
     }
   }
+
+  void RemovalFixup(node* x, node* parent_of_x) {
+    if (IsRoot(x)) {
+      x->color_ = NodeColor::BLACK;
+      std::cout << x << parent_of_x << "neiw";
+    }
+    // print_tree(*this);
+
+    // case 4
+    if (SiblingIsRed(x, parent_of_x)) {
+      node* sibling{GetSibling(x, parent_of_x)};
+      SwapColors(parent_of_x, sibling);
+
+      print_tree(*this);
+      if (IsRightChild(sibling)) {
+        RotateLeft(parent_of_x);
+      }
+    }
+
+    node* sibling{GetSibling(x, parent_of_x)};
+
+    node* siblings_child_near_to_x{IsRightChild(sibling) ? sibling->left_
+                                                         : sibling->right_};
+
+    node* siblings_child_far_from_x{IsRightChild(sibling) ? sibling->right_
+                                                          : sibling->left_};
+
+    // case 5
+    if (SiblingIsBlack(x, parent_of_x) &&
+        siblings_child_near_to_x->color_ == NodeColor::RED &&
+        IsBlack(siblings_child_far_from_x)) {
+      SwapColors(sibling, siblings_child_near_to_x);
+
+      IsRightChild(sibling) ? RotateRight(sibling) : RotateLeft(sibling);
+      print_tree(*this);
+    }
+
+    sibling = GetSibling(x, parent_of_x);
+    siblings_child_near_to_x =
+        IsRightChild(sibling) ? sibling->left_ : sibling->right_;
+    siblings_child_far_from_x =
+        IsRightChild(sibling) ? sibling->right_ : sibling->left_;
+    // std::cout << SiblingIsBlack(x, parent_of_x);
+    // case 6
+    if (SiblingIsBlack(x, parent_of_x) &&
+        siblings_child_far_from_x->color_ == NodeColor::RED &&
+        IsBlack(siblings_child_near_to_x)) {
+      SwapColors(parent_of_x, sibling);
+      IsRightChild(sibling) ? RotateLeft(parent_of_x)
+                            : RotateRight(parent_of_x);
+      siblings_child_far_from_x->color_ = NodeColor::BLACK;
+    }
+    print_tree(*this);
+  }
+
+#if 0
+  void RemovalFixup2(node* x, node* parent_of_x) {
+    // x might be nullptr, representing a "double black" node
+    while (x != root_ && (x == nullptr || x->color_ == NodeColor::BLACK)) {
+      // Left case: x is left child
+      if (x == parent_of_x->left_) {
+        node* w = parent_of_x->right_;  // w is x's sibling
+        if (w == nullptr) break;        // Protect against nullptr sibling
+
+        // Case 1: Sibling w is red
+        if (w->color_ == NodeColor::RED) {
+          w->color_ = NodeColor::BLACK;
+          parent_of_x->color_ = NodeColor::RED;
+          RotateLeft(parent_of_x);
+          w = parent_of_x->right_;
+          if (w == nullptr) break;  // Check again after rotation
+        }
+
+        // Case 2: Both of w's children are black
+        if ((w->left_ == nullptr || w->left_->color_ == NodeColor::BLACK) &&
+            (w->right_ == nullptr || w->right_->color_ == NodeColor::BLACK)) {
+          w->color_ = NodeColor::RED;
+          x = parent_of_x;
+          parent_of_x = x->parent_;
+        } else {
+          // Case 3: w's right child is black (left is red)
+          if (w->right_ == nullptr || w->right_->color_ == NodeColor::BLACK) {
+            if (w->left_ != nullptr) {
+              w->left_->color_ = NodeColor::BLACK;
+            }
+            w->color_ = NodeColor::RED;
+            RotateRight(w);
+            w = parent_of_x->right_;
+            if (w == nullptr) break;
+          }
+
+          // Case 4: w's right child is red
+          w->color_ = parent_of_x->color_;
+          parent_of_x->color_ = NodeColor::BLACK;
+          if (w->right_ != nullptr) {
+            w->right_->color_ = NodeColor::BLACK;
+          }
+          RotateLeft(parent_of_x);
+          x = root_;  // Terminates the loop
+        }
+      }
+      // Right case: x is right child (mirror of left case)
+      else {
+        node* w = parent_of_x->left_;  // w is x's sibling
+        if (w == nullptr) break;       // Protect against nullptr sibling
+
+        // Case 1: Sibling w is red
+        if (w->color_ == NodeColor::RED) {
+          w->color_ = NodeColor::BLACK;
+          parent_of_x->color_ = NodeColor::RED;
+          RotateRight(parent_of_x);
+          w = parent_of_x->left_;
+          if (w == nullptr) break;  // Check again after rotation
+        }
+
+        // Case 2: Both of w's children are black
+        if ((w->left_ == nullptr || w->left_->color_ == NodeColor::BLACK) &&
+            (w->right_ == nullptr || w->right_->color_ == NodeColor::BLACK)) {
+          w->color_ = NodeColor::RED;
+          x = parent_of_x;
+          parent_of_x = x->parent_;
+        } else {
+          // Case 3: w's left child is black (right is red)
+          if (w->left_ == nullptr || w->left_->color_ == NodeColor::BLACK) {
+            if (w->right_ != nullptr) {
+              w->right_->color_ = NodeColor::BLACK;
+            }
+            w->color_ = NodeColor::RED;
+            RotateLeft(w);
+            w = parent_of_x->left_;
+            if (w == nullptr) break;
+          }
+
+          // Case 4: w's left child is red
+          w->color_ = parent_of_x->color_;
+          parent_of_x->color_ = NodeColor::BLACK;
+          if (w->left_ != nullptr) {
+            w->left_->color_ = NodeColor::BLACK;
+          }
+          RotateRight(parent_of_x);
+          x = root_;  // Terminates the loop
+        }
+      }
+    }
+
+    // Ensure root and x (if it exists) are black
+    if (x != nullptr) {
+      x->color_ = NodeColor::BLACK;
+    }
+    root_->color_ = NodeColor::BLACK;
+  }
+#endif
 
   void Transplant(node* old_node, node* new_node) {
     if (IsRoot(old_node)) {
@@ -271,11 +423,6 @@ class RedBlackTree {
     if (new_node != nullptr) {
       new_node->parent_ = father;
     }
-  }
-
-  void RemovalFixup(node* node_to_fixup, node* parent_of_node_to_fixup) {
-    (void)node_to_fixup;
-    (void)parent_of_node_to_fixup;
   }
 
   node* GetMin(node* us) {
@@ -358,6 +505,42 @@ class RedBlackTree {
     other->color_ = temp;
   }
 
+  bool IsBlack(node* x) {
+    if (x == nullptr) {
+      return true;
+    } else {
+      return x->color_ == NodeColor::BLACK;
+    }
+  }
+
+  node* GetSiblingFromParent(node* parent) {
+    if (parent->left_ == nullptr) {
+      return parent->right_;
+    } else {
+      return parent->left_;
+    }
+  }
+
+  node* GetSibling(node* us, node* parent) {
+    if (us == nullptr) {
+      return GetSiblingFromParent(parent);
+    }
+    if (IsLeftChild(us)) {
+      return parent->right_;
+    } else {
+      return parent->left_;
+    }
+  }
+
+  bool SiblingIsRed(node* us, node* parent) {
+    node* sibling{GetSibling(us, parent)};
+    return sibling && sibling->color_ == NodeColor::RED;
+  }
+
+  bool SiblingIsBlack(node* us, node* parent) {
+    return !SiblingIsRed(us, parent);
+  }
+
   bool UncleIsRed(node* us) {
     node* uncle{GetUncle(us)};
     if (uncle == nullptr) {
@@ -377,7 +560,13 @@ class RedBlackTree {
   }
   bool IsRightChild(node* us) { return !IsLeftChild(us); };
 
-  bool IsRoot(node* us) { return us->parent_ == nullptr; };
+  bool IsRoot(node* us) {
+    if (us == nullptr) {
+      return false;
+    }
+    return us->parent_ == nullptr;
+  }
+
   bool GrandFatherExists(node* us) {
     return us && us->parent_ && us->parent_->parent_;
   }

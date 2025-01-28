@@ -340,6 +340,34 @@ TEST(RedBlackTreeEraseNoFixup, ConsecutiveRemoveRed) {
   EXPECT_TRUE(ValidateRedBlackTree(tree));
 }
 
+TEST(RedBlackTreeTest, EraseDoubleBlackWithRedSibling) {
+  s21::RedBlackTree<int, int> tree;
+
+  // Create this structure:
+  //       20B
+  //      /  \
+  //    10B   30R
+  //         /  \
+  //       25B   35B
+  //      /
+  //    23R
+
+  tree.insert({20, 999});  // Root will be black
+  tree.insert({10, 999});  // Will be black
+  tree.insert({30, 999});  // Will be red
+  tree.insert({25, 999});  // Will be black
+  tree.insert({35, 999});  // Will be black
+  tree.insert({23, 999});  // Will be black
+  // EXPECT_TRUE(ValidateRedBlackTree(tree));
+  s21::print_tree(tree);  // Verify initial structure
+
+  // When we delete 10, it creates a double-black at its position
+  // and its sibling (30) is red, triggering Case 1 of fixup
+  tree.erase(10);
+  EXPECT_TRUE(ValidateRedBlackTree(tree));
+  // s21::print_tree(tree);  // See the result
+}
+
 #if 0
 
 
