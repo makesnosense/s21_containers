@@ -235,6 +235,7 @@ class RedBlackTree {
   void Transplant(node* old_node, node* new_node) {
     if (IsRoot(old_node)) {
       root_ = new_node;
+      new_node->parent_ = nullptr;
       return;
     }
 
