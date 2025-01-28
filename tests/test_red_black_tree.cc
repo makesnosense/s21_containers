@@ -343,14 +343,14 @@ TEST(RedBlackTreeEraseNoFixup, ConsecutiveRemoveRed) {
 TEST(RedBlackTreeTest, EraseDoubleBlackWithRedSibling) {
   s21::RedBlackTree<int, int> tree;
 
-  // Create this structure:
+  /*// Create this structure:
   //       20B
   //      /  \
   //    10B   30R
   //         /  \
   //       25B   35B
   //      /
-  //    23R
+  //    23R                 */
 
   tree.insert({20, 999});  // Root will be black
   tree.insert({10, 999});
@@ -368,28 +368,29 @@ TEST(RedBlackTreeTest, EraseDoubleBlackWithRedSibling) {
   // s21::print_tree(tree);  // See the result
 }
 
-// TEST(RedBlackTreeTest, EraseDoubleBlackWithBlackSiblingBlackChildren) {
-//   s21::RedBlackTree<int, int> tree;
+TEST(RedBlackTreeTest, EraseDoubleBlackWithBlackSiblingBlackChildren) {
+  s21::RedBlackTree<int, int> tree;
 
-//   tree.insert({20, 999});
-//   tree.insert({10, 999});
-//   tree.insert({30, 999});
-//   tree.insert({5, 999});
-//   tree.insert({40, 999});
-//   s21::print_tree(tree);
-//   tree.erase(5);
-//   tree.erase(10);
-//   // When we delete 10, it creates a double-black at its position
-//   // and its sibling (30) is black with two black children
-//   // tree.erase(10);
+  tree.insert({20, 999});
+  tree.insert({10, 999});
+  tree.insert({30, 999});
+  tree.insert({5, 999});
+  tree.insert({40, 999});
 
-//   // Print result
+  // s21::print_tree(tree);
 
-//   EXPECT_TRUE(ValidateRedBlackTree(tree));
-// }
+  tree.erase(5);
+  tree.erase(40);
 
-#if 0
+  // s21::print_tree(tree);
 
+  tree.erase(10);
+
+  // Print result
+  // s21::print_tree(tree);
+
+  EXPECT_TRUE(ValidateRedBlackTree(tree));
+}
 
 TEST(RedBlackTreeTest, EraseLeafNode) {
   s21::RedBlackTree<int, int> tree;
@@ -460,12 +461,24 @@ TEST(RedBlackTreeTest, EraseFromEmptyTree) {
 //     tree.insert({key, 999});
 //   }
 
+//   tree.erase(10);
+//   tree.erase(5);
+
+//   s21::print_tree(tree);
+
+//   tree.erase(15);
+
+//   s21::print_tree(tree);
+
 //   // Remove all keys one by one
-//   for (int key : keys) {
-//     tree.erase(key);
-//     EXPECT_TRUE(ValidateRedBlackTree(tree));
-//   }
-// }
+//   // for (int key : keys) {
+//   //   if (key == 15) continue;
+//   //   std::cout << "\n\n\n\n" << key << "\n\n\n\n";
+//   //   tree.erase(key);
+//   //   s21::print_tree(tree);
+//   //   EXPECT_TRUE(ValidateRedBlackTree(tree));
+//   // }
+// } // seg fault
 
 TEST(RedBlackTreeTest, EraseRedNode) {
   s21::RedBlackTree<int, int> tree;
@@ -528,5 +541,5 @@ TEST(RedBlackTreeTest, RepeatedEraseInsert) {
     EXPECT_TRUE(ValidateRedBlackTree(tree));
   }
 }
-
+#if 0
 #endif
