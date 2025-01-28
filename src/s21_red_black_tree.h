@@ -56,16 +56,6 @@ class RedBlackTree {
   RedBlackTree& operator=(const RedBlackTree&) = delete;
   RedBlackTree& operator=(RedBlackTree&& other) = delete;
 
-  // void insert(const Key& key, const T& obj) {
-  //   if (root_ == nullptr) {
-  //     root_ = new node(key, obj);
-  //   }
-  //   if (root_->left_->data_.first < key) {
-  //     insert(key, obj);
-
-  //   }
-  // }
-
   std::pair<node*, bool> insert(const value_type& value) {
     if (root_ == nullptr) {
       root_ = new node(value.first, value.second);
@@ -81,7 +71,7 @@ class RedBlackTree {
           current->left_ = new node(value.first, value.second);
           current->left_->parent_ = current;
           ++size_;
-          InsertFixUp(current->left_);
+          InsertFixup(current->left_);
 
           return {current->left_, true};
         }
@@ -91,7 +81,7 @@ class RedBlackTree {
           current->right_ = new node(value.first, value.second);
           current->right_->parent_ = current;
           ++size_;
-          InsertFixUp(current->right_);
+          InsertFixup(current->right_);
           return {current->right_, true};
         }
         current = current->right_;
@@ -191,47 +181,72 @@ class RedBlackTree {
   }
 
   void erase(const Key& key) {
-    node* current = FindNode(key);
-    if (current == nullptr) {
-      return;
+    node* target = FindNode(key);
+    if (target == nullptr) {
+      return;  // Key not found
     }
 
-    node* replacement_node{nullptr};
-
-    // if node have one child or have no children
-    if (current->left_ == nullptr) {
-      replacement_node = current->right_;
-      Transplant(current, current->right_);
-    } else if (current->right_ == nullptr) {
-      replacement_node = current->left_;
-      Transplant(current, current->left_);
-    } else {
-      // if node have two children
-      node* min_in_right_subtree = GetMin(current->right_);
-      replacement_node = min_in_right_subtree->right_;
-
-      if (min_in_right_subtree->parent_ != current) {
-        Transplant(min_in_right_subtree, replacement_node);
-        min_in_right_subtree->right_ = current->right_;
-        min_in_right_subtree->right_->parent_ = min_in_right_subtree;
-      }
-      Transplant(current, min_in_right_subtree);
-      min_in_right_subtree->left_ = current->left_;
-      min_in_right_subtree->left_->parent_ = min_in_right_subtree;
-      min_in_right_subtree->color_ = current->color_;
-    }
-
-    delete current;
-    --size_;
-
-    // if (original_color == NodeColor::BLACK) {
-    //     EnsureValidityAfterDelete(replacement_node);
-    // }
+    RemoveNode(target);
   }
 
   node* get_root() const { return root_; }
 
  private:
+  void RemoveNode(node* removal_target) {
+    node* replacement{nullptr};    // Node that will take target's position
+    node* node_to_fixup{nullptr};  // Node that might need RB property fixes
+    node* parent_of_node_to_fixup{nullptr};  // Parent of node_to_fixup
+    NodeColor removed_node_original_color{removal_target->color_};
+
+    // Case 1: removal_target has at most one child
+    if (removal_target->left_ == nullptr) {
+      replacement = removal_target->right_;  // replacement might be nullptr
+      node_to_fixup = replacement;  // here node_to_fixup IS the replacement
+      parent_of_node_to_fixup =
+          removal_target->parent_;  // cause replacement can be nullptr
+      Transplant(removal_target, replacement);
+    } else if (removal_target->right_ == nullptr) {
+      replacement = removal_target->left_;
+      node_to_fixup = replacement;  // same here
+      parent_of_node_to_fixup = removal_target->parent_;
+      Transplant(removal_target, replacement);
+    }
+    // Case 2: removal_target has both children
+    else {
+      replacement =
+          GetMin(removal_target->right_);  // successor becomes replacement
+      removed_node_original_color = replacement->color_;
+      node_to_fixup =
+          replacement->right_;  // node_to_fixup is NOT the replacement
+
+      //  The replacement (successor) is a direct child of removal target
+      if (replacement->parent_ == removal_target) {
+        // parent_of_node_to_fixup becomes the replacement because after
+        // restructuring, node_to_fixup will be directly under the replacement
+        parent_of_node_to_fixup = replacement;
+      }
+      // The replacement (successor) is deeper in the right subtree
+      else {
+        parent_of_node_to_fixup = replacement->parent_;
+        Transplant(replacement, node_to_fixup);
+        // ensuring the successor takes over removed target's connections
+        replacement->right_ = removal_target->right_;
+        replacement->right_->parent_ = replacement;
+      }
+
+      Transplant(removal_target, replacement);
+      replacement->left_ = removal_target->left_;
+      replacement->left_->parent_ = replacement;
+      replacement->color_ = removal_target->color_;
+
+      delete removal_target;
+      --size_;
+      if (removed_node_original_color == NodeColor::BLACK) {
+        RemovalFixup(node_to_fixup, parent_of_node_to_fixup);
+      }
+    }
+  }
+
   void Transplant(node* old_node, node* new_node) {
     if (IsRoot(old_node)) {
       root_ = new_node;
@@ -251,6 +266,11 @@ class RedBlackTree {
     }
   }
 
+  void RemovalFixup(node* node_to_fixup, node* parent_of_node_to_fixup) {
+    (void)node_to_fixup;
+    (void)parent_of_node_to_fixup;
+  }
+
   node* GetMin(node* us) {
     node* current = us;
     while (current->left_ != nullptr) {
@@ -267,7 +287,7 @@ class RedBlackTree {
     return current;
   }
 
-  void InsertFixUp(node* us) {
+  void InsertFixup(node* us) {
     if (IsRoot(us)) {
       us->color_ = NodeColor::BLACK;
       return;
@@ -289,20 +309,20 @@ class RedBlackTree {
     if (UncleIsRed(us)) {
       // father and uncle are red
       RecolorFatherUncleGrandpa(us);
-      InsertFixUp(grandfather);
+      InsertFixup(grandfather);
     } else {
       // uncle color is black
       if (IsInnerChild(us)) {
-        InsertFixUpTreatInnerChild(us);
+        InsertFixupTreatInnerChild(us);
       } else {
-        InsertFixUpTreatOuterChild(us);
+        InsertFixupTreatOuterChild(us);
       }
     }
     // Ensure root remains black after any modifications
     root_->color_ = NodeColor::BLACK;
   }
 
-  void InsertFixUpTreatOuterChild(node* us) {
+  void InsertFixupTreatOuterChild(node* us) {
     node* father{us->parent_};
     node* grandfather{us->parent_->parent_};
 
@@ -314,14 +334,14 @@ class RedBlackTree {
     }
   }
 
-  void InsertFixUpTreatInnerChild(node* us) {
+  void InsertFixupTreatInnerChild(node* us) {
     node* father{us->parent_};
     if (IsLeftChild(father)) {
       RotateLeft(father);
-      InsertFixUpTreatOuterChild(us->left_);
+      InsertFixupTreatOuterChild(us->left_);
     } else {
       RotateRight(father);
-      InsertFixUpTreatOuterChild(us->right_);
+      InsertFixupTreatOuterChild(us->right_);
     }
   }
 
