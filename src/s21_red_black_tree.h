@@ -265,8 +265,12 @@ class RedBlackTree {
     if (SiblingIsBlack(x, parent_of_x) &&
         IsBlack(GetSibling(x, parent_of_x)->left_) &&
         IsBlack(GetSibling(x, parent_of_x)->right_)) {
+      node* sibling{GetSibling(x, parent_of_x)};
+      sibling->color_ = NodeColor::RED;
+      x = parent_of_x;
+      parent_of_x = parent_of_x->parent_;
+      return;
     }
-
     // case 4
     if (SiblingIsRed(x, parent_of_x)) {
       node* sibling{GetSibling(x, parent_of_x)};
@@ -283,6 +287,9 @@ class RedBlackTree {
     node* siblings_child_far_from_x{IsRightChild(sibling) ? sibling->right_
                                                           : sibling->left_};
     // case 5
+    // print_tree(*this);
+    // std::cout << "\n\n x: " << x->data_.first
+    //           << "\n perent_of_x: " << parent_of_x->data_.first;
     if (SiblingIsBlack(x, parent_of_x) &&
         siblings_child_near_to_x->color_ == NodeColor::RED &&
         IsBlack(siblings_child_far_from_x)) {
