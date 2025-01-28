@@ -261,25 +261,27 @@ class RedBlackTree {
     }
     // print_tree(*this);
 
+    // case 3
+    if (SiblingIsBlack(x, parent_of_x) &&
+        IsBlack(GetSibling(x, parent_of_x)->left_) &&
+        IsBlack(GetSibling(x, parent_of_x)->right_)) {
+    }
+
     // case 4
     if (SiblingIsRed(x, parent_of_x)) {
       node* sibling{GetSibling(x, parent_of_x)};
       SwapColors(parent_of_x, sibling);
 
-      print_tree(*this);
       if (IsRightChild(sibling)) {
         RotateLeft(parent_of_x);
       }
     }
 
     node* sibling{GetSibling(x, parent_of_x)};
-
     node* siblings_child_near_to_x{IsRightChild(sibling) ? sibling->left_
                                                          : sibling->right_};
-
     node* siblings_child_far_from_x{IsRightChild(sibling) ? sibling->right_
                                                           : sibling->left_};
-
     // case 5
     if (SiblingIsBlack(x, parent_of_x) &&
         siblings_child_near_to_x->color_ == NodeColor::RED &&
@@ -287,7 +289,6 @@ class RedBlackTree {
       SwapColors(sibling, siblings_child_near_to_x);
 
       IsRightChild(sibling) ? RotateRight(sibling) : RotateLeft(sibling);
-      print_tree(*this);
     }
 
     sibling = GetSibling(x, parent_of_x);
@@ -304,8 +305,8 @@ class RedBlackTree {
       IsRightChild(sibling) ? RotateLeft(parent_of_x)
                             : RotateRight(parent_of_x);
       siblings_child_far_from_x->color_ = NodeColor::BLACK;
+      return;
     }
-    print_tree(*this);
   }
 
 #if 0
