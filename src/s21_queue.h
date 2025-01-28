@@ -7,50 +7,7 @@
 
 #include "s21_base.h"
 #include "s21_deque.h"
-/*
-value_type
 
-T the template parameter T
-
-reference
-
-T & defines the type of the reference to an element
-
-const_reference
-
-const T & defines the type of the constant reference
-
-size_type
-
-size_t defines the type of the container size (standard type is size_t)
-
-queue()+
-
-queue(std::initializer_list<value_type> const &items)-
-
-queue(const queue &q)
-
-queue(queue &&q)
-
-~queue()+
-
-operator=(queue &&q)+
-
-const_reference front()+
-
-const_reference back()+
-
-bool empty()+
-
-size_type size()+
-
-void push(const_reference value)+
-
-void pop()+
-
-void swap(queue& other)+
-
-*/
 namespace s21 {
 
 template <typename T>
