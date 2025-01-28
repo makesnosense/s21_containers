@@ -196,6 +196,9 @@ class RedBlackTree {
     node* replacement{nullptr};    // Node that will take target's position
     node* node_to_fixup{nullptr};  // Node that might need RB property fixes
     node* parent_of_node_to_fixup{nullptr};  // Parent of node_to_fixup
+
+    // When removing a node, removed_node_original_color stores the color of the
+    // node whose position will be physically empty after all the moves
     NodeColor removed_node_original_color{removal_target->color_};
 
     // Case 1: removal_target has at most one child
@@ -215,7 +218,11 @@ class RedBlackTree {
     else {
       replacement =
           GetMin(removal_target->right_);  // successor becomes replacement
-      removed_node_original_color = replacement->color_;
+
+      removed_node_original_color =
+          replacement->color_;  // We store successor's color because
+      // successor's original position becomes empty
+
       node_to_fixup =
           replacement->right_;  // node_to_fixup is NOT the replacement
 
