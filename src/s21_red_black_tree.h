@@ -193,6 +193,13 @@ class RedBlackTree {
 
  private:
   void RemoveNode(node* removal_target) {
+    // Case 0: we have to remove the only element
+    if (removal_target == root_ && !root_->left_ && !root_->right_) {
+      delete root_;
+      root_ = nullptr;
+      return;
+    }
+
     node* replacement{nullptr};    // Node that will take target's position
     node* node_to_fixup{nullptr};  // Node that might need RB property fixes
     node* parent_of_node_to_fixup{nullptr};  // Parent of node_to_fixup
