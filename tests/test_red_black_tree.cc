@@ -456,7 +456,6 @@ TEST(RedBlackTreeTest, EraseAllNodesSequentially) {
   for (int key : keys) {
     tree.erase(key);
 
-    s21::print_tree(tree);
     EXPECT_TRUE(ValidateRedBlackTree(tree));
   }
 }  // seg fault

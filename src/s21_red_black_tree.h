@@ -262,13 +262,8 @@ class RedBlackTree {
   }
 
   void RemovalFixup(node* x, node* parent_of_x) {
-    // if (IsRoot(x)) {
-    //   x->color_ = NodeColor::BLACK;
-    //   return;
-    // }
-
     while (x != root_ && IsBlack(x)) {
-      node* sibling{GetSibling(x, parent_of_x)};
+      node* sibling = GetSibling(x, parent_of_x);
 
       // case 4: red sibling
       if (SiblingIsRed(x, parent_of_x)) {
@@ -279,13 +274,15 @@ class RedBlackTree {
         } else {
           RotateRight(parent_of_x);
         }
+
         sibling = GetSibling(x, parent_of_x);
       } else {  // black sibling
 
-        node* siblings_child_near_to_x{IsRightChild(sibling) ? sibling->left_
-                                                             : sibling->right_};
         node* siblings_child_far_from_x{IsRightChild(sibling) ? sibling->right_
                                                               : sibling->left_};
+
+        node* siblings_child_near_to_x{IsRightChild(sibling) ? sibling->left_
+                                                             : sibling->right_};
 
         // case 3: black sibling and both children black
         if (IsBlack(siblings_child_near_to_x) &&
@@ -319,6 +316,7 @@ class RedBlackTree {
         }
       }
     }
+    x->color_ = NodeColor::BLACK;
   }
 #if 0
   void RemovalFixup2(node* x, node* parent_of_x) {
