@@ -401,19 +401,24 @@ TEST(ListTest, mismatch) {
   EXPECT_TRUE(*s21_all_even.first);
 }
 TEST(ListTest, equal) {
-  s21::list<int> vec1{1, 2, 3, 4, 5};
-  s21::list<int> vec2{1, 2, 3, 4, 5};
-  s21::list<int> vec3{1, 2, 3, 4};
-  std::list<int> vec11{1, 2, 3, 4, 5};
-  std::list<int> vec21{1, 2, 3, 4, 5};
-  std::list<int> vec31{1, 2, 3, 4};
-  EXPECT_TRUE(std::equal(vec1.begin(), vec1.end(), vec2.begin()));
-  bool a = vec1.size() == vec3.size() &&
-           std::equal(vec1.begin(), vec1.end(), vec3.begin());
+  s21::list<int> s21_numbers_list{1, 2, 3, 4, 5};
+  s21::list<int> s21_numbers_list_equal{1, 2, 3, 4, 5};
+  s21::list<int> s21_numbers_list_not_equal{1, 2, 3, 4};
+  std::list<int> stl_numbers_list{1, 2, 3, 4, 5};
+  std::list<int> stl_numbers_list_equal{1, 2, 3, 4, 5};
+  std::list<int> stl_numbers_list_not_equal{1, 2, 3, 4};
+
+  EXPECT_TRUE(std::equal(s21_numbers_list.begin(), s21_numbers_list.end(),
+                         s21_numbers_list_equal.begin()));
+  bool a = s21_numbers_list.size() == s21_numbers_list_not_equal.size() &&
+           std::equal(s21_numbers_list.begin(), s21_numbers_list.end(),
+                      s21_numbers_list_not_equal.begin());
   EXPECT_TRUE(!(a));
-  EXPECT_TRUE(std::equal(vec11.begin(), vec11.end(), vec21.begin()));
-  EXPECT_TRUE(!(vec11.size() == vec31.size() &&
-                std::equal(vec11.begin(), vec11.end(), vec31.begin())));
+  EXPECT_TRUE(std::equal(stl_numbers_list.begin(), stl_numbers_list.end(),
+                         stl_numbers_list_equal.begin()));
+  EXPECT_TRUE(!(stl_numbers_list.size() == stl_numbers_list_not_equal.size() &&
+                std::equal(stl_numbers_list.begin(), stl_numbers_list.end(),
+                           stl_numbers_list_not_equal.begin())));
 }
 TEST(ListTest, copyit) {
   s21::list<int> s21_numbers_list{1, 2, 3, 4, 5};
