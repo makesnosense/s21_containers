@@ -23,6 +23,101 @@ class QueueTest : public testing::Test {
 using TestedTypes = ::testing::Types<char, int, double, DummyObject>;
 TYPED_TEST_SUITE(QueueTest, TestedTypes, );
 
+TYPED_TEST(QueueTest, EnqueueElement) {
+  this->empty_s21_queue_.push(TypeParam());
+  this->empty_stl_queue_.push(TypeParam());
+
+  EXPECT_EQ(this->empty_s21_queue_.size(), this->empty_stl_queue_.size());
+  EXPECT_FALSE(this->empty_s21_queue_.empty());
+}
+
+TYPED_TEST(QueueTest, DequeueElement) {
+  TypeParam value = TypeParam();
+  this->empty_s21_queue_.push(value);
+
+  EXPECT_EQ(this->empty_s21_queue_.size(), 1);
+
+  this->empty_s21_queue_.pop();
+
+  EXPECT_EQ(this->empty_s21_queue_.size(), 0);
+  EXPECT_TRUE(this->empty_s21_queue_.empty());
+}
+
+TYPED_TEST(QueueTest, FrontElement) {
+  TypeParam value = TypeParam();
+  this->empty_s21_queue_.push(value);
+
+  EXPECT_EQ(this->empty_s21_queue_.front(), value);
+}
+
+TYPED_TEST(QueueTest, IsEmpty) {
+  EXPECT_TRUE(this->empty_s21_queue_.empty());
+
+  TypeParam value = TypeParam();
+  this->empty_s21_queue_.push(value);
+
+  EXPECT_FALSE(this->empty_s21_queue_.empty());
+}
+
+TYPED_TEST(QueueTest, CopyConstructor) {
+  this->empty_s21_queue_.push(TypeParam());
+
+  s21::queue<TypeParam> copied_queue = this->empty_s21_queue_;
+
+  EXPECT_EQ(copied_queue.size(), this->empty_s21_queue_.size());
+  EXPECT_EQ(copied_queue.front(), this->empty_s21_queue_.front());
+}
+
+TYPED_TEST(QueueTest, MoveConstructor) {
+  this->empty_s21_queue_.push(TypeParam());
+
+  s21::queue<TypeParam> moved_queue = std::move(this->empty_s21_queue_);
+
+  EXPECT_EQ(moved_queue.size(), 1);
+  EXPECT_EQ(moved_queue.front(), TypeParam());
+}
+
+TYPED_TEST(QueueTest, CopyAssignmentOperator) {
+  this->empty_s21_queue_.push(TypeParam());
+
+  s21::queue<TypeParam> another_queue;
+  another_queue = this->empty_s21_queue_;
+
+  EXPECT_EQ(another_queue.size(), this->empty_s21_queue_.size());
+  EXPECT_EQ(another_queue.front(), this->empty_s21_queue_.front());
+}
+
+TYPED_TEST(QueueTest, MoveAssignmentOperator) {
+  this->empty_s21_queue_.push(TypeParam());
+
+  s21::queue<TypeParam> another_queue;
+  another_queue = std::move(this->empty_s21_queue_);
+
+  EXPECT_EQ(another_queue.size(), 1);
+  EXPECT_EQ(another_queue.front(), TypeParam());
+
+  EXPECT_EQ(this->empty_s21_queue_.size(), 0);
+}
+
+TEST(QueueTest, QueueFunctionality) {
+  s21::queue<int> queue;
+  for (int i = 0; i < 10; ++i) {
+    queue.push(i);
+  }
+
+  EXPECT_EQ(queue.size(), 10);
+
+  queue.pop();
+  EXPECT_EQ(queue.size(), 9);
+  EXPECT_EQ(queue.front(), 1);
+
+  for (int i = 0; i < 9; ++i) {
+    queue.pop();
+  }
+
+  EXPECT_TRUE(queue.empty());
+}
+
 TYPED_TEST(QueueTest, qeue1) { EXPECT_EQ(1, 1); }
 
 TEST(QueueTest, qeue) {
