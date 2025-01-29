@@ -434,21 +434,6 @@ TEST(ListTest, copyit) {
   EXPECT_TRUE(s21_numbers_list_copy == stl_numbers_list_copy);
 }
 
-#if 0 
-TYPED_TEST(ListTest, begin) {
-  auto s21_it = this->s21_list_.begin();
-  auto stl_it = this->stl_list_.begin();
-  EXPECT_EQ(s21_it, stl_it);
-}
-
-TYPED_TEST(ListTest, end) {
-  auto s21_it = this->s21_list_.end();
-  auto stl_it = this->stl_list_.end();
-  (void)stl_it;
-  EXPECT_EQ(1, 1);
-}
-#endif
-
 TEST(ListTest, PopFrontLeak) {
   s21::list<int> list;
 
@@ -463,3 +448,17 @@ TEST(ListTest, PopFrontLeak) {
   EXPECT_TRUE(list.empty());
   EXPECT_EQ(list.size(), size_t{0});
 }
+#if 0 
+TYPED_TEST(ListTest, begin) {
+  auto s21_it = this->s21_list_.begin();
+  auto stl_it = this->stl_list_.begin();
+  EXPECT_EQ(s21_it, stl_it);
+}
+
+TYPED_TEST(ListTest, end) {
+  auto s21_it = this->s21_list_.end();
+  auto stl_it = this->stl_list_.end();
+  (void)stl_it;
+  EXPECT_EQ(1, 1);
+}
+#endif
