@@ -416,15 +416,17 @@ TEST(ListTest, equal) {
                 std::equal(vec11.begin(), vec11.end(), vec31.begin())));
 }
 TEST(ListTest, copyit) {
-  s21::list<int> source{1, 2, 3, 4, 5};
-  s21::list<int> destination(5);
-  std::list<int> source1{1, 2, 3, 4, 5};
-  std::list<int> destination1(5);
+  s21::list<int> s21_numbers_list{1, 2, 3, 4, 5};
+  s21::list<int> s21_numbers_list_copy(5);
+  std::list<int> stl_numbers_list{1, 2, 3, 4, 5};
+  std::list<int> stl_numbers_list_copy(5);
 
-  std::copy(source.begin(), source.end(), destination.begin());
-  std::copy(source1.begin(), source1.end(), destination1.begin());
+  std::copy(s21_numbers_list.begin(), s21_numbers_list.end(),
+            s21_numbers_list_copy.begin());
+  std::copy(stl_numbers_list.begin(), stl_numbers_list.end(),
+            stl_numbers_list_copy.begin());
 
-  EXPECT_TRUE(destination == destination1);
+  EXPECT_TRUE(s21_numbers_list_copy == stl_numbers_list_copy);
 }
 
 #if 0 
