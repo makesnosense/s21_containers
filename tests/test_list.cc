@@ -212,15 +212,17 @@ TYPED_TEST(ListTest, splice) {
 }
 
 TEST(ListTest, all_of) {
-  s21::list<int> numberseee{2, 4, 6, 8};
-  std::list<int> numberseee1{2, 4, 6, 8};
+  s21::list<int> s21_numbers_list{2, 4, 6, 8};
+  std::list<int> stl_numbers_list{2, 4, 6, 8};
 
-  bool all_even = std::all_of(numberseee.begin(), numberseee.end(),
-                              [](int n) { return n % 2 == 0; });
-  bool all_even2 = std::all_of(numberseee1.begin(), numberseee1.end(),
-                               [](int n) { return n % 2 == 0; });
+  bool s21_all_even =
+      std::all_of(s21_numbers_list.begin(), s21_numbers_list.end(),
+                  [](int n) { return n % 2 == 0; });
+  bool stl_all_even =
+      std::all_of(stl_numbers_list.begin(), stl_numbers_list.end(),
+                  [](int n) { return n % 2 == 0; });
 
-  EXPECT_EQ(all_even2, all_even);
+  EXPECT_EQ(s21_all_even, stl_all_even);
 }
 TEST(ListTest, any_of) {
   s21::list<int> numbers{2, 4, 6, 8, 11};
