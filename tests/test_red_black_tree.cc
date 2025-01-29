@@ -4,6 +4,8 @@
 #include <gtest/gtest.h>
 #pragma GCC diagnostic pop
 
+#include <algorithm>
+
 template <typename Key, typename T>
 bool ValidateProperties(const s21::Node<Key, T>* node, int& black_height);
 
