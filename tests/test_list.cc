@@ -343,20 +343,22 @@ TEST(ListTest, find_end) {
   EXPECT_EQ(*s21_all_even, *stl_all_even);
 }
 TEST(ListTest, find_first_of) {
-  s21::list<char> v1{'f', 'c', 'e', 'd', 'b', 'a'};
-  s21::list<char> v2{'D', 'F'};
-  std::list<char> v11{'f', 'c', 'e', 'd', 'b', 'a'};
-  std::list<char> v21{'D', 'F'};
+  s21::list<char> s21_char_list{'f', 'c', 'e', 'd', 'b', 'a'};
+  s21::list<char> s21_char_list_find{'D', 'F'};
+  std::list<char> stl_char_list{'f', 'c', 'e', 'd', 'b', 'a'};
+  std::list<char> stl_char_list_find{'D', 'F'};
 
   // Find the first occurrence of any character from v2 in v1
-  auto result = std::find_first_of(
-      v1.begin(), v1.end(), v2.begin(), v2.end(),
+  auto s21_all_even = std::find_first_of(
+      s21_char_list.begin(), s21_char_list.end(), s21_char_list_find.begin(),
+      s21_char_list_find.end(),
       [](char a, char b) { return tolower(a) == tolower(b); });
-  auto result1 = std::find_first_of(
-      v11.begin(), v11.end(), v21.begin(), v21.end(),
+  auto stl_all_even = std::find_first_of(
+      stl_char_list.begin(), stl_char_list.end(), stl_char_list_find.begin(),
+      stl_char_list_find.end(),
       [](char a, char b) { return tolower(a) == tolower(b); });
 
-  EXPECT_EQ(*result, *result1);
+  EXPECT_EQ(*s21_all_even, *stl_all_even);
 }
 TEST(ListTest, adjacent_find) {
   s21::list<int> numbers{1, 2, 3, 3, 5};
