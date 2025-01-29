@@ -21,9 +21,7 @@ class ListTest : public testing::Test {
         stl_list_for_swap{1, 2, 3, 4, 5, 6, 7, 8, 9},
         s21_list_for_swap{1, 2, 3, 4, 5, 6, 7, 8, 9},
         large_stl_list_(1000, 42),
-        large_s21_list_(1000, 42),
-        list_(3),
-        alist_(3) {}
+        large_s21_list_(1000, 42) {}
 
   std::list<T> empty_stl_list_;
   s21::list<T> empty_s21_list_;
@@ -34,8 +32,6 @@ class ListTest : public testing::Test {
 
   std::list<T> large_stl_list_;
   s21::list<T> large_s21_list_;
-  std::list<T> list_;
-  s21::list<T> alist_;
 };
 using TestedTypes = ::testing::Types<char, int, double, DummyObject>;
 TYPED_TEST_SUITE(ListTest, TestedTypes, );
@@ -59,7 +55,7 @@ TYPED_TEST(ListTest, pop_back) {
 }
 
 TYPED_TEST(ListTest, ConstructorSize_type) {
-  EXPECT_EQ(this->list_.size(), this->alist_.size());
+  EXPECT_EQ(this->large_stl_list_.size(), this->large_s21_list_.size());
   EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
 }
 TYPED_TEST(ListTest, max_size) {
