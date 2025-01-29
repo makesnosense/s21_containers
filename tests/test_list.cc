@@ -348,7 +348,6 @@ TEST(ListTest, find_first_of) {
   std::list<char> stl_char_list{'f', 'c', 'e', 'd', 'b', 'a'};
   std::list<char> stl_char_list_find{'D', 'F'};
 
-  // Find the first occurrence of any character from v2 in v1
   auto s21_all_even = std::find_first_of(
       s21_char_list.begin(), s21_char_list.end(), s21_char_list_find.begin(),
       s21_char_list_find.end(),
@@ -361,40 +360,45 @@ TEST(ListTest, find_first_of) {
   EXPECT_EQ(*s21_all_even, *stl_all_even);
 }
 TEST(ListTest, adjacent_find) {
-  s21::list<int> numbers{1, 2, 3, 3, 5};
-  std::list<int> numbers1{1, 2, 3, 3, 5};
+  s21::list<int> s21_numbers_list{1, 2, 3, 3, 5};
+  std::list<int> stl_numbers_list{1, 2, 3, 3, 5};
 
-  // Find the first occurrence of consecutive identical elements
-  auto it = std::adjacent_find(numbers.begin(), numbers.end());
-  auto it1 = std::adjacent_find(numbers1.begin(), numbers1.end());
-  EXPECT_EQ(*it, *it1);
+  auto s21_all_even =
+      std::adjacent_find(s21_numbers_list.begin(), s21_numbers_list.end());
+  auto stl_all_even =
+      std::adjacent_find(stl_numbers_list.begin(), stl_numbers_list.end());
+  EXPECT_EQ(*s21_all_even, *stl_all_even);
 }
 TEST(ListTest, search) {
-  s21::list<int> numbers{1, 2, 3, 4};
-  std::list<int> numbers1{1, 2, 3, 4};
-  auto it = std::find(numbers.begin(), numbers.end(), 3);
-  auto it1 = std::find(numbers1.begin(), numbers1.end(), 3);
-  EXPECT_EQ(*it, *it1);
+  s21::list<int> s21_numbers_list{1, 2, 3, 4};
+  std::list<int> stl_numbers_list{1, 2, 3, 4};
+  auto s21_all_even =
+      std::find(s21_numbers_list.begin(), s21_numbers_list.end(), 3);
+  auto stl_all_even =
+      std::find(stl_numbers_list.begin(), stl_numbers_list.end(), 3);
+  EXPECT_EQ(*s21_all_even, *stl_all_even);
 }
 
 TEST(ListTest, search_n) {
-  s21::list<int> numbers{1, 2, 3, 3, 3, 4, 5};
-  std::list<int> numbers1{1, 2, 3, 3, 3, 4, 5};
+  s21::list<int> s21_numbers_list{1, 2, 3, 3, 3, 4, 5};
+  std::list<int> stl_numbers_list{1, 2, 3, 3, 3, 4, 5};
 
-  // Search for two consecutive occurrences of the number 3
-  auto result = std::search_n(numbers.begin(), numbers.end(), 2, 3);
-  auto result1 = std::search_n(numbers1.begin(), numbers1.end(), 2, 3);
+  auto s21_all_even =
+      std::search_n(s21_numbers_list.begin(), s21_numbers_list.end(), 2, 3);
+  auto stl_all_even =
+      std::search_n(stl_numbers_list.begin(), stl_numbers_list.end(), 2, 3);
 
-  EXPECT_EQ(*result, *result1);
+  EXPECT_EQ(*s21_all_even, *stl_all_even);
 }
 TEST(ListTest, mismatch) {
-  s21::list<int> vec1{1, 2, 3, 4, 5};
-  s21::list<int> vec2{1, 2, 0, 4, 5};
+  s21::list<int> s21_numbers_list{1, 2, 3, 4, 5};
+  s21::list<int> s21_numbers_list_test{1, 2, 0, 4, 5};
 
-  auto result = std::mismatch(vec1.begin(), vec1.end(), vec2.begin());
-  (void)result;
+  auto s21_all_even =
+      std::mismatch(s21_numbers_list.begin(), s21_numbers_list.end(),
+                    s21_numbers_list_test.begin());
 
-  EXPECT_TRUE(*result.first);
+  EXPECT_TRUE(*s21_all_even.first);
 }
 TEST(ListTest, equal) {
   s21::list<int> vec1{1, 2, 3, 4, 5};
@@ -441,12 +445,10 @@ TYPED_TEST(ListTest, end) {
 TEST(ListTest, PopFrontLeak) {
   s21::list<int> list;
 
-  // Add several elements
   for (int i = 0; i < 1000; ++i) {
     list.push_back(i);
   }
 
-  // Pop all elements from front
   while (!list.empty()) {
     list.pop_front();
   }
