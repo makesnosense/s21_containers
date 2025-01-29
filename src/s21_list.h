@@ -24,7 +24,7 @@ class list {
   using pointer = T*;
 
  private:
-#ifdef __GNUC__  // For GCC/Clang
+#ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpadded"
 #endif
@@ -44,6 +44,72 @@ class list {
 #pragma GCC diagnostic pop
 #endif
 
+ public:
+  using iterator = ListIterator<T, false>;
+
+  using const_iterator = const ListIterator<T, true>;
+  using size_type = typename traits::size_type;
+
+  list() : head_{nullptr}, tail_{nullptr}, size_{0} {}
+  explicit list(std::initializer_list<value_type> init)
+      : head_{nullptr}, tail_{nullptr}, size_{0} {
+    for (const T& value : init) {
+      Node* new_node = new Node(value);
+      if (!head_) {
+        head_ = new_node;
+        tail_ = new_node;
+      } else {
+        tail_->next_ = new_node;
+        new_node->pre_ = tail_;
+        tail_ = new_node;
+      }
+      size_++;
+    }
+  }
+  list(size_type n) : head_{nullptr}, tail_{nullptr}, size_{0} {
+    for (size_type i = 0; i < n; i++) {
+      Node* new_node = new Node();
+      if (!head_) {
+        head_ = new_node;
+        tail_ = new_node;
+      } else {
+        tail_->next_ = new_node;
+        new_node->pre_ = tail_;
+        tail_ = new_node;
+      }
+      size_++;
+    }
+  }
+  list(const list& other) : head_(nullptr), tail_(nullptr), size_(0) {
+    if (other.head_ != nullptr) {
+      Node* current = other.head_;
+      while (current != nullptr) {
+        push_back(current->data_);
+        current = current->next_;
+      }
+    }
+  }
+  list(list&& l) noexcept : head_(l.head_), tail_(l.tail_), size_(l.size_) {
+    l.head_ = nullptr;
+    l.tail_ = nullptr;
+    l.size_ = 0;
+  }
+  explicit list(size_type n, const value_type& value)
+      : head_{nullptr}, tail_{nullptr}, size_{0} {
+    for (size_type i = 0; i < n; ++i) {
+      Node* new_node = new Node(value);
+      if (!head_) {
+        head_ = new_node;
+
+        tail_ = new_node;
+      } else {
+        tail_->next_ = new_node;
+        new_node->pre_ = tail_;
+        tail_ = new_node;
+      }
+      size_++;
+    }
+  }
   std::pair<Node*, Node*> Split(Node* head) {
     Node* slow = head;
     Node* fast = head->next_;
@@ -62,7 +128,7 @@ class list {
     return {head, second_half};
   }
 
-  Node* MergeForSortr(Node* first, Node* second) {
+  Node* MergeForSort(Node* first, Node* second) {
     if (first == nullptr) return second;
     if (second == nullptr) return first;
 
@@ -112,78 +178,7 @@ class list {
     first_half = MergeSort(first_half);
     second_half = MergeSort(second_half);
 
-    return MergeForSortr(first_half, second_half);
-  }
-
- public:
-  using iterator = ListIterator<T, false>;
-  // using reverse_iterator = ListIterator<T>;
-  using const_iterator = const ListIterator<T, true>;
-  using size_type = typename traits::size_type;
-
-  list() : head_{nullptr}, tail_{nullptr}, size_{0} {}
-  explicit list(std::initializer_list<value_type> init)
-      : head_{nullptr}, tail_{nullptr}, size_{0} {
-    // for (const T& value : init) {
-    //   std::cout << value << ' ';
-    // }
-    for (const T& value : init) {
-      Node* new_node = new Node(value);
-      if (!head_) {
-        head_ = new_node;
-        tail_ = new_node;
-      } else {
-        tail_->next_ = new_node;
-        new_node->pre_ = tail_;
-        tail_ = new_node;
-      }
-      size_++;
-    }
-  }
-  list(size_type n) : head_{nullptr}, tail_{nullptr}, size_{0} {
-    for (size_type i = 0; i < n; i++) {
-      Node* new_node = new Node();
-      if (!head_) {
-        head_ = new_node;
-        tail_ = new_node;
-      } else {
-        tail_->next_ = new_node;
-        new_node->pre_ = tail_;
-        tail_ = new_node;
-      }
-      size_++;
-    }
-  }
-  list(const list& other) : head_(nullptr), tail_(nullptr), size_(0) {
-    if (other.head_ != nullptr) {
-      Node* current = other.head_;
-      while (current != nullptr) {
-        push_back(current->data_);
-        current = current->next_;
-      }
-    }
-  }
-  list(list&& l) noexcept : head_(l.head_), tail_(l.tail_), size_(l.size_) {
-    l.head_ = nullptr;
-    l.tail_ = nullptr;
-    l.size_ = 0;
-  }
-  explicit list(size_type n, const value_type& value)
-      : head_{nullptr}, tail_{nullptr}, size_{0} {
-    for (size_type i = 0; i < n; ++i) {
-      Node* new_node =
-          new Node(value);  // Create a new node initialized with 'value'
-      if (!head_) {
-        head_ = new_node;  // If the list is empty, set head and tail to the new
-                           // node
-        tail_ = new_node;
-      } else {
-        tail_->next_ = new_node;  // Link the new node at the end of the list
-        new_node->pre_ = tail_;
-        tail_ = new_node;  // Update the tail pointer
-      }
-      size_++;  // Increment the size of the list
-    }
+    return MergeForSort(first_half, second_half);
   }
   iterator insert(iterator pos, const_reference value) {
     Node* new_node = new Node(value);
@@ -547,10 +542,9 @@ class list {
 
     return true;
   }
-  /////////////////////////
+
   iterator begin() { return iterator(head_); }
   iterator end() { return nullptr; }
-  /////////////////////////
 
   int get_size() const;
 
@@ -567,7 +561,7 @@ class list {
   }
 
   ~list() { clear(); };
-  ///////////////////////////////////
+
  private:
   Node* head_;
   Node* tail_;
@@ -647,21 +641,19 @@ class ListIterator {
     return temp;
   }
   difference_type operator-(const ListIterator& other) const {
-    // Check if both iterators are equal
     if (current_ == other.current_) {
-      return 0;  // Same position, distance is zero
+      return 0;
     }
 
     difference_type distance = 0;
     ListIterator temp = other;
 
-    // Move temp until it reaches the current position
     while (temp != *this) {
       ++distance;
       ++temp;
     }
 
-    return distance;  // Return the number of steps between the two iterators
+    return distance;
   }
 
   ListIterator& operator-=(int n) { return *this += -n; }
