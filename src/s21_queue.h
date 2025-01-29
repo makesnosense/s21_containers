@@ -31,7 +31,7 @@ class queue {
     if (!empty()) {
       data_.pop_front();
     } else {
-      throw std::out_of_range("Queue is empty");
+      throw std::logic_error("Queue is empty");
     }
   }
 
@@ -39,14 +39,14 @@ class queue {
     if (!empty()) {
       return data_.front();
     } else {
-      throw std::out_of_range("Queue is empty");
+      throw std::logic_error("Queue is empty");
     }
   }
   const_reference back() const {
     if (!empty()) {
       return data_.back();
     } else {
-      throw std::out_of_range("Queue is empty");
+      throw std::logic_error("Queue is empty");
     }
   }
   void swap(queue &other) noexcept { std::swap(data_, other.data_); }
