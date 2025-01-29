@@ -249,82 +249,98 @@ TEST(ListTest, none_of) {
   EXPECT_EQ(s21_all_even, stl_all_even);
 }
 TEST(ListTest, for_each) {
-  s21::list<int> numbers{1, 2, 3, 4, 5};
-  std::list<int> numbers1{1, 2, 3, 4, 5};
+  s21::list<int> s21_numbers_list{1, 2, 3, 4, 5};
+  std::list<int> stl_numbers_list{1, 2, 3, 4, 5};
 
-  std::for_each(numbers.begin(), numbers.end(), [](int& n) { ++n; });
+  std::for_each(s21_numbers_list.begin(), s21_numbers_list.end(),
+                [](int& n) { ++n; });
 
-  std::for_each(numbers1.begin(), numbers1.end(), [](int& n) { ++n; });
-  EXPECT_TRUE(numbers == numbers1);
+  std::for_each(stl_numbers_list.begin(), stl_numbers_list.end(),
+                [](int& n) { ++n; });
+  EXPECT_TRUE(s21_numbers_list == stl_numbers_list);
 }
 TEST(ListTest, for_each_n) {
-  s21::list<int> numbers{1, 2, 3, 4, 5};
-  std::list<int> numbers1{1, 2, 3, 4, 5};
+  s21::list<int> s21_numbers_list{1, 2, 3, 4, 5};
+  std::list<int> stl_numbers_list{1, 2, 3, 4, 5};
 
-  std::for_each_n(numbers.begin(), 3, [](int& n) { n *= 2; });
-  std::for_each_n(numbers1.begin(), 3, [](int& n) { n *= 2; });
+  std::for_each_n(s21_numbers_list.begin(), 3, [](int& n) { n *= 2; });
+  std::for_each_n(stl_numbers_list.begin(), 3, [](int& n) { n *= 2; });
 
-  EXPECT_TRUE(numbers == numbers1);
+  EXPECT_TRUE(s21_numbers_list == stl_numbers_list);
 }
 TEST(ListTest, count) {
-  s21::list<int> numbers{1, 2, 3, 4, 5};
-  std::list<int> numbers1{1, 2, 3, 4, 5};
+  s21::list<int> s21_numbers_list{1, 2, 3, 4, 5};
+  std::list<int> stl_numbers_list{1, 2, 3, 4, 5};
 
-  auto count_of_twos = std::count(numbers.begin(), numbers.end(), 2);
-  auto count_of_twos1 = std::count(numbers1.begin(), numbers1.end(), 2);
+  auto s21_all_even =
+      std::count(s21_numbers_list.begin(), s21_numbers_list.end(), 2);
+  auto stl_all_even =
+      std::count(stl_numbers_list.begin(), stl_numbers_list.end(), 2);
 
-  EXPECT_EQ(count_of_twos, count_of_twos1);
+  EXPECT_EQ(s21_all_even, stl_all_even);
 }
 TEST(ListTest, count_if) {
-  s21::list<int> numbers{1, 2, 3, 4, 5};
-  std::list<int> numbers1{1, 2, 3, 4, 5};
-  auto count_of_evens = std::count_if(numbers.begin(), numbers.end(),
-                                      [](int n) { return n % 2 == 0; });
-  auto count_of_evens1 = std::count_if(numbers1.begin(), numbers1.end(),
-                                       [](int n) { return n % 2 == 0; });
+  s21::list<int> s21_numbers_list{1, 2, 3, 4, 5};
+  std::list<int> stl_numbers_list{1, 2, 3, 4, 5};
+  auto s21_all_even =
+      std::count_if(s21_numbers_list.begin(), s21_numbers_list.end(),
+                    [](int n) { return n % 2 == 0; });
+  auto stl_all_even =
+      std::count_if(stl_numbers_list.begin(), stl_numbers_list.end(),
+                    [](int n) { return n % 2 == 0; });
 
-  EXPECT_EQ(count_of_evens, count_of_evens1);
+  EXPECT_EQ(s21_all_even, stl_all_even);
 }
 TEST(ListTest, find) {
-  s21::list<int> v{1, 2, 3, 4, 5};
-  std::list<int> v1{1, 2, 3, 4, 5};
+  s21::list<int> s21_numbers_list{1, 2, 3, 4, 5};
+  std::list<int> stl_numbers_list{1, 2, 3, 4, 5};
 
-  auto it = std::find(v.begin(), v.end(), 3);
-  auto it1 = std::find(v1.begin(), v1.end(), 3);
-  EXPECT_EQ(*it, *it1);
+  auto s21_all_even =
+      std::find(s21_numbers_list.begin(), s21_numbers_list.end(), 3);
+  auto stl_all_even =
+      std::find(stl_numbers_list.begin(), stl_numbers_list.end(), 3);
+  EXPECT_EQ(*s21_all_even, *stl_all_even);
 }
 TEST(ListTest, find_if) {
-  s21::list<int> numbers{1, 3, 5, 7, 8, 10};
-  std::list<int> numbers1{1, 3, 5, 7, 8, 10};
+  s21::list<int> s21_numbers_list{1, 3, 5, 7, 8, 10};
+  std::list<int> stl_numbers_list{1, 3, 5, 7, 8, 10};
 
-  auto it = std::find_if(numbers.begin(), numbers.end(),
-                         [](int n) { return n % 2 == 0; });
-  auto it1 = std::find_if(numbers1.begin(), numbers1.end(),
-                          [](int n) { return n % 2 == 0; });
+  auto s21_all_even =
+      std::find_if(s21_numbers_list.begin(), s21_numbers_list.end(),
+                   [](int n) { return n % 2 == 0; });
+  auto stl_all_even =
+      std::find_if(stl_numbers_list.begin(), stl_numbers_list.end(),
+                   [](int n) { return n % 2 == 0; });
 
-  EXPECT_EQ(*it, *it1);
+  EXPECT_EQ(*s21_all_even, *stl_all_even);
 }
 TEST(ListTest, find_if_not) {
-  s21::list<int> numbers{1, 3, 5, 7, 8, 10};
-  std::list<int> numbers1{1, 3, 5, 7, 8, 10};
+  s21::list<int> s21_numbers_list{1, 3, 5, 7, 8, 10};
+  std::list<int> stl_numbers_list{1, 3, 5, 7, 8, 10};
 
-  auto it = std::find_if_not(numbers.begin(), numbers.end(),
-                             [](int n) { return n % 2 != 0; });
-  auto it1 = std::find_if_not(numbers1.begin(), numbers1.end(),
-                              [](int n) { return n % 2 != 0; });
+  auto s21_all_even =
+      std::find_if_not(s21_numbers_list.begin(), s21_numbers_list.end(),
+                       [](int n) { return n % 2 != 0; });
+  auto stl_all_even =
+      std::find_if_not(stl_numbers_list.begin(), stl_numbers_list.end(),
+                       [](int n) { return n % 2 != 0; });
 
-  EXPECT_EQ(*it, *it1);
+  EXPECT_EQ(*s21_all_even, *stl_all_even);
 }
 TEST(ListTest, find_end) {
-  s21::list<int> v1{1, 2, 1, 2, 3, 4, 1, 2};
-  s21::list<int> v2{1, 2};
-  std::list<int> v11{1, 2, 1, 2, 3, 4, 1, 2};
-  std::list<int> v21{1, 2};
+  s21::list<int> s21_numbers_list{1, 2, 1, 2, 3, 4, 1, 2};
+  s21::list<int> s21_numbers_list_end{1, 2};
+  std::list<int> stl_numbers_list{1, 2, 1, 2, 3, 4, 1, 2};
+  std::list<int> stl_numbers_list_end{1, 2};
 
-  auto result = std::find_end(v1.begin(), v1.end(), v2.begin(), v2.end());
-  auto result1 = std::find_end(v11.begin(), v11.end(), v21.begin(), v21.end());
+  auto s21_all_even =
+      std::find_end(s21_numbers_list.begin(), s21_numbers_list.end(),
+                    s21_numbers_list_end.begin(), s21_numbers_list_end.end());
+  auto stl_all_even =
+      std::find_end(stl_numbers_list.begin(), stl_numbers_list.end(),
+                    stl_numbers_list_end.begin(), stl_numbers_list_end.end());
 
-  EXPECT_EQ(*result, *result1);
+  EXPECT_EQ(*s21_all_even, *stl_all_even);
 }
 TEST(ListTest, find_first_of) {
   s21::list<char> v1{'f', 'c', 'e', 'd', 'b', 'a'};
