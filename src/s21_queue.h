@@ -3,7 +3,6 @@
 
 #include <initializer_list>
 #include <iostream>
-#include <iterator>
 
 #include "s21_base.h"
 #include "s21_deque.h"
