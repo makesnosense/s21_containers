@@ -225,24 +225,28 @@ TEST(ListTest, all_of) {
   EXPECT_EQ(s21_all_even, stl_all_even);
 }
 TEST(ListTest, any_of) {
-  s21::list<int> numbers{2, 4, 6, 8, 11};
-  std::list<int> numbers1{2, 4, 6, 8, 11};
+  s21::list<int> s21_numbers_list{2, 4, 6, 8, 11};
+  std::list<int> stl_numbers_list{2, 4, 6, 8, 11};
 
-  bool result = std::any_of(numbers.begin(), numbers.end(),
-                            [](int n) { return n % 2 == 0; });
-  bool result1 = std::any_of(numbers.begin(), numbers.end(),
-                             [](int n) { return n % 2 == 0; });
-  EXPECT_EQ(result, result1);
+  bool s21_all_even =
+      std::any_of(s21_numbers_list.begin(), s21_numbers_list.end(),
+                  [](int n) { return n % 2 == 0; });
+  bool stl_all_even =
+      std::any_of(stl_numbers_list.begin(), stl_numbers_list.end(),
+                  [](int n) { return n % 2 == 0; });
+  EXPECT_EQ(s21_all_even, stl_all_even);
 }
 TEST(ListTest, none_of) {
-  s21::list<int> numbers{2, 4, 6, 8, 11};
-  std::list<int> numbers1{2, 4, 6, 8, 11};
+  s21::list<int> s21_numbers_list{2, 4, 6, 8, 11};
+  std::list<int> stl_numbers_list{2, 4, 6, 8, 11};
 
-  bool result =
-      std::none_of(numbers.begin(), numbers.end(), [](int n) { return n < 0; });
-  bool result1 = std::none_of(numbers1.begin(), numbers1.end(),
-                              [](int n) { return n < 0; });
-  EXPECT_EQ(result, result1);
+  bool s21_all_even =
+      std::none_of(s21_numbers_list.begin(), s21_numbers_list.end(),
+                   [](int n) { return n < 0; });
+  bool stl_all_even =
+      std::none_of(stl_numbers_list.begin(), stl_numbers_list.end(),
+                   [](int n) { return n < 0; });
+  EXPECT_EQ(s21_all_even, stl_all_even);
 }
 TEST(ListTest, for_each) {
   s21::list<int> numbers{1, 2, 3, 4, 5};
