@@ -5,6 +5,9 @@
 #pragma GCC diagnostic pop
 
 #include <algorithm>
+#include <vector>
+
+#include "random.h"
 
 template <typename Key, typename T>
 bool ValidateProperties(const s21::Node<Key, T>* node, int& black_height);
@@ -656,25 +659,24 @@ TEST(RedBlackTreeTest, RemovalFixupCases) {
   EXPECT_TRUE(ValidateRedBlackTree(tree));
 }
 
-// TEST(RedBlackTreeTest, StressTestRemoval) {
-//   s21::RedBlackTree<int, int> tree;
-//   const int SIZE = 100;
+TEST(RedBlackTreeTest, StressTestRemoval) {
+  s21::RedBlackTree<int, int> tree;
+  const int SIZE = 1000;
 
-//   // Insert elements
-//   for (int i = 0; i < SIZE; i++) {
-//     tree.insert({i, 999});
-//     EXPECT_TRUE(ValidateRedBlackTree(tree));
-//   }
+  // Insert elements
+  for (int i = 0; i < SIZE; i++) {
+    tree.insert({i, 999});
+    EXPECT_TRUE(ValidateRedBlackTree(tree));
+  }
 
-//   // Remove randomly
-//   std::vector<int> indices(SIZE);
-//   std::iota(indices.begin(), indices.end(), 0);
-//   std::random_device rd;
-//   std::mt19937 g(rd());
-//   std::shuffle(indices.begin(), indices.end(), g);
+  // Remove randomly
+  std::vector<int> indices(SIZE);
+  std::iota(indices.begin(), indices.end(), 0);
 
-//   for (int i : indices) {
-//     tree.erase(i);
-//     EXPECT_TRUE(ValidateRedBlackTree(tree));
-//   }
-// }
+  std::shuffle(indices.begin(), indices.end(), Random::mt);
+
+  for (int i : indices) {
+    tree.erase(i);
+    EXPECT_TRUE(ValidateRedBlackTree(tree));
+  }
+}
