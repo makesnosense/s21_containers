@@ -26,7 +26,6 @@ class queue {
   queue(const queue &other) : data_(other.data_) {}
 
   queue(queue &&other) noexcept : data_(std::move(other.data_)) {}
-
   void push(const_reference value) { data_.push_back(value); }
 
   void pop() {
