@@ -31,7 +31,7 @@ class stack {
     if (!empty()) {
       data_.pop_back();
     } else {
-      throw std::out_of_range("is empty");
+      throw std::logic_error("is empty");
     }
   }
 
@@ -39,7 +39,7 @@ class stack {
     if (!empty()) {
       return data_.back();
     } else {
-      throw std::out_of_range("is empty");
+      throw std::logic_error("is empty");
     }
   }
 
