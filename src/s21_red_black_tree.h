@@ -56,7 +56,7 @@ class Node<Key, void> {
 
 template <typename Key, typename T>
 class RedBlackTree;
-template <typename Key, typename T = void>
+template <typename Key, bool is_const, typename T = void>
 class RedBlackTreeIterator;
 template <typename Key, typename T>
 void print_tree(const RedBlackTree<Key, T>& tree);
@@ -68,7 +68,8 @@ class RedBlackTree {
   using value_type = typename node_type::value_type;
   using key_type = Key;
   using mapped_type = T;
-  using iterator = RedBlackTreeIterator<Key, T>;
+  using iterator = RedBlackTreeIterator<Key, false, T>;
+  using const_iterator = RedBlackTreeIterator<Key, true, T>;
 
   // using value_type = typename traits::value_type;
   // using pointer = T*;
@@ -101,6 +102,19 @@ class RedBlackTree {
   }
 
   iterator end() { return iterator(nullptr); }
+
+  // const_iterator begin() const {
+  //   if (!root_) {
+  //     return end();
+  //   }
+  //   node_type* current = root_;
+  //   while (current->left_) {
+  //     current = current->left_;
+  //   }
+  //   return const_iterator(current);
+  // }
+
+  // const_iterator end() const { return const_iterator(nullptr); }
 
   std::pair<node_type*, bool> insert(const value_type& value) {
     if (root_ == nullptr) {
@@ -591,10 +605,11 @@ class RedBlackTree {
   size_type size_;
 };
 
-template <typename Key, typename T = void>
+template <typename Key, bool is_const, typename T = void>
 class RedBlackTreeIteratorBase {
  protected:
-  using node_type = Node<Key, T>;
+  using node_type =
+      std::conditional_t<is_const, const Node<Key, T>, Node<Key, T>>;
   node_type* current_{nullptr};
 
   RedBlackTreeIteratorBase() = default;
@@ -632,21 +647,28 @@ class RedBlackTreeIteratorBase {
 };
 
 // Map version
-template <typename Key, typename T>
-class RedBlackTreeIterator : public RedBlackTreeIteratorBase<Key, T> {
+template <typename Key, bool is_const, typename T>
+class RedBlackTreeIterator : public RedBlackTreeIteratorBase<Key, is_const, T> {
  public:
   using iterator_category = std::bidirectional_iterator_tag;
   using value_type = std::pair<const Key, T>;
   using difference_type = std::ptrdiff_t;
-  using pointer = value_type*;
-  using reference = value_type&;
+  using pointer = std::conditional_t<is_const, const value_type*, value_type*>;
+  using reference =
+      std::conditional_t<is_const, const value_type&, value_type&>;
 
-  using Base = RedBlackTreeIteratorBase<Key, T>;
+  using Base = RedBlackTreeIteratorBase<Key, is_const, T>;
   using Base::current_;
 
   // Constructors
   RedBlackTreeIterator() : Base() {}
   explicit RedBlackTreeIterator(typename Base::node_type* node) : Base(node) {}
+
+  template <bool other_is_const,
+            typename = std::enable_if_t<(is_const || !other_is_const)>>
+  RedBlackTreeIterator(
+      const RedBlackTreeIterator<Key, other_is_const, T>& other)
+      : Base(other.current_) {}
 
   // Specialized dereferencing
   reference operator*() const { return current_->data_; }
@@ -657,28 +679,45 @@ class RedBlackTreeIterator : public RedBlackTreeIteratorBase<Key, T> {
     this->increment();
     return *this;
   }
+
+  RedBlackTreeIterator operator++(int) {
+    RedBlackTreeIterator temp = *this;
+    this->increment();
+    return temp;
+  }
+
   RedBlackTreeIterator& operator--() {
     this->decrement();
     return *this;
   }
+  RedBlackTreeIterator operator--(int) {
+    RedBlackTreeIterator temp = *this;
+    this->decrement();
+    return temp;
+  }
 };
 
 // Set version
-template <typename Key>
-class RedBlackTreeIterator<Key, void>
-    : public RedBlackTreeIteratorBase<Key, void> {
+template <typename Key, bool is_const>
+class RedBlackTreeIterator<Key, is_const, void>
+    : public RedBlackTreeIteratorBase<Key, is_const, void> {
  public:
   using iterator_category = std::bidirectional_iterator_tag;
   using value_type = Key;
   using difference_type = std::ptrdiff_t;
-  using pointer = const Key*;
-  using reference = const Key&;
+  using pointer = std::conditional_t<is_const, const Key*, Key*>;
+  using reference = std::conditional_t<is_const, const Key&, Key&>;
 
-  using Base = RedBlackTreeIteratorBase<Key, void>;
+  using Base = RedBlackTreeIteratorBase<Key, is_const, void>;
   using Base::current_;
 
   RedBlackTreeIterator() : Base() {}
   explicit RedBlackTreeIterator(typename Base::node_type* node) : Base(node) {}
+
+  template <bool other_is_const,
+            typename = std::enable_if_t<(is_const || !other_is_const)>>
+  RedBlackTreeIterator(const RedBlackTreeIterator<Key, other_is_const>& other)
+      : Base(other.current_) {}
 
   // Specialized dereferencing
   reference operator*() const { return current_->data_; }
@@ -688,9 +727,22 @@ class RedBlackTreeIterator<Key, void>
     this->increment();
     return *this;
   }
+
+  RedBlackTreeIterator operator++(int) {
+    RedBlackTreeIterator temp = *this;
+    this->increment();
+    return temp;
+  }
+
   RedBlackTreeIterator& operator--() {
     this->decrement();
     return *this;
+  }
+
+  RedBlackTreeIterator operator--(int) {
+    RedBlackTreeIterator temp = *this;
+    this->decrement();
+    return temp;
   }
 };
 
