@@ -29,8 +29,12 @@ class set {
       tree_.insert(i);
     }
   }
-  // set(const set &s){}
-  // set(set &&s){}
+  set(const set& other) {
+    for (auto it = other.begin(); it != other.end(); ++it) {
+      tree_.insert(*it);
+    }
+  }
+  set(set&& other) noexcept : tree_(std::move(other.tree_)) {}
 
   explicit set(size_type size, value_type value) : tree_{} {
     for (size_type i{0}; i < size; i++) {
@@ -45,8 +49,11 @@ class set {
   iterator begin() { return tree_.begin(); }
   iterator end() { return tree_.end(); }
 
+  const_iterator begin() const { return tree_.begin(); }
+  const_iterator end() const { return tree_.end(); }
+
   bool empty() { return tree_.size() == 0; }
-  size_type size() { return tree_.size(); }
+  size_type size() const { return tree_.size(); }
   size_type max_size() {
     return std::numeric_limits<size_type>::max() / sizeof(Key);
   }
@@ -65,7 +72,21 @@ class set {
 
   iterator find(const Key& key) { return iterator(tree_.FindNode(key)); }
   bool contains(const Key& key) {
-    return iterator(tree_.FindNode(key)) != nullptr;
+    return iterator(tree_.FindNode(key)) != tree_.end();
+  }
+
+  bool operator==(const set& other) const {
+    if (this->size() != other.size()) return false;
+    auto it1 = begin();
+    auto it2 = other.begin();
+
+    while (it1 != end() && it2 != other.end()) {
+      if (*it1 != *it2) return false;
+      ++it1;
+      ++it2;
+    }
+
+    return it1 == end() && it2 == other.end();
   }
 
  private:
