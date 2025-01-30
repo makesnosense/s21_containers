@@ -17,14 +17,13 @@ class StackTest : public testing::Test {
 
   std::stack<T> empty_stl_stack_;
   s21::stack<T> empty_s21_stack_;
-  // std::stack<T> stl_stack_;
-  // s21::stack<T> s21_stack_;
 };
 using TestedTypes = ::testing::Types<char, int, double, DummyObject>;
 TYPED_TEST_SUITE(StackTest, TestedTypes, );
 TYPED_TEST(StackTest, PushElement) {
-  this->empty_s21_stack_.push(TypeParam());
-  this->empty_stl_stack_.push(TypeParam());
+  TypeParam value = TypeParam();
+  this->empty_s21_stack_.push(value);
+  this->empty_stl_stack_.push(value);
   EXPECT_EQ(this->empty_s21_stack_.size(), this->empty_stl_stack_.size());
   EXPECT_FALSE(this->empty_s21_stack_.empty());
 }
@@ -53,7 +52,8 @@ TYPED_TEST(StackTest, IsEmpty) {
 }
 
 TYPED_TEST(StackTest, CopyConstructor) {
-  this->empty_s21_stack_.push(TypeParam());
+  TypeParam value = TypeParam();
+  this->empty_s21_stack_.push(value);
   s21::stack<TypeParam> copied_stack = this->empty_s21_stack_;
 
   EXPECT_EQ(copied_stack.size(), this->empty_s21_stack_.size());
@@ -61,14 +61,18 @@ TYPED_TEST(StackTest, CopyConstructor) {
 }
 
 TYPED_TEST(StackTest, MoveConstructor) {
-  this->empty_s21_stack_.push(TypeParam());
+  TypeParam value = TypeParam();
+
+  this->empty_s21_stack_.push(value);
   s21::stack<TypeParam> moved_stack = std::move(this->empty_s21_stack_);
 
   EXPECT_EQ(moved_stack.size(), 1);
-  EXPECT_EQ(moved_stack.top(), TypeParam());
+  EXPECT_EQ(moved_stack.top(), value);
 }
 TYPED_TEST(StackTest, CopyAssignmentOperator) {
-  this->empty_s21_stack_.push(TypeParam());
+  TypeParam value = TypeParam();
+
+  this->empty_s21_stack_.push(value);
   s21::stack<TypeParam> another_stack;
   another_stack = this->empty_s21_stack_;
 
@@ -77,14 +81,15 @@ TYPED_TEST(StackTest, CopyAssignmentOperator) {
 }
 
 TYPED_TEST(StackTest, MoveAssignmentOperator) {
-  this->empty_s21_stack_.push(TypeParam());
+  TypeParam value = TypeParam();
+
+  this->empty_s21_stack_.push(value);
   s21::stack<TypeParam> another_stack;
   another_stack = std::move(this->empty_s21_stack_);
 
   EXPECT_EQ(another_stack.size(), 1);
-  EXPECT_EQ(another_stack.top(), TypeParam());
+  EXPECT_EQ(another_stack.top(), value);
 }
-// TYPED_TEST(StackTest, stack1) { EXPECT_EQ(1, 1); }
 
 TEST(StackTest, stack) {
   s21::stack<int> mss;
