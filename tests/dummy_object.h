@@ -62,9 +62,10 @@ class DummyObject {
   bool operator<(const DummyObject& other) const {
     return value_ < other.value_;
   }
-  bool operator<=(const DummyObject& other) const {
-    return value_ <= other.value_;
+  bool operator>(const DummyObject& other) const {
+    return value_ > other.value_;
   }
+
   friend std::ostream& operator<<(std::ostream& os, const DummyObject& obj) {
     os << obj.value_;
     return os;
