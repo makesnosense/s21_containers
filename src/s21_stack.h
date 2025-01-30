@@ -21,7 +21,7 @@ class stack {
 
   stack() : data_() {}
   stack(const stack &other) : data_(other.data_) {}
-
+  stack(stack &&other) noexcept : data_(std::move(other.data_)) {}
   stack(std::initializer_list<T> const &init) : stack(init) {}
 
   void push(const_reference value) { data_.push_front(value); }
