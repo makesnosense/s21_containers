@@ -1342,3 +1342,83 @@ TEST(RedBlackTreeSetTest, SetConstIterartor) {
   std_it_set_const = std_it_set;
   s21_it_set_const = s21_it_set;
 }
+
+TEST(RedBlackTreeMapTest, BeginEmpty) {
+  s21::RedBlackTree<int, int> tree;
+  EXPECT_EQ(tree.begin(), tree.end());
+}
+
+TEST(RedBlackTreeMapTest, BeginSingleElement) {
+  s21::RedBlackTree<int, int> tree;
+  tree.insert({5, 100});
+  auto it = tree.begin();
+  EXPECT_EQ(it->first, 5);
+  EXPECT_EQ(it->second, 100);
+}
+
+TEST(RedBlackTreeMapTest, BeginMultipleElements) {
+  s21::RedBlackTree<int, int> tree;
+  tree.insert({10, 100});
+  tree.insert({5, 200});
+  tree.insert({15, 300});
+
+  auto it = tree.begin();
+  EXPECT_EQ(it->first, 5);  // Should point to smallest key
+  EXPECT_EQ(it->second, 200);
+}
+
+TEST(RedBlackTreeSetTest, BeginEmpty) {
+  s21::RedBlackTree<int> tree;
+  EXPECT_EQ(tree.begin(), tree.end());
+}
+
+TEST(RedBlackTreeSetTest, BeginSingleElement) {
+  s21::RedBlackTree<int> tree;
+  tree.insert(5);
+  auto it = tree.begin();
+  EXPECT_EQ(*it, 5);
+}
+
+TEST(RedBlackTreeSetTest, BeginMultipleElements) {
+  s21::RedBlackTree<int> tree;
+  tree.insert(10);
+  tree.insert(5);
+  tree.insert(15);
+
+  auto it = tree.begin();
+  EXPECT_EQ(*it, 5);  // Should point to smallest element
+}
+
+// Test iterator traversal for Map
+TEST(RedBlackTreeMapTest, IteratorTraversal) {
+  s21::RedBlackTree<int, int> tree;
+  tree.insert({10, 100});
+  tree.insert({5, 200});
+  tree.insert({15, 300});
+
+  auto it = tree.begin();
+  EXPECT_EQ(it->first, 5);
+  ++it;
+  EXPECT_EQ(it->first, 10);
+  ++it;
+  EXPECT_EQ(it->first, 15);
+  ++it;
+  EXPECT_EQ(it, tree.end());
+}
+
+// Test iterator traversal for Set
+TEST(RedBlackTreeSetTest, IteratorTraversal) {
+  s21::RedBlackTree<int> tree;
+  tree.insert(10);
+  tree.insert(5);
+  tree.insert(15);
+
+  auto it = tree.begin();
+  EXPECT_EQ(*it, 5);
+  ++it;
+  EXPECT_EQ(*it, 10);
+  ++it;
+  EXPECT_EQ(*it, 15);
+  ++it;
+  EXPECT_EQ(it, tree.end());
+}

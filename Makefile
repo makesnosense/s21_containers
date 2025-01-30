@@ -9,7 +9,7 @@ WARN_FLAGS := -Werror -Wextra -Wall -Weffc++ -Wconversion -Wsign-conversion -Wpa
 DEPENDENCY_FLAGS := -MMD -MP
 INCLUDE_DIRS := -I./src
 DEBUG_FLAG := -g
-CXXFLAGS := $(STD_FLAGS) $(WARN_FLAGS) $(DEPENDENCY_FLAGS) $(INCLUDE_DIRS)
+CXXFLAGS := $(STD_FLAGS) $(WARN_FLAGS) $(DEPENDENCY_FLAGS) $(INCLUDE_DIRS) $(DEBUG_FLAG)
 
 #━━━━━━━━━━Test and Coverage Configuration━━━━━━━━━━
 TESTS_LINKER_FLAGS := -lgtest_main -lgtest -pthread
@@ -40,7 +40,7 @@ endif
 
 #━━━━━━━━━━Targets━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 test: $(BUILD_DIR)/run_tests
-	./$(BUILD_DIR)/run_tests 
+	./$(BUILD_DIR)/run_tests --gtest_filter=RedBlackTree*
 
 all: coverage valgrind
 
