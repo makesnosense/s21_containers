@@ -1220,3 +1220,125 @@ TEST(RedBlackTreeSetTest, StressTestRemoval) {
     EXPECT_TRUE(ValidateRedBlackTree(tree));
   }
 }
+
+TEST(RedBlackTreeSetTest, ComparisonOperatorsSet) {
+  s21::RedBlackTree<int> tree;
+  const int SIZE = 1000;
+
+  // Insert elements
+  for (int i = 0; i < SIZE; i++) {
+    tree.insert(i);
+  }
+
+  s21::RedBlackTree<int>::iterator iter1{tree.begin()};
+  s21::RedBlackTree<int>::iterator iter2{tree.begin()};
+
+  *iter2++;
+  *iter2++;
+
+  EXPECT_FALSE(iter1 == iter2);
+  EXPECT_TRUE(iter1 != iter2);
+}
+
+TEST(RedBlackTreeSetTest, ComparisonOperatorsSetConst) {
+  s21::RedBlackTree<int> tree;
+  const int SIZE = 1000;
+
+  // Insert elements
+  for (int i = 0; i < SIZE; i++) {
+    tree.insert(i);
+  }
+
+  s21::RedBlackTree<int>::const_iterator iter1{tree.begin()};
+  s21::RedBlackTree<int>::const_iterator iter2{tree.begin()};
+
+  *iter2++;
+
+  EXPECT_FALSE(iter1 == iter2);
+  EXPECT_TRUE(iter1 != iter2);
+}
+
+TEST(RedBlackTreeSetTest, ComparisonOperatorsMap) {
+  s21::RedBlackTree<int, int> tree;
+  const int SIZE = 1000;
+
+  // Insert elements
+  for (int i = 0; i < SIZE; i++) {
+    tree.insert({i, i});
+  }
+
+  s21::RedBlackTree<int, int>::iterator iter1{tree.begin()};
+  s21::RedBlackTree<int, int>::iterator iter2{tree.begin()};
+
+  *iter2++;
+  *iter2++;
+
+  EXPECT_FALSE(iter1 == iter2);
+  EXPECT_TRUE(iter1 != iter2);
+}
+
+TEST(RedBlackTreeSetTest, ComparisonOperatorsMapConst) {
+  s21::RedBlackTree<int, int> tree;
+  const int SIZE = 1000;
+
+  // Insert elements
+  for (int i = 0; i < SIZE; i++) {
+    tree.insert({i, i});
+  }
+
+  s21::RedBlackTree<int, int>::const_iterator iter1{tree.begin()};
+  s21::RedBlackTree<int, int>::const_iterator iter2{tree.begin()};
+
+  *iter2++;
+
+  EXPECT_FALSE(iter1 == iter2);
+  EXPECT_TRUE(iter1 != iter2);
+}
+
+TEST(RedBlackTreeSetTest, MapConstIterartor) {
+  std::map<int, int> std_map{};
+  s21::RedBlackTree<int, int> tree;
+  const int SIZE = 1000;
+
+  // Insert elements
+  for (int i = 0; i < SIZE; i++) {
+    tree.insert({i, i});
+    std_map.insert(std::make_pair(i, i));
+  }
+  std::map<int, int>::iterator std_it_map{std_map.begin()};
+  std::map<int, int>::const_iterator std_it_map_const{std_map.begin()};
+
+  s21::RedBlackTree<int, int>::iterator s21_it_map{tree.begin()};
+  s21::RedBlackTree<int, int>::const_iterator s21_it_map_const{tree.begin()};
+
+  *s21_it_map++;
+  *std_it_map++;
+  *s21_it_map_const++;
+  *std_it_map_const++;
+  //   *std_it_map_const = std::make_pair(54, 347);
+  //   *s21_it_map_const = {45, 46};
+}
+
+TEST(RedBlackTreeSetTest, SetConstIterartor) {
+  std::set<int> std_set{};
+  s21::RedBlackTree<int> tree;
+  const int SIZE = 1000;
+
+  // Insert elements
+  for (int i = 0; i < SIZE; i++) {
+    tree.insert(i);
+    std_set.insert(i);
+  }
+  std::set<int>::iterator std_it_set{std_set.begin()};
+  std::set<int>::const_iterator std_it_set_const{std_set.begin()};
+
+  s21::RedBlackTree<int>::iterator s21_it_set{tree.begin()};
+  s21::RedBlackTree<int>::const_iterator s21_it_set_const{tree.begin()};
+
+  *s21_it_set++;
+  *std_it_set++;
+  *s21_it_set_const++;
+  *std_it_set_const++;
+  std_it_set_const = std_it_set;
+  s21_it_set_const = s21_it_set;
+}
