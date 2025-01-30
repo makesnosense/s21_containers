@@ -45,7 +45,7 @@ TYPED_TEST(SetTest, InsertSet_1) {
   typename std::set<TypeParam>::iterator std_set_it{
       this->empty_stl_set_.begin()};
 
-  for (int i{0}; i < this->empty_s21_set_.size(); i++) {
+  for (size_t i{0}; i < this->empty_s21_set_.size(); i++) {
     EXPECT_EQ(*s21_set_it, *std_set_it);
     *std_set_it++;
     *s21_set_it++;
@@ -119,12 +119,12 @@ TEST(SetTest, MoveConstructor) {
 
   s21::set<int> s21_set_2(std::move(s21_set_1));
 
-  EXPECT_EQ(s21_set_2.size(), 3);
+  EXPECT_EQ(s21_set_2.size(), size_t{3});
   EXPECT_TRUE(s21_set_2.contains(1));
   EXPECT_TRUE(s21_set_2.contains(2));
   EXPECT_TRUE(s21_set_2.contains(3));
 
-  EXPECT_EQ(s21_set_1.size(), 0);
+  EXPECT_EQ(s21_set_1.size(), size_t{0});
   EXPECT_FALSE(s21_set_1.contains(1));
   EXPECT_FALSE(s21_set_1.contains(2));
   EXPECT_FALSE(s21_set_1.contains(3));
