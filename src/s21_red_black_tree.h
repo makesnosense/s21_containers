@@ -1,6 +1,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <iostream>
+#include <type_traits>
 #include <utility>
 
 #include "s21_base.h"
@@ -11,32 +12,60 @@ enum class NodeColor : int8_t { RED = 0, BLACK = 1 };
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpadded"
-template <typename Key, typename T>
+
+template <typename Key, typename T = void>
 class Node {
  public:
-  std::pair<const Key, T> data_;
+  using value_type = std::pair<const Key, T>;
+  using key_type = Key;
+  using mapped_type = T;
+
+  value_type data_;
   Node* left_{nullptr};
   Node* right_{nullptr};
   Node* parent_{nullptr};
   NodeColor color_{NodeColor::RED};
 
-  Node(const Key& key, const T& value) : data_(key, value) {}
+  // Constructor for Map case
+  Node(const key_type& key, const mapped_type& value) : data_(key, value) {}
+
+  const key_type& GetKey() const { return data_.first; }
+  const mapped_type& GetValue() const { return data_.second; }
 };
+
+// Specialization for Set case (T = void)
+template <typename Key>
+class Node<Key, void> {
+ public:
+  using value_type = Key;
+  using key_type = Key;
+
+  value_type data_;
+  Node* left_{nullptr};
+  Node* right_{nullptr};
+  Node* parent_{nullptr};
+  NodeColor color_{NodeColor::RED};
+
+  // Constructor for Set case
+  explicit Node(const Key& key) : data_(key) {}
+
+  const key_type& GetKey() const { return data_; }
+};
+
 #pragma GCC diagnostic pop
 
 template <typename Key, typename T>
 class RedBlackTree;
-
 template <typename Key, typename T>
 void print_tree(const RedBlackTree<Key, T>& tree);
 
-template <typename Key, typename T>
+template <typename Key, typename T = void>
 class RedBlackTree {
  public:
   using node = Node<Key, T>;
-  using value_type = std::pair<const Key, T>;
-  // using key_type = Key;
-  // using mapped_type = T;
+  using value_type = typename node::value_type;
+  using key_type = Key;
+  using mapped_type = T;
   // using value_type = typename traits::value_type;
   // using pointer = T*;
   // using const_pointer = const T*;
@@ -58,17 +87,20 @@ class RedBlackTree {
 
   std::pair<node*, bool> insert(const value_type& value) {
     if (root_ == nullptr) {
-      root_ = new node(value.first, value.second);
+      root_ = CreateNode(value);
+      // root_ = new node(value.first, value.second);
       root_->parent_ = nullptr;
       root_->color_ = NodeColor::BLACK;
       ++size_;
       return {root_, true};
     }
     node* current = root_;
+    const key_type& inserted_value_key{ExtractKeyFromAmbiguousValue(value)};
     while (true) {
-      if (value.first < current->data_.first) {
+      if (inserted_value_key < current->GetKey()) {
         if (current->left_ == nullptr) {
-          current->left_ = new node(value.first, value.second);
+          current->left_ = CreateNode(value);
+          // current->left_ = new node(value.first, value.second);
           current->left_->parent_ = current;
           ++size_;
           InsertFixup(current->left_);
@@ -76,9 +108,10 @@ class RedBlackTree {
           return {current->left_, true};
         }
         current = current->left_;
-      } else if (value.first > current->data_.first) {
+      } else if (inserted_value_key > current->GetKey()) {
         if (current->right_ == nullptr) {
-          current->right_ = new node(value.first, value.second);
+          current->right_ = CreateNode(value);
+          // current->right_ = new node(value.first, value.second);
           current->right_->parent_ = current;
           ++size_;
           InsertFixup(current->right_);
@@ -157,19 +190,19 @@ class RedBlackTree {
     }
   }
 
-  node* FindNode(const Key& key) {
+  node* FindNode(const key_type& key) {
     if (root_ == nullptr) {
       return nullptr;
     }
 
     node* current{root_};
     while (true) {
-      if (key < current->data_.first) {
+      if (key < current->GetKey()) {
         if (current->left_ == nullptr) {
           return nullptr;
         }
         current = current->left_;
-      } else if (key > current->data_.first) {
+      } else if (key > current->GetKey()) {
         if (current->right_ == nullptr) {
           return nullptr;
         }
@@ -192,6 +225,24 @@ class RedBlackTree {
   node* get_root() const { return root_; }
 
  private:
+  // Helper to get key from value_type
+  const key_type& ExtractKeyFromAmbiguousValue(const value_type& value) const {
+    if constexpr (std::is_same_v<T, void>) {
+      return value;  // For Set: value is the key
+    } else {
+      return value.first;  // For Map: value is a pair
+    }
+  }
+
+  // Helper for creating new node - specialized for Map/Set
+  node* CreateNode(const value_type& value) {
+    if constexpr (std::is_same_v<T, void>) {
+      return new node(value);  // Set case
+    } else {
+      return new node(value.first, value.second);  // Map case
+    }
+  }
+
   void RemoveNode(node* removal_target) {
     // Case 0: we have to remove the only element
     if (removal_target == root_ && !root_->left_ && !root_->right_) {
@@ -540,9 +591,16 @@ void print_tree_helper(const Node<Key, T>* root, std::string prefix = "",
 
   std::cout << prefix;
   std::cout << (root->color_ == NodeColor::RED ? print_color::RED
-                                               : print_color::BLACK)
-            << root->data_.first << "("
-            << (root->color_ == NodeColor::RED ? "R" : "B") << ")"
+                                               : print_color::BLACK);
+
+  // Handle both Set and Map cases for printing the key
+  if constexpr (std::is_same_v<T, void>) {
+    std::cout << root->data_;  // Set case: data_ is the key
+  } else {
+    std::cout << root->data_.first;  // Map case: data_.first is the key
+  }
+
+  std::cout << "(" << (root->color_ == NodeColor::RED ? "R" : "B") << ")"
             << print_color::RESET << "\n";
 
   if (root->right_ || root->left_) {
