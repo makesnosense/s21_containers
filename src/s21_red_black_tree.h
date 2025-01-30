@@ -103,6 +103,8 @@ class RedBlackTree {
 
   iterator end() { return iterator(nullptr); }
 
+  size_type size() { return size_; }
+
   // const_iterator begin() const {
   //   if (!root_) {
   //     return end();
@@ -747,9 +749,9 @@ class RedBlackTreeIterator<Key, is_const, void>
 };
 
 namespace print_color {
-const char* RED = "\033[1;31m";
-const char* BLACK = "\033[2;37m";
-const char* RESET = "\033[0m";
+static constexpr const char* RED = "\033[1;31m";
+static constexpr const char* BLACK = "\033[2;37m";
+static constexpr const char* RESET = "\033[0m";
 }  // namespace print_color
 
 template <typename Key, typename T>
