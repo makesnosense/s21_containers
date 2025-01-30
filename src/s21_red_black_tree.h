@@ -62,8 +62,8 @@ void print_tree(const RedBlackTree<Key, T>& tree);
 template <typename Key, typename T = void>
 class RedBlackTree {
  public:
-  using node = Node<Key, T>;
-  using value_type = typename node::value_type;
+  using node_type = Node<Key, T>;
+  using value_type = typename node_type::value_type;
   using key_type = Key;
   using mapped_type = T;
   // using value_type = typename traits::value_type;
@@ -85,7 +85,7 @@ class RedBlackTree {
   RedBlackTree& operator=(const RedBlackTree&) = delete;
   RedBlackTree& operator=(RedBlackTree&& other) = delete;
 
-  std::pair<node*, bool> insert(const value_type& value) {
+  std::pair<node_type*, bool> insert(const value_type& value) {
     if (root_ == nullptr) {
       root_ = CreateNode(value);
       // root_ = new node(value.first, value.second);
@@ -94,7 +94,7 @@ class RedBlackTree {
       ++size_;
       return {root_, true};
     }
-    node* current = root_;
+    node_type* current = root_;
     const key_type& inserted_value_key{ExtractKeyFromAmbiguousValue(value)};
     while (true) {
       if (inserted_value_key < current->GetKey()) {
@@ -124,11 +124,11 @@ class RedBlackTree {
     }
   }
 
-  void RotateLeft(node* us) {
+  void RotateLeft(node_type* us) {
     bool us_is_root{root_ == us};
 
-    node* right_child{us->right_};
-    node* displaced_left_child{right_child->left_};
+    node_type* right_child{us->right_};
+    node_type* displaced_left_child{right_child->left_};
 
     // right_child moves up, becoming parent of us
     right_child->parent_ = us->parent_;
@@ -157,11 +157,11 @@ class RedBlackTree {
     }
   }
 
-  void RotateRight(node* us) {
+  void RotateRight(node_type* us) {
     bool us_is_root{root_ == us};
 
-    node* left_child{us->left_};
-    node* displaced_right_child{left_child->right_};
+    node_type* left_child{us->left_};
+    node_type* displaced_right_child{left_child->right_};
 
     // left_child moves up, becoming parent of us
     left_child->parent_ = us->parent_;
@@ -190,12 +190,12 @@ class RedBlackTree {
     }
   }
 
-  node* FindNode(const key_type& key) {
+  node_type* FindNode(const key_type& key) {
     if (root_ == nullptr) {
       return nullptr;
     }
 
-    node* current{root_};
+    node_type* current{root_};
     while (true) {
       if (key < current->GetKey()) {
         if (current->left_ == nullptr) {
@@ -214,7 +214,7 @@ class RedBlackTree {
   }
 
   void erase(const Key& key) {
-    node* target = FindNode(key);
+    node_type* target = FindNode(key);
     if (target == nullptr) {
       return;  // Key not found
     }
@@ -222,7 +222,7 @@ class RedBlackTree {
     RemoveNode(target);
   }
 
-  node* get_root() const { return root_; }
+  node_type* get_root() const { return root_; }
 
  private:
   // Helper to get key from value_type
@@ -235,15 +235,15 @@ class RedBlackTree {
   }
 
   // Helper for creating new node - specialized for Map/Set
-  node* CreateNode(const value_type& value) {
+  node_type* CreateNode(const value_type& value) {
     if constexpr (std::is_same_v<T, void>) {
-      return new node(value);  // Set case
+      return new node_type(value);  // Set case
     } else {
-      return new node(value.first, value.second);  // Map case
+      return new node_type(value.first, value.second);  // Map case
     }
   }
 
-  void RemoveNode(node* removal_target) {
+  void RemoveNode(node_type* removal_target) {
     // Case 0: we have to remove the only element
     if (removal_target == root_ && !root_->left_ && !root_->right_) {
       delete root_;
@@ -251,9 +251,10 @@ class RedBlackTree {
       return;
     }
 
-    node* replacement{nullptr};    // Node that will take target's position
-    node* node_to_fixup{nullptr};  // Node that might need RB property fixes
-    node* parent_of_node_to_fixup{nullptr};  // Parent of node_to_fixup
+    node_type* replacement{nullptr};  // Node that will take target's position
+    node_type* node_to_fixup{
+        nullptr};  // Node that might need RB property fixes
+    node_type* parent_of_node_to_fixup{nullptr};  // Parent of node_to_fixup
 
     // When removing a node, removed_node_original_color stores the color of the
     // node whose position will be physically empty after all the moves
@@ -312,9 +313,9 @@ class RedBlackTree {
     }
   }
 
-  void RemovalFixup(node* x, node* parent_of_x) {
+  void RemovalFixup(node_type* x, node_type* parent_of_x) {
     while (x != root_ && IsBlack(x)) {
-      node* sibling = GetSibling(x, parent_of_x);
+      node_type* sibling = GetSibling(x, parent_of_x);
 
       // case 4: red sibling
       if (SiblingIsRed(x, parent_of_x)) {
@@ -329,11 +330,11 @@ class RedBlackTree {
         sibling = GetSibling(x, parent_of_x);
       } else {  // black sibling
 
-        node* siblings_child_far_from_x{IsRightChild(sibling) ? sibling->right_
-                                                              : sibling->left_};
+        node_type* siblings_child_far_from_x{
+            IsRightChild(sibling) ? sibling->right_ : sibling->left_};
 
-        node* siblings_child_near_to_x{IsRightChild(sibling) ? sibling->left_
-                                                             : sibling->right_};
+        node_type* siblings_child_near_to_x{
+            IsRightChild(sibling) ? sibling->left_ : sibling->right_};
 
         // case 3: black sibling and both children black
         if (IsBlack(siblings_child_near_to_x) &&
@@ -370,14 +371,14 @@ class RedBlackTree {
     x->color_ = NodeColor::BLACK;
   }
 
-  void Transplant(node* old_node, node* new_node) {
+  void Transplant(node_type* old_node, node_type* new_node) {
     if (IsRoot(old_node)) {
       root_ = new_node;
       new_node->parent_ = nullptr;
       return;
     }
 
-    node* father{old_node->parent_};
+    node_type* father{old_node->parent_};
     if (IsLeftChild(old_node)) {
       father->left_ = new_node;
     } else {
@@ -389,23 +390,23 @@ class RedBlackTree {
     }
   }
 
-  node* GetMin(node* us) {
-    node* current = us;
+  node_type* GetMin(node_type* us) {
+    node_type* current = us;
     while (current->left_ != nullptr) {
       current = current->left_;
     }
     return current;
   }
 
-  node* GetMax(node* us) {
-    node* current = us;
+  node_type* GetMax(node_type* us) {
+    node_type* current = us;
     while (current->right_ != nullptr) {
       current = current->right_;
     }
     return current;
   }
 
-  void InsertFixup(node* us) {
+  void InsertFixup(node_type* us) {
     if (IsRoot(us)) {
       us->color_ = NodeColor::BLACK;
       return;
@@ -422,7 +423,7 @@ class RedBlackTree {
     // 2. Parent is red
     // 3. Grandfather exists
 
-    node* grandfather = us->parent_->parent_;
+    node_type* grandfather = us->parent_->parent_;
 
     if (UncleIsRed(us)) {
       // father and uncle are red
@@ -440,9 +441,9 @@ class RedBlackTree {
     root_->color_ = NodeColor::BLACK;
   }
 
-  void InsertFixupTreatOuterChild(node* us) {
-    node* father{us->parent_};
-    node* grandfather{us->parent_->parent_};
+  void InsertFixupTreatOuterChild(node_type* us) {
+    node_type* father{us->parent_};
+    node_type* grandfather{us->parent_->parent_};
 
     SwapColors(father, grandfather);
     if (IsLeftChild(father)) {
@@ -452,8 +453,8 @@ class RedBlackTree {
     }
   }
 
-  void InsertFixupTreatInnerChild(node* us) {
-    node* father{us->parent_};
+  void InsertFixupTreatInnerChild(node_type* us) {
+    node_type* father{us->parent_};
     if (IsLeftChild(father)) {
       RotateLeft(father);
       InsertFixupTreatOuterChild(us->left_);
@@ -463,13 +464,13 @@ class RedBlackTree {
     }
   }
 
-  void SwapColors(node* first, node* other) {
+  void SwapColors(node_type* first, node_type* other) {
     NodeColor temp{first->color_};
     first->color_ = other->color_;
     other->color_ = temp;
   }
 
-  bool IsBlack(node* x) {
+  bool IsBlack(node_type* x) {
     if (x == nullptr) {
       return true;
     } else {
@@ -477,7 +478,7 @@ class RedBlackTree {
     }
   }
 
-  node* GetSiblingFromParent(node* parent) {
+  node_type* GetSiblingFromParent(node_type* parent) {
     if (parent->left_ == nullptr) {
       return parent->right_;
     } else {
@@ -485,7 +486,7 @@ class RedBlackTree {
     }
   }
 
-  node* GetSibling(node* us, node* parent) {
+  node_type* GetSibling(node_type* us, node_type* parent) {
     if (us == nullptr) {
       return GetSiblingFromParent(parent);
     }
@@ -496,47 +497,47 @@ class RedBlackTree {
     }
   }
 
-  bool SiblingIsRed(node* us, node* parent) {
-    node* sibling{GetSibling(us, parent)};
+  bool SiblingIsRed(node_type* us, node_type* parent) {
+    node_type* sibling{GetSibling(us, parent)};
     return sibling && sibling->color_ == NodeColor::RED;
   }
 
-  bool SiblingIsBlack(node* us, node* parent) {
+  bool SiblingIsBlack(node_type* us, node_type* parent) {
     return !SiblingIsRed(us, parent);
   }
 
-  bool UncleIsRed(node* us) {
-    node* uncle{GetUncle(us)};
+  bool UncleIsRed(node_type* us) {
+    node_type* uncle{GetUncle(us)};
     if (uncle == nullptr) {
       return false;
     }
     return uncle->color_ == NodeColor::RED;
   }
 
-  bool IsInnerChild(node* us) {
-    node* father{us->parent_};
+  bool IsInnerChild(node_type* us) {
+    node_type* father{us->parent_};
     return (IsLeftChild(us) && IsRightChild(father)) ||
            (IsRightChild(us) && IsLeftChild(father));
   }
 
-  bool IsLeftChild(node* us) {
+  bool IsLeftChild(node_type* us) {
     return us->parent_ && (us == us->parent_->left_);
   }
-  bool IsRightChild(node* us) { return !IsLeftChild(us); };
+  bool IsRightChild(node_type* us) { return !IsLeftChild(us); };
 
-  bool IsRoot(node* us) {
+  bool IsRoot(node_type* us) {
     if (us == nullptr) {
       return false;
     }
     return us->parent_ == nullptr;
   }
 
-  bool GrandFatherExists(node* us) {
+  bool GrandFatherExists(node_type* us) {
     return us && us->parent_ && us->parent_->parent_;
   }
 
-  node* GetUncle(node* us) {
-    node* father{us->parent_};
+  node_type* GetUncle(node_type* us) {
+    node_type* father{us->parent_};
     if (IsLeftChild(father)) {
       return father->parent_->right_;
     } else {
@@ -544,16 +545,16 @@ class RedBlackTree {
     }
   }
 
-  void RecolorFatherUncleGrandpa(node* us) {
+  void RecolorFatherUncleGrandpa(node_type* us) {
     if (GrandFatherExists(us) == false) {
       if (us->parent_) {
         us->parent_->color_ = NodeColor::BLACK;
       }
       return;
     }
-    node* uncle{GetUncle(us)};
-    node* father{us->parent_};
-    node* grandfather{father->parent_};
+    node_type* uncle{GetUncle(us)};
+    node_type* father{us->parent_};
+    node_type* grandfather{father->parent_};
 
     father->color_ = NodeColor::BLACK;
     if (uncle) {
@@ -562,7 +563,7 @@ class RedBlackTree {
     grandfather->color_ = NodeColor::RED;
   }
 
-  void DeleteSubtree(node* n) {
+  void DeleteSubtree(node_type* n) {
     if (n) {
       DeleteSubtree(n->left_);
       DeleteSubtree(n->right_);
@@ -570,7 +571,7 @@ class RedBlackTree {
     }
   }
 
-  node* root_;
+  node_type* root_;
   size_type size_;
 };
 
