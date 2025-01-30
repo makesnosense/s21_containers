@@ -56,6 +56,8 @@ class Node<Key, void> {
 
 template <typename Key, typename T>
 class RedBlackTree;
+template <typename Key, typename T = void>
+class RedBlackTreeIterator;
 template <typename Key, typename T>
 void print_tree(const RedBlackTree<Key, T>& tree);
 
@@ -66,6 +68,8 @@ class RedBlackTree {
   using value_type = typename node_type::value_type;
   using key_type = Key;
   using mapped_type = T;
+  using iterator = RedBlackTreeIterator<Key, T>;
+
   // using value_type = typename traits::value_type;
   // using pointer = T*;
   // using const_pointer = const T*;
@@ -84,6 +88,19 @@ class RedBlackTree {
   }
   RedBlackTree& operator=(const RedBlackTree&) = delete;
   RedBlackTree& operator=(RedBlackTree&& other) = delete;
+
+  iterator begin() {
+    if (!root_) {
+      return end();
+    }
+    node_type* current = root_;
+    while (current->left_) {
+      current = current->left_;
+    }
+    return iterator(current);
+  }
+
+  iterator end() { return iterator(nullptr); }
 
   std::pair<node_type*, bool> insert(const value_type& value) {
     if (root_ == nullptr) {
@@ -251,9 +268,8 @@ class RedBlackTree {
       return;
     }
 
-    node_type* replacement{nullptr};  // Node that will take target's position
-    node_type* node_to_fixup{
-        nullptr};  // Node that might need RB property fixes
+    node_type* replacement{nullptr};    // Node that will take target's position
+    node_type* node_to_fixup{nullptr};  // Node that may need RB property fixes
     node_type* parent_of_node_to_fixup{nullptr};  // Parent of node_to_fixup
 
     // When removing a node, removed_node_original_color stores the color of the
@@ -573,6 +589,109 @@ class RedBlackTree {
 
   node_type* root_;
   size_type size_;
+};
+
+template <typename Key, typename T = void>
+class RedBlackTreeIteratorBase {
+ protected:
+  using node_type = Node<Key, T>;
+  node_type* current_{nullptr};
+
+  RedBlackTreeIteratorBase() = default;
+  explicit RedBlackTreeIteratorBase(node_type* node) : current_(node) {}
+
+  // Common traversal logic
+  void increment() {
+    if (current_->right_) {
+      current_ = current_->right_;
+      while (current_->left_) {
+        current_ = current_->left_;
+      }
+    } else {
+      node_type* parent = current_->parent_;
+      while (parent && current_ == parent->right_) {
+        current_ = parent;
+        parent = parent->parent_;
+      }
+      current_ = parent;
+    }
+  }
+
+  void decrement() {
+    // Similar logic for decrement
+  }
+
+ public:
+  // Common operators
+  bool operator==(const RedBlackTreeIteratorBase& other) const {
+    return current_ == other.current_;
+  }
+  bool operator!=(const RedBlackTreeIteratorBase& other) const {
+    return !(*this == other);
+  }
+};
+
+// Map version
+template <typename Key, typename T>
+class RedBlackTreeIterator : public RedBlackTreeIteratorBase<Key, T> {
+ public:
+  using iterator_category = std::bidirectional_iterator_tag;
+  using value_type = std::pair<const Key, T>;
+  using difference_type = std::ptrdiff_t;
+  using pointer = value_type*;
+  using reference = value_type&;
+
+  using Base = RedBlackTreeIteratorBase<Key, T>;
+  using Base::current_;
+
+  // Constructors
+  RedBlackTreeIterator() : Base() {}
+  explicit RedBlackTreeIterator(typename Base::node_type* node) : Base(node) {}
+
+  // Specialized dereferencing
+  reference operator*() const { return current_->data_; }
+  pointer operator->() const { return &(current_->data_); }
+
+  // Increment/decrement using base class implementation
+  RedBlackTreeIterator& operator++() {
+    this->increment();
+    return *this;
+  }
+  RedBlackTreeIterator& operator--() {
+    this->decrement();
+    return *this;
+  }
+};
+
+// Set version
+template <typename Key>
+class RedBlackTreeIterator<Key, void>
+    : public RedBlackTreeIteratorBase<Key, void> {
+ public:
+  using iterator_category = std::bidirectional_iterator_tag;
+  using value_type = Key;
+  using difference_type = std::ptrdiff_t;
+  using pointer = const Key*;
+  using reference = const Key&;
+
+  using Base = RedBlackTreeIteratorBase<Key, void>;
+  using Base::current_;
+
+  RedBlackTreeIterator() : Base() {}
+  explicit RedBlackTreeIterator(typename Base::node_type* node) : Base(node) {}
+
+  // Specialized dereferencing
+  reference operator*() const { return current_->data_; }
+  pointer operator->() const { return &(current_->data_); }
+
+  RedBlackTreeIterator& operator++() {
+    this->increment();
+    return *this;
+  }
+  RedBlackTreeIterator& operator--() {
+    this->decrement();
+    return *this;
+  }
 };
 
 namespace print_color {
