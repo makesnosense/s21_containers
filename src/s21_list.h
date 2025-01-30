@@ -13,7 +13,6 @@ template <typename T, bool is_const>
 class ListIterator;
 template <typename T>
 class list {
- public:
   friend class ListIterator<T, false>;
   friend class ListIterator<T, true>;
   using traits = container_traits<T>;
