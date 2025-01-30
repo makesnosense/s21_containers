@@ -17,15 +17,14 @@ class QueueTest : public testing::Test {
 
   std::queue<T> empty_stl_queue_;
   s21::queue<T> empty_s21_queue_;
-  // std::queue<T> stl_queue_;
-  // s21::queue<T> s21_queue_;
 };
 using TestedTypes = ::testing::Types<char, int, double, DummyObject>;
 TYPED_TEST_SUITE(QueueTest, TestedTypes, );
 
 TYPED_TEST(QueueTest, EnqueueElement) {
-  this->empty_s21_queue_.push(TypeParam());
-  this->empty_stl_queue_.push(TypeParam());
+  TypeParam value = TypeParam();
+  this->empty_s21_queue_.push(value);
+  this->empty_stl_queue_.push(value);
 
   EXPECT_EQ(this->empty_s21_queue_.size(), this->empty_stl_queue_.size());
   EXPECT_FALSE(this->empty_s21_queue_.empty());
@@ -60,7 +59,8 @@ TYPED_TEST(QueueTest, IsEmpty) {
 }
 
 TYPED_TEST(QueueTest, CopyConstructor) {
-  this->empty_s21_queue_.push(TypeParam());
+  TypeParam value = TypeParam();
+  this->empty_s21_queue_.push(value);
 
   s21::queue<TypeParam> copied_queue = this->empty_s21_queue_;
 
@@ -69,7 +69,9 @@ TYPED_TEST(QueueTest, CopyConstructor) {
 }
 
 TYPED_TEST(QueueTest, MoveConstructor) {
-  this->empty_s21_queue_.push(TypeParam());
+  TypeParam value = TypeParam();
+
+  this->empty_s21_queue_.push(value);
 
   s21::queue<TypeParam> moved_queue = std::move(this->empty_s21_queue_);
 
@@ -78,7 +80,9 @@ TYPED_TEST(QueueTest, MoveConstructor) {
 }
 
 TYPED_TEST(QueueTest, CopyAssignmentOperator) {
-  this->empty_s21_queue_.push(TypeParam());
+  TypeParam value = TypeParam();
+
+  this->empty_s21_queue_.push(value);
 
   s21::queue<TypeParam> another_queue;
   another_queue = this->empty_s21_queue_;
@@ -88,7 +92,9 @@ TYPED_TEST(QueueTest, CopyAssignmentOperator) {
 }
 
 TYPED_TEST(QueueTest, MoveAssignmentOperator) {
-  this->empty_s21_queue_.push(TypeParam());
+  TypeParam value = TypeParam();
+
+  this->empty_s21_queue_.push(value);
 
   s21::queue<TypeParam> another_queue;
   another_queue = std::move(this->empty_s21_queue_);
@@ -117,8 +123,6 @@ TEST(QueueTest, QueueFunctionality) {
 
   EXPECT_TRUE(queue.empty());
 }
-
-TYPED_TEST(QueueTest, qeue1) { EXPECT_EQ(1, 1); }
 
 TEST(QueueTest, qeue) {
   s21::queue<int> mss;
