@@ -250,13 +250,16 @@ class RedBlackTree {
     }
   }
 
-  void erase(const Key& key) {
+  size_type erase(const Key& key) {
+    size_type erased_elements{0};
     node_type* target = FindNode(key);
     if (target == nullptr) {
-      return;  // Key not found
+      return erased_elements;  // Key not found
     }
 
     RemoveNode(target);
+    ++erased_elements;
+    return erased_elements;
   }
 
   node_type* get_root() const { return root_; }

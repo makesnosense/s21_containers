@@ -295,8 +295,9 @@ TEST(RedBlackTreeEraseNoFixup, RemoveRedWithRedChild) {
   tree.insert({30, 1});  // Red right
   tree.insert({40, 1});  // Red right's right
 
-  tree.erase(30);
+  size_t erased_elements{tree.erase(30)};
   EXPECT_TRUE(ValidateRedBlackTree(tree));
+  EXPECT_EQ(erased_elements, size_t{1});
 }
 
 TEST(RedBlackTreeEraseNoFixup, RemoveRedWithLeftChild) {
@@ -305,17 +306,20 @@ TEST(RedBlackTreeEraseNoFixup, RemoveRedWithLeftChild) {
   tree.insert({30, 1});  // Red right
   tree.insert({25, 1});  // Red right's left
 
-  tree.erase(30);
+  size_t erased_elements{tree.erase(30)};
+  erased_elements += tree.erase(33);
   EXPECT_TRUE(ValidateRedBlackTree(tree));
+  EXPECT_EQ(erased_elements, size_t{1});
 }
 
 TEST(RedBlackTreeEraseNoFixup, RemoveOnlyRoot) {
   s21::RedBlackTree<int, int> tree;
   tree.insert({20, 1});  // Single black root
 
-  tree.erase(20);
+  size_t erased_elements{tree.erase(20)};
   EXPECT_TRUE(ValidateRedBlackTree(tree));
   EXPECT_EQ(tree.get_root(), nullptr);
+  EXPECT_EQ(erased_elements, size_t{1});
 }
 
 TEST(RedBlackTreeEraseNoFixup, RemoveRedNodeBothRedChildren) {
