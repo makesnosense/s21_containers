@@ -97,3 +97,35 @@ TYPED_TEST(SetTest, InsertWithExistingElements) {
   EXPECT_EQ(*result_s21.first, *result_std.first);
   EXPECT_EQ(this->empty_s21_set_.size(), this->empty_stl_set_.size());
 }
+
+// copy contructer
+TEST(SetTest, CopyConstructor) {
+  s21::set<int> s21_set_1{3, 53, 145, 6, 57, 2, 46, 2};
+  s21_set_1.insert(1);
+  s21_set_1.insert(2);
+  s21_set_1.insert(3);
+
+  s21::set<int> s21_set_2(s21_set_1);
+
+  EXPECT_EQ(s21_set_1, s21_set_2);
+}
+
+// move constructer
+TEST(SetTest, MoveConstructor) {
+  s21::set<int> s21_set_1;
+  s21_set_1.insert(1);
+  s21_set_1.insert(2);
+  s21_set_1.insert(3);
+
+  s21::set<int> s21_set_2(std::move(s21_set_1));
+
+  EXPECT_EQ(s21_set_2.size(), 3);
+  EXPECT_TRUE(s21_set_2.contains(1));
+  EXPECT_TRUE(s21_set_2.contains(2));
+  EXPECT_TRUE(s21_set_2.contains(3));
+
+  EXPECT_EQ(s21_set_1.size(), 0);
+  EXPECT_FALSE(s21_set_1.contains(1));
+  EXPECT_FALSE(s21_set_1.contains(2));
+  EXPECT_FALSE(s21_set_1.contains(3));
+}
