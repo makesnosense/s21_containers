@@ -81,7 +81,11 @@ class RedBlackTree {
 
   RedBlackTree() : root_(nullptr), size_(0) {}
   RedBlackTree(const RedBlackTree&) = delete;
-  RedBlackTree(RedBlackTree&& other) = delete;
+  RedBlackTree(RedBlackTree&& other) noexcept
+      : root_(other.root_), size_(other.size_) {
+    other.root_ = nullptr;
+    other.size_ = 0;
+  }
   ~RedBlackTree() {
     DeleteSubtree(root_);
     root_ = nullptr;
@@ -103,20 +107,20 @@ class RedBlackTree {
 
   iterator end() { return iterator(nullptr); }
 
-  size_type size() { return size_; }
+  size_type size() const { return size_; }
 
-  // const_iterator begin() const {
-  //   if (!root_) {
-  //     return end();
-  //   }
-  //   node_type* current = root_;
-  //   while (current->left_) {
-  //     current = current->left_;
-  //   }
-  //   return const_iterator(current);
-  // }
+  const_iterator begin() const {
+    if (!root_) {
+      return end();
+    }
+    node_type* current = root_;
+    while (current->left_) {
+      current = current->left_;
+    }
+    return const_iterator(current);
+  }
 
-  // const_iterator end() const { return const_iterator(nullptr); }
+  const_iterator end() const { return const_iterator(nullptr); }
 
   std::pair<node_type*, bool> insert(const value_type& value) {
     if (root_ == nullptr) {
