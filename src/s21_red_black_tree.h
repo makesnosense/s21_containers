@@ -26,8 +26,12 @@ class Node {
   Node* parent_{nullptr};
   NodeColor color_{NodeColor::RED};
 
+  Node() = default;
+
   // Constructor for Map case
   Node(const key_type& key, const mapped_type& value) : data_(key, value) {}
+
+  Node& operator=(const Node& other) = delete;
 
   const key_type& GetKey() const { return data_.first; }
   const mapped_type& GetValue() const { return data_.second; }
@@ -46,8 +50,14 @@ class Node<Key, void> {
   Node* parent_{nullptr};
   NodeColor color_{NodeColor::RED};
 
+  Node() = default;
+
+  Node<Key, void>(const s21::Node<Key, void>&) = delete;
+
   // Constructor for Set case
   explicit Node(const Key& key) : data_(key) {}
+
+  Node& operator=(const Node& other) = delete;
 
   const key_type& GetKey() const { return data_; }
 };
