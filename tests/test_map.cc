@@ -128,28 +128,26 @@ TYPED_TEST(MapTest, InsertWithExistingElements) {
   EXPECT_EQ(this->empty_s21_map_.size(), this->empty_stl_map_.size());
 }
 
-// Element access tests
+// // Element access tests
 TYPED_TEST(MapTest, At) {
   EXPECT_EQ(this->s21_map_.at(103), "a");
   EXPECT_EQ(this->s21_map_.at(53), "b");
   EXPECT_EQ(this->s21_map_.at(73), "c");
 
-  EXPECT_THROW(this->s21_map_.at(999), std::out_of_range);
+  EXPECT_THROW(this->s21_map_.at(52), std::out_of_range);
   EXPECT_THROW(this->empty_s21_map_.at(1), std::out_of_range);
 }
 
 TYPED_TEST(MapTest, OperatorSubscript) {
-  // Access existing element
   EXPECT_EQ(this->s21_map_[103], "a");
 
-  // Insert new element
-  typename TypeParam::first_type key{999};
+  typename TypeParam::first_type key{99};
   this->s21_map_[key] = "new";
   EXPECT_EQ(this->s21_map_[key], "new");
   EXPECT_EQ(this->s21_map_.size(), size_t{9});
 }
 
-// Copy constructor
+// // Copy constructor
 TYPED_TEST(MapTest, CopyConstructor) {
   s21::map<typename TypeParam::first_type, typename TypeParam::second_type>
       s21_map_2(this->s21_map_);
@@ -229,14 +227,14 @@ TYPED_TEST(MapTest, SwapMaps) {
 // Merge
 TYPED_TEST(MapTest, MergeMaps) {
   s21::map<typename TypeParam::first_type, typename TypeParam::second_type>
-      other{{200, "extra"}, {201, "more"}};
+      other{{48, "extra"}, {49, "more"}};
   size_t initial_size = this->s21_map_.size();
 
   this->s21_map_.merge(other);
 
   EXPECT_EQ(this->s21_map_.size(), initial_size + 2);
-  EXPECT_EQ(this->s21_map_.at(200), "extra");
-  EXPECT_EQ(this->s21_map_.at(201), "more");
+  EXPECT_EQ(this->s21_map_.at(48), "extra");
+  EXPECT_EQ(this->s21_map_.at(49), "more");
   EXPECT_TRUE(other.empty());
 }
 
@@ -246,13 +244,13 @@ TYPED_TEST(MapTest, Find) {
   EXPECT_NE(it, this->s21_map_.end());
   EXPECT_EQ(it->second, "a");
 
-  it = this->s21_map_.find(999);
+  it = this->s21_map_.find(99);
   EXPECT_EQ(it, this->s21_map_.end());
 }
 
 // Contains
 TYPED_TEST(MapTest, Contains) {
   EXPECT_TRUE(this->s21_map_.contains(103));
-  EXPECT_FALSE(this->s21_map_.contains(999));
+  EXPECT_FALSE(this->s21_map_.contains(52));
   EXPECT_FALSE(this->empty_s21_map_.contains(1));
 }
