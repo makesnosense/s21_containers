@@ -250,6 +250,13 @@ class RedBlackTree {
     }
   }
 
+  iterator erase(iterator pos) {
+    iterator next{pos};
+    ++next;
+    RemoveNode(pos.current_);
+    return next;
+  }
+
   size_type erase(const Key& key) {
     size_type erased_elements{0};
     node_type* target = FindNode(key);
