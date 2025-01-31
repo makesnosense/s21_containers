@@ -6,7 +6,6 @@
 #include <iostream>
 #include <iterator>
 
-#include "s21_base.h"
 namespace s21 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpadded"
@@ -34,17 +33,16 @@ class list {
   friend class ListIterator<T, false>;
   friend class ListIterator<T, true>;
 
-  using traits = container_traits<T>;
-  using value_type = typename traits::value_type;
-  using reference = typename traits::reference;
-  using const_reference = typename traits::const_reference;
+  using value_type = T;
+  using reference = T&;
+  using const_reference = const T&;
 
   using pointer = T*;
 
   using iterator = ListIterator<T, false>;
   using node_type = Node<T>;
   using const_iterator = const ListIterator<T, true>;
-  using size_type = typename traits::size_type;
+  using size_type = std::size_t;
 
   list() : head_{nullptr}, tail_{nullptr}, size_{0} {}
   explicit list(std::initializer_list<value_type> init)
