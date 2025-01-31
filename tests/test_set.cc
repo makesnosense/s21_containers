@@ -26,8 +26,8 @@ class SetTest : public testing::Test {
   s21::set<Key> empty_s21_set_;
   std::set<Key> stl_set_;
   s21::set<Key> s21_set_;
-  std::set<Key> large_stl_set_;
-  s21::set<Key> large_s21_set_;
+  // std::set<Key> large_stl_set_;
+  // s21::set<Key> large_s21_set_;
 };
 
 using TestedTypes = ::testing::Types<char, int, double, DummyObject>;
