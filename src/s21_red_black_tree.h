@@ -664,9 +664,9 @@ class RedBlackTreeIteratorBase {
       }
     } else {
       node_type* parent = current_->parent_;
-      while (parent && current_ == parent->left) {
+      while (parent && current_ == parent->left_) {
         current_ = parent;
-        parent = current_->parent;
+        parent = current_->parent_;
       }
       current_ = parent;
     }
