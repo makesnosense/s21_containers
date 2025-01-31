@@ -278,6 +278,7 @@ class RedBlackTree {
       clear();
       root_ = other.root_;
       other.root_ = nullptr;
+      size_ = other.size_;
     }
     return *this;
   }
