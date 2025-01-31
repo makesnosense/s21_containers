@@ -17,8 +17,8 @@ class SetTest : public testing::Test {
   SetTest()
       : empty_stl_set_(),
         empty_s21_set_(),
-        stl_set_{3, 53, 73, 6, 57, 2, 46, 4},
-        s21_set_{3, 53, 73, 6, 57, 2, 46, 4} {}
+        stl_set_{103, 53, 73, 106, 57, 102, 46, 104},
+        s21_set_{103, 53, 73, 106, 57, 102, 46, 104} {}
 
   std::set<Key> empty_stl_set_;
   s21::set<Key> empty_s21_set_;
@@ -106,14 +106,14 @@ TYPED_TEST(SetTest, MoveConstructor) {
   s21::set<TypeParam> s21_set_2(std::move(this->s21_set_));
 
   EXPECT_EQ(s21_set_2.size(), size_t{8});
-  EXPECT_TRUE(s21_set_2.contains(3));
+  EXPECT_TRUE(s21_set_2.contains(103));
   EXPECT_TRUE(s21_set_2.contains(53));
   EXPECT_TRUE(s21_set_2.contains(73));
-  EXPECT_TRUE(s21_set_2.contains(6));
+  EXPECT_TRUE(s21_set_2.contains(106));
   EXPECT_TRUE(s21_set_2.contains(57));
-  EXPECT_TRUE(s21_set_2.contains(2));
+  EXPECT_TRUE(s21_set_2.contains(102));
   EXPECT_TRUE(s21_set_2.contains(46));
-  EXPECT_TRUE(s21_set_2.contains(4));
+  EXPECT_TRUE(s21_set_2.contains(104));
 
   EXPECT_EQ(this->s21_set_.size(), size_t{0});
   EXPECT_FALSE(this->s21_set_.contains(1));
@@ -128,7 +128,7 @@ TEST(SetNonTyped, ConstructorWithSizeAndValue) {
 
   s21::set<int> test_set(size, value);
 
-  EXPECT_EQ(test_set.size(), 1);
+  EXPECT_EQ(test_set.size(), size_t{1});
 
   EXPECT_TRUE(test_set.contains(value));
 
@@ -151,14 +151,14 @@ TYPED_TEST(SetTest, MoveAssignmentOperator) {
 
 // erase
 TYPED_TEST(SetTest, EraseIteratorPos1) {
-  auto it = this->s21_set_.find(3);
+  auto it = this->s21_set_.find(103);
   ASSERT_NE(it, this->s21_set_.end());
   this->s21_set_.erase(it);
 
   EXPECT_EQ(this->s21_set_.size(), size_t{7});
   EXPECT_FALSE(this->s21_set_.contains(3));
 
-  it = this->s21_set_.find(2);
+  it = this->s21_set_.find(102);
   ASSERT_NE(it, this->s21_set_.end());
   this->s21_set_.erase(it);
 
@@ -176,8 +176,8 @@ TYPED_TEST(SetTest, EraseIteratorPos1) {
 }
 
 TYPED_TEST(SetTest, EraseIteratorPos2) {
-  auto s21_it = this->s21_set_.find(3);
-  auto std_it = this->stl_set_.find(3);
+  auto s21_it = this->s21_set_.find(103);
+  auto std_it = this->stl_set_.find(103);
 
   ASSERT_NE(s21_it, this->s21_set_.end());
   ASSERT_NE(std_it, this->stl_set_.end());
@@ -186,11 +186,11 @@ TYPED_TEST(SetTest, EraseIteratorPos2) {
   this->stl_set_.erase(std_it);
 
   EXPECT_EQ(this->s21_set_.size(), this->stl_set_.size());
-  EXPECT_EQ(this->s21_set_.find(3) == this->s21_set_.end(),
-            this->stl_set_.find(3) == this->stl_set_.end());
+  EXPECT_EQ(this->s21_set_.find(103) == this->s21_set_.end(),
+            this->stl_set_.find(103) == this->stl_set_.end());
 
-  s21_it = this->s21_set_.find(2);
-  std_it = this->stl_set_.find(2);
+  s21_it = this->s21_set_.find(102);
+  std_it = this->stl_set_.find(102);
 
   ASSERT_NE(s21_it, this->s21_set_.end());
   ASSERT_NE(std_it, this->stl_set_.end());
@@ -199,8 +199,8 @@ TYPED_TEST(SetTest, EraseIteratorPos2) {
   this->stl_set_.erase(std_it);
 
   EXPECT_EQ(this->s21_set_.size(), this->stl_set_.size());
-  EXPECT_EQ(this->s21_set_.find(2) == this->s21_set_.end(),
-            this->stl_set_.find(2) == this->stl_set_.end());
+  EXPECT_EQ(this->s21_set_.find(102) == this->s21_set_.end(),
+            this->stl_set_.find(102) == this->stl_set_.end());
 
   s21_it = this->s21_set_.find(57);
   std_it = this->stl_set_.find(57);
@@ -251,14 +251,14 @@ TYPED_TEST(SetTest, Swap_SameSize_1) {
   EXPECT_EQ(this->empty_s21_set_.size(), size_t{8});
   EXPECT_EQ(this->s21_set_.size(), size_t{0});
 
-  EXPECT_TRUE(this->empty_s21_set_.contains(3));
+  EXPECT_TRUE(this->empty_s21_set_.contains(103));
   EXPECT_TRUE(this->empty_s21_set_.contains(53));
   EXPECT_TRUE(this->empty_s21_set_.contains(73));
-  EXPECT_TRUE(this->empty_s21_set_.contains(6));
+  EXPECT_TRUE(this->empty_s21_set_.contains(106));
   EXPECT_TRUE(this->empty_s21_set_.contains(57));
-  EXPECT_TRUE(this->empty_s21_set_.contains(2));
+  EXPECT_TRUE(this->empty_s21_set_.contains(102));
   EXPECT_TRUE(this->empty_s21_set_.contains(46));
-  EXPECT_TRUE(this->empty_s21_set_.contains(4));
+  EXPECT_TRUE(this->empty_s21_set_.contains(104));
 
   EXPECT_FALSE(this->s21_set_.contains(73));
   EXPECT_FALSE(this->s21_set_.contains(53));
@@ -352,27 +352,27 @@ TYPED_TEST(SetTest, Merge_NonOverlapping) {
   this->stl_set_.merge(std_set2);
 
   EXPECT_EQ(this->s21_set_.size(), size_t{11});
-  EXPECT_TRUE(this->s21_set_.contains(3));
+  EXPECT_TRUE(this->s21_set_.contains(103));
   EXPECT_TRUE(this->s21_set_.contains(53));
   EXPECT_TRUE(this->s21_set_.contains(73));
-  EXPECT_TRUE(this->s21_set_.contains(6));
+  EXPECT_TRUE(this->s21_set_.contains(106));
   EXPECT_TRUE(this->s21_set_.contains(57));
-  EXPECT_TRUE(this->s21_set_.contains(2));
+  EXPECT_TRUE(this->s21_set_.contains(102));
   EXPECT_TRUE(this->s21_set_.contains(46));
-  EXPECT_TRUE(this->s21_set_.contains(4));
+  EXPECT_TRUE(this->s21_set_.contains(104));
   EXPECT_TRUE(this->s21_set_.contains(19));
   EXPECT_TRUE(this->s21_set_.contains(21));
   EXPECT_TRUE(this->s21_set_.contains(29));
 
   EXPECT_EQ(this->stl_set_.size(), size_t{11});
-  EXPECT_NE(this->stl_set_.find(2), this->stl_set_.end());
+  EXPECT_NE(this->stl_set_.find(102), this->stl_set_.end());
   EXPECT_NE(this->stl_set_.find(53), this->stl_set_.end());
   EXPECT_NE(this->stl_set_.find(73), this->stl_set_.end());
-  EXPECT_NE(this->stl_set_.find(6), this->stl_set_.end());
+  EXPECT_NE(this->stl_set_.find(106), this->stl_set_.end());
   EXPECT_NE(this->stl_set_.find(57), this->stl_set_.end());
-  EXPECT_NE(this->stl_set_.find(3), this->stl_set_.end());
+  EXPECT_NE(this->stl_set_.find(103), this->stl_set_.end());
   EXPECT_NE(this->stl_set_.find(46), this->stl_set_.end());
-  EXPECT_NE(this->stl_set_.find(4), this->stl_set_.end());
+  EXPECT_NE(this->stl_set_.find(104), this->stl_set_.end());
   EXPECT_NE(this->stl_set_.find(19), this->stl_set_.end());
   EXPECT_NE(this->stl_set_.find(21), this->stl_set_.end());
   EXPECT_NE(this->stl_set_.find(29), this->stl_set_.end());
@@ -469,8 +469,8 @@ TYPED_TEST(SetTest, Find_NonExistingElement) {
 }
 
 TYPED_TEST(SetTest, Find_FirstElement) {
-  auto s21_it = this->s21_set_.find(3);
-  auto std_it = this->stl_set_.find(3);
+  auto s21_it = this->s21_set_.find(103);
+  auto std_it = this->stl_set_.find(103);
 
   ASSERT_NE(s21_it, this->s21_set_.end());
   ASSERT_NE(std_it, this->stl_set_.end());
@@ -479,8 +479,8 @@ TYPED_TEST(SetTest, Find_FirstElement) {
 }
 
 TYPED_TEST(SetTest, Find_LastElement) {
-  auto s21_it = this->s21_set_.find(3);
-  auto std_it = this->stl_set_.find(3);
+  auto s21_it = this->s21_set_.find(103);
+  auto std_it = this->stl_set_.find(103);
 
   ASSERT_NE(s21_it, this->s21_set_.end());
   ASSERT_NE(std_it, this->stl_set_.end());
