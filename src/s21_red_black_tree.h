@@ -269,6 +269,8 @@ class RedBlackTree {
 
   void clear() { DeleteSubtree(root_); }
 
+  bool empty() { return size_ == 0; }
+
   node_type* get_root() const { return root_; }
 
   RedBlackTree& operator=(const RedBlackTree&) = delete;
