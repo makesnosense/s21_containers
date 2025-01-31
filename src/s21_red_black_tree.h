@@ -267,6 +267,8 @@ class RedBlackTree {
     return erased_elements;
   }
 
+  void clear() { DeleteSubtree(root_); }
+
   node_type* get_root() const { return root_; }
 
   RedBlackTree& operator=(const RedBlackTree&) = delete;
@@ -279,6 +281,7 @@ class RedBlackTree {
     }
     return *this;
   }
+
  private:
   // Helper to get key from value_type
   const key_type& ExtractKeyFromAmbiguousValue(const value_type& value) const {
