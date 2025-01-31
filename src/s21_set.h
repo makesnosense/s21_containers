@@ -15,7 +15,6 @@ namespace s21 {
 template <typename Key>
 class set {
  public:
-  using node_type = Node<Key, void>;
   using key_type = Key;
   using value_type = Key;
   using iterator = RedBlackTreeIterator<Key, false, void>;
