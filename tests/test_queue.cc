@@ -34,11 +34,11 @@ TYPED_TEST(QueueTest, DequeueElement) {
   TypeParam value = TypeParam();
   this->empty_s21_queue_.push(value);
 
-  EXPECT_EQ(this->empty_s21_queue_.size(), 1);
+  EXPECT_EQ(this->empty_s21_queue_.size(), size_t{1});
 
   this->empty_s21_queue_.pop();
 
-  EXPECT_EQ(this->empty_s21_queue_.size(), 0);
+  EXPECT_EQ(this->empty_s21_queue_.size(), size_t{0});
   EXPECT_TRUE(this->empty_s21_queue_.empty());
 }
 
@@ -75,7 +75,7 @@ TYPED_TEST(QueueTest, MoveConstructor) {
 
   s21::queue<TypeParam> moved_queue = std::move(this->empty_s21_queue_);
 
-  EXPECT_EQ(moved_queue.size(), 1);
+  EXPECT_EQ(moved_queue.size(), size_t{1});
   EXPECT_EQ(moved_queue.front(), TypeParam());
 }
 
@@ -99,10 +99,10 @@ TYPED_TEST(QueueTest, MoveAssignmentOperator) {
   s21::queue<TypeParam> another_queue;
   another_queue = std::move(this->empty_s21_queue_);
 
-  EXPECT_EQ(another_queue.size(), 1);
+  EXPECT_EQ(another_queue.size(), size_t{1});
   EXPECT_EQ(another_queue.front(), TypeParam());
 
-  EXPECT_EQ(this->empty_s21_queue_.size(), 0);
+  EXPECT_EQ(this->empty_s21_queue_.size(), size_t{0});
 }
 
 TEST(QueueTest, QueueFunctionality) {
@@ -111,10 +111,10 @@ TEST(QueueTest, QueueFunctionality) {
     queue.push(i);
   }
 
-  EXPECT_EQ(queue.size(), 10);
+  EXPECT_EQ(queue.size(), size_t{10});
 
   queue.pop();
-  EXPECT_EQ(queue.size(), 9);
+  EXPECT_EQ(queue.size(), size_t{9});
   EXPECT_EQ(queue.front(), 1);
 
   for (int i = 0; i < 9; ++i) {

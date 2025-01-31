@@ -31,11 +31,11 @@ TYPED_TEST(StackTest, PopElement) {
   TypeParam value = TypeParam();
   this->empty_s21_stack_.push(value);
 
-  EXPECT_EQ(this->empty_s21_stack_.size(), 1);
+  EXPECT_EQ(this->empty_s21_stack_.size(), size_t{1});
 
   this->empty_s21_stack_.pop();
 
-  EXPECT_EQ(this->empty_s21_stack_.size(), 0);
+  EXPECT_EQ(this->empty_s21_stack_.size(), size_t{0});
 
   EXPECT_TRUE(this->empty_s21_stack_.empty());
 }
@@ -66,7 +66,7 @@ TYPED_TEST(StackTest, MoveConstructor) {
   this->empty_s21_stack_.push(value);
   s21::stack<TypeParam> moved_stack = std::move(this->empty_s21_stack_);
 
-  EXPECT_EQ(moved_stack.size(), 1);
+  EXPECT_EQ(moved_stack.size(), size_t{1});
   EXPECT_EQ(moved_stack.top(), value);
 }
 TYPED_TEST(StackTest, CopyAssignmentOperator) {
@@ -87,7 +87,7 @@ TYPED_TEST(StackTest, MoveAssignmentOperator) {
   s21::stack<TypeParam> another_stack;
   another_stack = std::move(this->empty_s21_stack_);
 
-  EXPECT_EQ(another_stack.size(), 1);
+  EXPECT_EQ(another_stack.size(), size_t{1});
   EXPECT_EQ(another_stack.top(), value);
 }
 
