@@ -4,7 +4,6 @@
 #include <initializer_list>
 #include <iostream>
 
-#include "s21_base.h"
 #include "s21_deque.h"
 namespace s21 {
 
@@ -14,10 +13,9 @@ class stack {
   deque<T> data_;
 
  public:
-  using traits = container_traits<T>;
-  using value_type = typename traits::value_type;
-  using reference = typename traits::reference;
-  using const_reference = typename traits::const_reference;
+  using value_type = T;
+  using reference = T &;
+  using const_reference = const T &;
 
   stack() : data_() {}
   stack(const stack &other) : data_(other.data_) {}
