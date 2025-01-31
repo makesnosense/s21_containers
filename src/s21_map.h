@@ -86,7 +86,7 @@ class map {
     return {iterator(result.first), result.second};
   }
 
-  std::pair<iterator, bool> insert(const Key& key, const T& obj) {
+  std::pair<iterator, bool> insert(const key_type& key, const T& obj) {
     value_type value{key, obj};
     auto result = tree_.insert(value);
     return {iterator(result.first), result.second};
