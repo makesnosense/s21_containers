@@ -656,7 +656,19 @@ class RedBlackTreeIteratorBase {
   }
 
   void decrement() {
-    // Similar logic for decrement
+    if (current_->left_) {
+      current_ = current_->left_;
+      while (current_->right_) {
+        current_ = current_->right_;
+      }
+    } else {
+      node_type* parent = current_->parent_;
+      while (parent && current_ == parent->left) {
+        current_ = parent;
+        parent = current_->parent;
+      }
+      current_ = parent;
+    }
   }
 
  public:

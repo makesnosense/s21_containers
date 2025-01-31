@@ -1448,3 +1448,26 @@ TEST(RedBlackTreeSetTest, EraseUsingIterator) {
 
   EXPECT_EQ(tree.size(), size_t{3});
 }
+
+// Test iterator traversal for Set
+TEST(RedBlackTreeSetTest, DecrementIterator) {
+  s21::RedBlackTree<int> tree;
+  tree.insert(1);
+  tree.insert(3);
+  tree.insert(2);
+  tree.insert(4);
+  tree.insert(5);
+  tree.insert(6);
+
+  auto it = tree.begin();
+
+  ++it;
+  ++it;
+  ++it;
+  --it;
+
+  tree.erase(it);
+
+  EXPECT_EQ(tree.size(), size_t{5});
+  EXPECT_TRUE(tree.FindNode(3) == nullptr);
+}
