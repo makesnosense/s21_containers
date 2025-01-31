@@ -6,16 +6,14 @@
 #include <iterator>
 #include <stdexcept>
 
-#include "s21_base.h"
 namespace s21 {
 
 template <typename T, std::size_t N>
 class array {
-  using traits = container_traits<T>;
-  using value_type = typename traits::value_type;
-  using reference = typename traits::reference;
-  using const_reference = typename traits::const_reference;
-  using size_type = typename traits::size_type;
+  using value_type = T;
+  using reference = T&;
+  using const_reference = const T&;
+  using size_type = std::size_t;
 
  private:
   value_type data[N];
