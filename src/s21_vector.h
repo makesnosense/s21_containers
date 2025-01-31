@@ -14,7 +14,7 @@ template <typename T>
 class vector {
  public:
   using traits = container_traits<T>;
-  using value_type = typename traits::value_type;
+  using value_type = T;
   using reference = typename traits::reference;
   using const_reference = typename traits::const_reference;
   using iterator = VectorIterator<T, false>;
@@ -173,7 +173,8 @@ class vector {
     }
   }
 
-  void push_back(const value_type& value) {
+  template <typename U>
+  void push_back(U&& value) {
     if (size_ == capacity_) {
       size_type new_capacity = (capacity_ == 0) ? 1 : capacity_ * 2;
       if (capacity_ * 2 > max_size()) {
@@ -181,7 +182,7 @@ class vector {
       }
       reserve(new_capacity);
     }
-    data_[size_] = value;
+    data_[size_] = std::forward<U>(value);
     size_++;
   }
 
@@ -192,14 +193,15 @@ class vector {
     }
   }
 
-  iterator insert(const_iterator position, const value_type& value) {
+  template <typename U>
+  iterator insert(const_iterator position, U&& value) {
     size_type index = static_cast<size_type>(std::distance(cbegin(), position));
     resize(size() + 1);
 
     for (size_type i = size() - 1; i > index; --i) {
       data_[i] = std::move(data_[i - 1]);
     }
-    data_[index] = value;
+    data_[index] = std::forward<U>(value);
 
     return iterator(data_ + index);
   }
