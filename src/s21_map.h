@@ -47,21 +47,21 @@ class map {
     return *this;
   }
 
-  T& at(const Key& key) {
-    auto it = tree_.find(key);
-    if (it == tree_.end()) {
+  mapped_type& at(const key_type& key) {
+    auto node = tree_.FindNode(key);
+    if (node == nullptr) {
       throw std::out_of_range("Out of range");
     }
-    return it->second;
+    return node->data_.second;
   }
 
-  T& operator[](const Key& key) {
-    auto it = tree_.find(key);
-    if (it != tree_.end()) {
-      return it->second;
+  mapped_type& operator[](const key_type& key) {
+    auto it = tree_.FindNode(key);
+    if (it != nullptr) {
+      return it->data_.second;
     }
 
-    return tree_.insert({key, T{}}).first->second;
+    return tree_.insert({key, T{}}).first->data_.second;
   }
 
   iterator begin() { return tree_.begin(); }
@@ -101,8 +101,24 @@ class map {
     }
   }
 
+  iterator find(const key_type& key) { return iterator(tree_.FindNode(key)); }
+
   bool contains(const key_type& key) {
     return iterator(tree_.FindNode(key)) != tree_.end();
+  }
+
+  bool operator==(const map& other) const {
+    if (this->size() != other.size()) return false;
+    auto it1 = begin();
+    auto it2 = other.begin();
+
+    while (it1 != end() && it2 != other.end()) {
+      if (*it1 != *it2) return false;
+      ++it1;
+      ++it2;
+    }
+
+    return it1 == end() && it2 == other.end();
   }
 
  private:
