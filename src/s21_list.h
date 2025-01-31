@@ -8,13 +8,31 @@
 
 #include "s21_base.h"
 namespace s21 {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpadded"
+template <typename T>
+struct node {
+  using value_type = T;
+  alignas(alignof(value_type)) value_type data_;
+  node* next_;
+  node* pre_;
+
+  node() : data_(T()), next_(nullptr), pre_(nullptr) {}
+  node(value_type val) : data_(val), next_(nullptr), pre_(nullptr) {}
+  node(const node&) = default;
+  node& operator=(const node&) = default;
+  ~node() = default;
+};
+#pragma GCC diagnostic pop
 
 template <typename T, bool is_const>
 class ListIterator;
 template <typename T>
 class list {
+  friend struct node<T>;
   friend class ListIterator<T, false>;
   friend class ListIterator<T, true>;
+
   using traits = container_traits<T>;
   using value_type = typename traits::value_type;
   using reference = typename traits::reference;
@@ -22,33 +40,12 @@ class list {
 
   using pointer = T*;
 
- private:
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpadded"
-#endif
-  struct Node {
-    alignas(alignof(value_type)) value_type data_;
-    Node* next_;
-    Node* pre_;
-
-    Node() : data_(T()), next_(nullptr), pre_(nullptr) {}
-    Node(value_type val) : data_(val), next_(nullptr), pre_(nullptr) {}
-    Node(const Node&) = default;
-    Node& operator=(const Node&) = default;
-    ~Node() = default;
-  };
-
-#if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic pop
-#endif
-
- public:
   using iterator = ListIterator<T, false>;
-
+  using Node = node<T>;
   using const_iterator = const ListIterator<T, true>;
   using size_type = typename traits::size_type;
 
+ public:
   list() : head_{nullptr}, tail_{nullptr}, size_{0} {}
   explicit list(std::initializer_list<value_type> init)
       : head_{nullptr}, tail_{nullptr}, size_{0} {
