@@ -152,21 +152,21 @@ TYPED_TEST(SetTest, MoveAssignmentOperator) {
 // erase
 TYPED_TEST(SetTest, EraseIteratorPos1) {
   auto it = this->s21_set_.find(103);
-  ASSERT_NE(it, this->s21_set_.end());
+  EXPECT_NE(it, this->s21_set_.end());
   this->s21_set_.erase(it);
 
   EXPECT_EQ(this->s21_set_.size(), size_t{7});
   EXPECT_FALSE(this->s21_set_.contains(3));
 
   it = this->s21_set_.find(102);
-  ASSERT_NE(it, this->s21_set_.end());
+  EXPECT_NE(it, this->s21_set_.end());
   this->s21_set_.erase(it);
 
   EXPECT_EQ(this->s21_set_.size(), size_t{6});
   EXPECT_FALSE(this->s21_set_.contains(2));
 
   it = this->s21_set_.find(57);
-  ASSERT_NE(it, this->s21_set_.end());
+  EXPECT_NE(it, this->s21_set_.end());
   this->s21_set_.erase(it);
 
   EXPECT_EQ(this->s21_set_.size(), size_t{5});
@@ -179,8 +179,8 @@ TYPED_TEST(SetTest, EraseIteratorPos2) {
   auto s21_it = this->s21_set_.find(103);
   auto std_it = this->stl_set_.find(103);
 
-  ASSERT_NE(s21_it, this->s21_set_.end());
-  ASSERT_NE(std_it, this->stl_set_.end());
+  EXPECT_NE(s21_it, this->s21_set_.end());
+  EXPECT_NE(std_it, this->stl_set_.end());
 
   this->s21_set_.erase(s21_it);
   this->stl_set_.erase(std_it);
@@ -192,8 +192,8 @@ TYPED_TEST(SetTest, EraseIteratorPos2) {
   s21_it = this->s21_set_.find(102);
   std_it = this->stl_set_.find(102);
 
-  ASSERT_NE(s21_it, this->s21_set_.end());
-  ASSERT_NE(std_it, this->stl_set_.end());
+  EXPECT_NE(s21_it, this->s21_set_.end());
+  EXPECT_NE(std_it, this->stl_set_.end());
 
   this->s21_set_.erase(s21_it);
   this->stl_set_.erase(std_it);
@@ -205,8 +205,8 @@ TYPED_TEST(SetTest, EraseIteratorPos2) {
   s21_it = this->s21_set_.find(57);
   std_it = this->stl_set_.find(57);
 
-  ASSERT_NE(s21_it, this->s21_set_.end());
-  ASSERT_NE(std_it, this->stl_set_.end());
+  EXPECT_NE(s21_it, this->s21_set_.end());
+  EXPECT_NE(std_it, this->stl_set_.end());
 
   this->s21_set_.erase(s21_it);
   this->stl_set_.erase(std_it);
@@ -238,7 +238,7 @@ TEST(SetNonTyped, EraseIteratorPos_NotFound) {
   s21::set<int> s21_set = {1, 2, 3, 4, 5};
 
   auto it = s21_set.find(6);
-  ASSERT_EQ(it, s21_set.end());
+  EXPECT_EQ(it, s21_set.end());
   s21_set.erase(it);
 
   EXPECT_EQ(s21_set.size(), size_t{5});
@@ -454,8 +454,8 @@ TYPED_TEST(SetTest, Find_ExistingElement) {
   auto s21_it = this->s21_set_.find(53);
   auto std_it = this->stl_set_.find(53);
 
-  ASSERT_NE(s21_it, this->s21_set_.end());
-  ASSERT_NE(std_it, this->stl_set_.end());
+  EXPECT_NE(s21_it, this->s21_set_.end());
+  EXPECT_NE(std_it, this->stl_set_.end());
 
   EXPECT_EQ(*s21_it, *std_it);
 }
@@ -472,8 +472,8 @@ TYPED_TEST(SetTest, Find_FirstElement) {
   auto s21_it = this->s21_set_.find(103);
   auto std_it = this->stl_set_.find(103);
 
-  ASSERT_NE(s21_it, this->s21_set_.end());
-  ASSERT_NE(std_it, this->stl_set_.end());
+  EXPECT_NE(s21_it, this->s21_set_.end());
+  EXPECT_NE(std_it, this->stl_set_.end());
 
   EXPECT_EQ(*s21_it, *std_it);
 }
@@ -482,8 +482,8 @@ TYPED_TEST(SetTest, Find_LastElement) {
   auto s21_it = this->s21_set_.find(103);
   auto std_it = this->stl_set_.find(103);
 
-  ASSERT_NE(s21_it, this->s21_set_.end());
-  ASSERT_NE(std_it, this->stl_set_.end());
+  EXPECT_NE(s21_it, this->s21_set_.end());
+  EXPECT_NE(std_it, this->stl_set_.end());
 
   EXPECT_EQ(*s21_it, *std_it);
 }
