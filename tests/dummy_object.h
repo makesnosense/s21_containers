@@ -62,6 +62,9 @@ class DummyObject {
   bool operator<(const DummyObject& other) const {
     return value_ < other.value_;
   }
+  bool operator<=(const DummyObject& other) const {
+    return value_ <= other.value_;
+  }
   bool operator>(const DummyObject& other) const {
     return value_ > other.value_;
   }
