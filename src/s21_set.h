@@ -16,9 +16,8 @@ template <typename Key>
 class set {
  public:
   using node_type = Node<Key, void>;
-  // using value_type = typename node_type::value_type;
   using key_type = Key;
-  using value_type = key_type;
+  using value_type = Key;
   using iterator = RedBlackTreeIterator<Key, false, void>;
   using const_iterator = RedBlackTreeIterator<Key, true, void>;
   using size_type = std::size_t;
@@ -44,7 +43,13 @@ class set {
 
   ~set() = default;
 
-  // operator=(set &&s){}
+  set& operator=(set&& other) noexcept {
+    if (this != &other) {
+      tree_ = std::move(other.tree_);
+      other.tree_ = RedBlackTree<key_type>();
+    }
+    return *this;
+  }
 
   iterator begin() { return tree_.begin(); }
   iterator end() { return tree_.end(); }
@@ -52,26 +57,32 @@ class set {
   const_iterator begin() const { return tree_.begin(); }
   const_iterator end() const { return tree_.end(); }
 
-  bool empty() { return tree_.size() == 0; }
+  bool empty() { return tree_.empty(); }
   size_type size() const { return tree_.size(); }
   size_type max_size() {
-    return std::numeric_limits<size_type>::max() / sizeof(Key);
+    return std::numeric_limits<size_type>::max() / sizeof(key_type);
   }
 
-  // void clear(){}
+  void clear() { tree_.clear(); }
+
   std::pair<iterator, bool> insert(const value_type& value) {
     auto result = tree_.insert(value);
     return {iterator(result.first), result.second};
   }
-  void erase(iterator pos) {
-    node_type node_to_remove = pos.current_;
-    tree_.erase(node_to_remove.GetKey());
-  }
-  // void swap(set& other){}
-  // void merge(set& other){}
 
-  iterator find(const Key& key) { return iterator(tree_.FindNode(key)); }
-  bool contains(const Key& key) {
+  iterator erase(iterator pos) { return tree_.erase(pos); }
+
+  void swap(set& other) noexcept { std::swap(tree_, other.tree_); }
+
+  void merge(set& other) {
+    for (auto it = other.begin(); it != other.end();) {
+      tree_.insert(*it);
+      it = other.erase(it);
+    }
+  }
+
+  iterator find(const key_type& key) { return iterator(tree_.FindNode(key)); }
+  bool contains(const key_type& key) {
     return iterator(tree_.FindNode(key)) != tree_.end();
   }
 
@@ -90,7 +101,7 @@ class set {
   }
 
  private:
-  RedBlackTree<Key> tree_;
+  RedBlackTree<key_type> tree_;
 };
 
 }  // namespace s21

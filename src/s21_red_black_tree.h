@@ -26,8 +26,12 @@ class Node {
   Node* parent_{nullptr};
   NodeColor color_{NodeColor::RED};
 
+  Node() = default;
+
   // Constructor for Map case
   Node(const key_type& key, const mapped_type& value) : data_(key, value) {}
+
+  Node& operator=(const Node& other) = delete;
 
   const key_type& GetKey() const { return data_.first; }
   const mapped_type& GetValue() const { return data_.second; }
@@ -46,8 +50,14 @@ class Node<Key, void> {
   Node* parent_{nullptr};
   NodeColor color_{NodeColor::RED};
 
+  Node() = default;
+
+  Node<Key, void>(const s21::Node<Key, void>&) = delete;
+
   // Constructor for Set case
   explicit Node(const Key& key) : data_(key) {}
+
+  Node& operator=(const Node& other) = delete;
 
   const key_type& GetKey() const { return data_; }
 };
@@ -250,7 +260,11 @@ class RedBlackTree {
 
   iterator erase(iterator pos) {
     iterator next{pos};
-    ++next;
+    if (next != nullptr) {
+      ++next;
+    } else {
+      return iterator();
+    }
     RemoveNode(pos.current_);
     return next;
   }
@@ -309,6 +323,7 @@ class RedBlackTree {
     if (removal_target == root_ && !root_->left_ && !root_->right_) {
       delete root_;
       root_ = nullptr;
+      --size_;
       return;
     }
 
@@ -683,9 +698,14 @@ class RedBlackTreeIteratorBase {
   bool operator==(const RedBlackTreeIteratorBase& other) const {
     return current_ == other.current_;
   }
+
   bool operator!=(const RedBlackTreeIteratorBase& other) const {
     return !(*this == other);
   }
+
+  bool operator==(std::nullptr_t) const { return current_ == nullptr; }
+
+  bool operator!=(std::nullptr_t) const { return current_ != nullptr; }
 };
 
 // Map version
