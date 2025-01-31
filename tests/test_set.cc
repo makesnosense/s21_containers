@@ -122,7 +122,7 @@ TYPED_TEST(SetTest, MoveConstructor) {
 }
 
 // ConstructorWithSizeAndValue
-TEST(SetTest, ConstructorWithSizeAndValue) {
+TEST(SetNonTyped, ConstructorWithSizeAndValue) {
   size_t size = 5;
   int value = 42;
 
@@ -150,7 +150,7 @@ TYPED_TEST(SetTest, MoveAssignmentOperator) {
 }
 
 // erase
-TYPED_TEST(SetTest, EraseIteratorPos) {
+TYPED_TEST(SetTest, EraseIteratorPos1) {
   auto it = this->s21_set_.find(3);
   ASSERT_NE(it, this->s21_set_.end());
   this->s21_set_.erase(it);
@@ -175,6 +175,49 @@ TYPED_TEST(SetTest, EraseIteratorPos) {
   EXPECT_FALSE(this->s21_set_.empty());
 }
 
+TYPED_TEST(SetTest, EraseIteratorPos2) {
+  auto s21_it = this->s21_set_.find(3);
+  auto std_it = this->stl_set_.find(3);
+
+  ASSERT_NE(s21_it, this->s21_set_.end());
+  ASSERT_NE(std_it, this->stl_set_.end());
+
+  this->s21_set_.erase(s21_it);
+  this->stl_set_.erase(std_it);
+
+  EXPECT_EQ(this->s21_set_.size(), this->stl_set_.size());
+  EXPECT_EQ(this->s21_set_.find(3) == this->s21_set_.end(),
+            this->stl_set_.find(3) == this->stl_set_.end());
+
+  s21_it = this->s21_set_.find(2);
+  std_it = this->stl_set_.find(2);
+
+  ASSERT_NE(s21_it, this->s21_set_.end());
+  ASSERT_NE(std_it, this->stl_set_.end());
+
+  this->s21_set_.erase(s21_it);
+  this->stl_set_.erase(std_it);
+
+  EXPECT_EQ(this->s21_set_.size(), this->stl_set_.size());
+  EXPECT_EQ(this->s21_set_.find(2) == this->s21_set_.end(),
+            this->stl_set_.find(2) == this->stl_set_.end());
+
+  s21_it = this->s21_set_.find(57);
+  std_it = this->stl_set_.find(57);
+
+  ASSERT_NE(s21_it, this->s21_set_.end());
+  ASSERT_NE(std_it, this->stl_set_.end());
+
+  this->s21_set_.erase(s21_it);
+  this->stl_set_.erase(std_it);
+
+  EXPECT_EQ(this->s21_set_.size(), this->stl_set_.size());
+  EXPECT_EQ(this->s21_set_.find(57) == this->s21_set_.end(),
+            this->stl_set_.find(57) == this->stl_set_.end());
+
+  EXPECT_EQ(this->s21_set_.empty(), this->stl_set_.empty());
+}
+
 TYPED_TEST(SetTest, EraseIteratorPos_EmptySet) {
   auto it = this->empty_s21_set_.begin();
   this->empty_s21_set_.erase(it);
@@ -182,7 +225,7 @@ TYPED_TEST(SetTest, EraseIteratorPos_EmptySet) {
   EXPECT_TRUE(this->empty_s21_set_.empty());
 }
 
-TEST(SetTest, EraseIteratorPos_SingleElement) {
+TEST(SetNonTyped, EraseIteratorPos_SingleElement) {
   s21::set<int> s21_set = {10};
 
   auto it = s21_set.begin();
@@ -191,7 +234,7 @@ TEST(SetTest, EraseIteratorPos_SingleElement) {
   EXPECT_TRUE(s21_set.empty());
 }
 
-TEST(SetTest, EraseIteratorPos_NotFound) {
+TEST(SetNonTyped, EraseIteratorPos_NotFound) {
   s21::set<int> s21_set = {1, 2, 3, 4, 5};
 
   auto it = s21_set.find(6);
@@ -199,4 +242,256 @@ TEST(SetTest, EraseIteratorPos_NotFound) {
   s21_set.erase(it);
 
   EXPECT_EQ(s21_set.size(), size_t{5});
+}
+
+// swap
+TYPED_TEST(SetTest, Swap_SameSize_1) {
+  this->empty_s21_set_.swap(this->s21_set_);
+
+  EXPECT_EQ(this->empty_s21_set_.size(), size_t{8});
+  EXPECT_EQ(this->s21_set_.size(), size_t{0});
+
+  EXPECT_TRUE(this->empty_s21_set_.contains(3));
+  EXPECT_TRUE(this->empty_s21_set_.contains(53));
+  EXPECT_TRUE(this->empty_s21_set_.contains(73));
+  EXPECT_TRUE(this->empty_s21_set_.contains(6));
+  EXPECT_TRUE(this->empty_s21_set_.contains(57));
+  EXPECT_TRUE(this->empty_s21_set_.contains(2));
+  EXPECT_TRUE(this->empty_s21_set_.contains(46));
+  EXPECT_TRUE(this->empty_s21_set_.contains(4));
+
+  EXPECT_FALSE(this->s21_set_.contains(73));
+  EXPECT_FALSE(this->s21_set_.contains(53));
+  EXPECT_FALSE(this->s21_set_.contains(3));
+}
+
+TYPED_TEST(SetTest, Swap_SameSize_2) {
+  this->empty_s21_set_.swap(this->s21_set_);
+  this->empty_stl_set_.swap(this->stl_set_);
+
+  EXPECT_EQ(this->empty_s21_set_.size(), this->empty_stl_set_.size());
+  EXPECT_EQ(this->s21_set_.size(), this->stl_set_.size());
+
+  EXPECT_EQ(this->empty_s21_set_.contains(3),
+            this->empty_stl_set_.count(3) > 0);
+  EXPECT_EQ(this->empty_s21_set_.contains(53),
+            this->empty_stl_set_.count(53) > 0);
+  EXPECT_EQ(this->empty_s21_set_.contains(73),
+            this->empty_stl_set_.count(73) > 0);
+  EXPECT_EQ(this->empty_s21_set_.contains(6),
+            this->empty_stl_set_.count(6) > 0);
+  EXPECT_EQ(this->empty_s21_set_.contains(57),
+            this->empty_stl_set_.count(57) > 0);
+  EXPECT_EQ(this->empty_s21_set_.contains(2),
+            this->empty_stl_set_.count(2) > 0);
+  EXPECT_EQ(this->empty_s21_set_.contains(46),
+            this->empty_stl_set_.count(46) > 0);
+  EXPECT_EQ(this->empty_s21_set_.contains(4),
+            this->empty_stl_set_.count(4) > 0);
+
+  EXPECT_EQ(this->s21_set_.contains(73), this->stl_set_.count(73) > 0);
+  EXPECT_EQ(this->s21_set_.contains(53), this->stl_set_.count(53) > 0);
+  EXPECT_EQ(this->s21_set_.contains(3), this->stl_set_.count(3) > 0);
+}
+
+TEST(SetNonTyped, Swap_DifferentSize) {
+  s21::set<int> s21_set1 = {1, 2, 3, 4, 5};
+  s21::set<int> s21_set2 = {10};
+
+  s21_set1.swap(s21_set2);
+
+  EXPECT_EQ(s21_set1.size(), size_t{1});
+  EXPECT_EQ(s21_set2.size(), size_t{5});
+
+  EXPECT_TRUE(s21_set1.contains(10));
+
+  EXPECT_TRUE(s21_set2.contains(1));
+  EXPECT_TRUE(s21_set2.contains(2));
+  EXPECT_TRUE(s21_set2.contains(3));
+  EXPECT_TRUE(s21_set2.contains(4));
+  EXPECT_TRUE(s21_set2.contains(5));
+}
+
+TEST(SetNonTyped, Swap_EmptyAndNonEmpty) {
+  s21::set<int> s21_set1;
+  s21::set<int> s21_set2 = {42};
+
+  s21_set1.swap(s21_set2);
+
+  EXPECT_TRUE(s21_set2.empty());
+  EXPECT_EQ(s21_set1.size(), size_t{1});
+  EXPECT_TRUE(s21_set1.contains(42));
+}
+
+TYPED_TEST(SetTest, Swap_BothEmpty) {
+  s21::set<TypeParam> s21_set;
+
+  this->empty_s21_set_.swap(s21_set);
+
+  EXPECT_TRUE(this->empty_s21_set_.empty());
+  EXPECT_TRUE(s21_set.empty());
+}
+
+TYPED_TEST(SetTest, Swap_SameElements) {
+  s21::set<TypeParam> s21_set{this->s21_set_};
+
+  s21_set.swap(this->s21_set_);
+
+  EXPECT_EQ(s21_set.size(), size_t{8});
+  EXPECT_EQ(this->s21_set_.size(), size_t{8});
+
+  EXPECT_EQ(s21_set, this->s21_set_);
+}
+
+// merge
+TYPED_TEST(SetTest, Merge_NonOverlapping) {
+  s21::set<TypeParam> s21_set2 = {19, 21, 29};
+  std::set<TypeParam> std_set2 = {19, 21, 29};
+
+  this->s21_set_.merge(s21_set2);
+  this->stl_set_.merge(std_set2);
+
+  EXPECT_EQ(this->s21_set_.size(), size_t{11});
+  EXPECT_TRUE(this->s21_set_.contains(3));
+  EXPECT_TRUE(this->s21_set_.contains(53));
+  EXPECT_TRUE(this->s21_set_.contains(73));
+  EXPECT_TRUE(this->s21_set_.contains(6));
+  EXPECT_TRUE(this->s21_set_.contains(57));
+  EXPECT_TRUE(this->s21_set_.contains(2));
+  EXPECT_TRUE(this->s21_set_.contains(46));
+  EXPECT_TRUE(this->s21_set_.contains(4));
+  EXPECT_TRUE(this->s21_set_.contains(19));
+  EXPECT_TRUE(this->s21_set_.contains(21));
+  EXPECT_TRUE(this->s21_set_.contains(29));
+
+  EXPECT_EQ(this->stl_set_.size(), size_t{11});
+  EXPECT_NE(this->stl_set_.find(2), this->stl_set_.end());
+  EXPECT_NE(this->stl_set_.find(53), this->stl_set_.end());
+  EXPECT_NE(this->stl_set_.find(73), this->stl_set_.end());
+  EXPECT_NE(this->stl_set_.find(6), this->stl_set_.end());
+  EXPECT_NE(this->stl_set_.find(57), this->stl_set_.end());
+  EXPECT_NE(this->stl_set_.find(3), this->stl_set_.end());
+  EXPECT_NE(this->stl_set_.find(46), this->stl_set_.end());
+  EXPECT_NE(this->stl_set_.find(4), this->stl_set_.end());
+  EXPECT_NE(this->stl_set_.find(19), this->stl_set_.end());
+  EXPECT_NE(this->stl_set_.find(21), this->stl_set_.end());
+  EXPECT_NE(this->stl_set_.find(29), this->stl_set_.end());
+
+  EXPECT_TRUE(s21_set2.empty());
+  EXPECT_TRUE(std_set2.empty());
+}
+
+TEST(SetNonTyped, Merge_Overlapping) {
+  s21::set<int> s21_set1 = {1, 2, 3};
+  s21::set<int> s21_set2 = {3, 4, 5};
+
+  s21_set1.merge(s21_set2);
+
+  EXPECT_EQ(s21_set1.size(), size_t{5});
+  EXPECT_TRUE(s21_set1.contains(1));
+  EXPECT_TRUE(s21_set1.contains(2));
+  EXPECT_TRUE(s21_set1.contains(3));
+  EXPECT_TRUE(s21_set1.contains(4));
+  EXPECT_TRUE(s21_set1.contains(5));
+
+  EXPECT_TRUE(s21_set2.empty());
+}
+
+TEST(SetNonTyped, Merge_EmptyIntoNonEmpty) {
+  s21::set<int> s21_set1 = {10, 20, 30};
+  s21::set<int> s21_set2;
+
+  s21_set1.merge(s21_set2);
+
+  EXPECT_EQ(s21_set1.size(), size_t{3});
+  EXPECT_TRUE(s21_set1.contains(10));
+  EXPECT_TRUE(s21_set1.contains(20));
+  EXPECT_TRUE(s21_set1.contains(30));
+
+  EXPECT_TRUE(s21_set2.empty());
+}
+
+TEST(SetNonTyped, Merge_NonEmptyIntoEmpty) {
+  s21::set<int> s21_set1;
+  s21::set<int> s21_set2 = {100, 200, 300};
+
+  s21_set1.merge(s21_set2);
+
+  EXPECT_EQ(s21_set1.size(), size_t{3});
+  EXPECT_TRUE(s21_set1.contains(100));
+  EXPECT_TRUE(s21_set1.contains(200));
+  EXPECT_TRUE(s21_set1.contains(300));
+
+  EXPECT_TRUE(s21_set2.empty());
+}
+
+TEST(SetNonTyped, Merge_BothEmpty) {
+  s21::set<int> s21_set1;
+  s21::set<int> s21_set2;
+
+  s21_set1.merge(s21_set2);
+
+  EXPECT_TRUE(s21_set1.empty());
+  EXPECT_TRUE(s21_set2.empty());
+}
+
+TEST(SetNonTyped, Merge_SameSets) {
+  s21::set<int> s21_set1 = {1, 2, 3};
+  s21::set<int> s21_set2 = {1, 2, 3};
+
+  s21_set1.merge(s21_set2);
+
+  EXPECT_EQ(s21_set1.size(), size_t{3});
+  EXPECT_TRUE(s21_set1.contains(1));
+  EXPECT_TRUE(s21_set1.contains(2));
+  EXPECT_TRUE(s21_set1.contains(3));
+
+  EXPECT_TRUE(s21_set2.empty());
+}
+
+// find
+TYPED_TEST(SetTest, Find_ExistingElement) {
+  auto s21_it = this->s21_set_.find(53);
+  auto std_it = this->stl_set_.find(53);
+
+  ASSERT_NE(s21_it, this->s21_set_.end());
+  ASSERT_NE(std_it, this->stl_set_.end());
+
+  EXPECT_EQ(*s21_it, *std_it);
+}
+
+TYPED_TEST(SetTest, Find_NonExistingElement) {
+  auto s21_it = this->s21_set_.find(100);
+  auto std_it = this->stl_set_.find(100);
+
+  EXPECT_EQ(s21_it, this->s21_set_.end());
+  EXPECT_EQ(std_it, this->stl_set_.end());
+}
+
+TYPED_TEST(SetTest, Find_FirstElement) {
+  auto s21_it = this->s21_set_.find(3);
+  auto std_it = this->stl_set_.find(3);
+
+  ASSERT_NE(s21_it, this->s21_set_.end());
+  ASSERT_NE(std_it, this->stl_set_.end());
+
+  EXPECT_EQ(*s21_it, *std_it);
+}
+
+TYPED_TEST(SetTest, Find_LastElement) {
+  auto s21_it = this->s21_set_.find(3);
+  auto std_it = this->stl_set_.find(3);
+
+  ASSERT_NE(s21_it, this->s21_set_.end());
+  ASSERT_NE(std_it, this->stl_set_.end());
+
+  EXPECT_EQ(*s21_it, *std_it);
+}
+
+TYPED_TEST(SetTest, Find_InEmptySet) {
+  auto s21_it = this->empty_s21_set_.find(3);
+  auto std_it = this->empty_stl_set_.find(3);
+
+  EXPECT_EQ(s21_it, this->empty_s21_set_.end());
+  EXPECT_EQ(std_it, this->empty_stl_set_.end());
 }
