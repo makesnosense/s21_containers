@@ -250,7 +250,11 @@ class RedBlackTree {
 
   iterator erase(iterator pos) {
     iterator next{pos};
-    ++next;
+    if (next != nullptr) {
+      ++next;
+    } else {
+      return iterator();
+    }
     RemoveNode(pos.current_);
     return next;
   }
@@ -309,6 +313,7 @@ class RedBlackTree {
     if (removal_target == root_ && !root_->left_ && !root_->right_) {
       delete root_;
       root_ = nullptr;
+      --size_;
       return;
     }
 
@@ -683,9 +688,14 @@ class RedBlackTreeIteratorBase {
   bool operator==(const RedBlackTreeIteratorBase& other) const {
     return current_ == other.current_;
   }
+
   bool operator!=(const RedBlackTreeIteratorBase& other) const {
     return !(*this == other);
   }
+
+  bool operator==(std::nullptr_t) const { return current_ == nullptr; }
+
+  bool operator!=(std::nullptr_t) const { return current_ != nullptr; }
 };
 
 // Map version
