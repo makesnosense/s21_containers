@@ -31,6 +31,8 @@ class Node {
   // Constructor for Map case
   Node(const key_type& key, const mapped_type& value) : data_(key, value) {}
 
+  Node<Key, T>(const s21::Node<Key, T>&) = delete;
+
   Node& operator=(const Node& other) = delete;
 
   const key_type& GetKey() const { return data_.first; }
