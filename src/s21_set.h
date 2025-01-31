@@ -23,12 +23,12 @@ class set {
   using size_type = std::size_t;
 
   set() : tree_{} {}
-  set(std::initializer_list<value_type> const& items) {
+  set(std::initializer_list<value_type> const& items) : tree_{} {
     for (const auto& i : items) {
       tree_.insert(i);
     }
   }
-  set(const set& other) {
+  set(const set& other) : tree_{} {
     for (auto it = other.begin(); it != other.end(); ++it) {
       tree_.insert(*it);
     }
