@@ -20,6 +20,7 @@ class map {
   using mapped_type = T;
   using iterator = RedBlackTreeIterator<Key, false, T>;
   using const_iterator = RedBlackTreeIterator<Key, true, T>;
+  using size_type = std::size_t;
 
   map() : tree_{} {}
 
@@ -92,8 +93,8 @@ class map {
   }
 
   iterator erase(iterator pos) { return tree_.erase(pos); }
-  void swap(set& other) noexcept { std::swap(tree_, other.tree_); }
-  void merge(set& other) {
+  void swap(map& other) noexcept { std::swap(tree_, other.tree_); }
+  void merge(map& other) {
     for (auto it = other.begin(); it != other.end();) {
       tree_.insert(*it);
       it = other.erase(it);
