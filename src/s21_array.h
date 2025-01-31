@@ -13,7 +13,7 @@ class array {
   using value_type = T;
   using reference = T&;
   using const_reference = const T&;
-  using size_type = typename traits::size_type;
+  using size_type = std::size_t;
 
  private:
   value_type data[N];
