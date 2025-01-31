@@ -17,17 +17,13 @@ class SetTest : public testing::Test {
   SetTest()
       : empty_stl_set_(),
         empty_s21_set_(),
-        stl_set_{68, 66, 67},
-        s21_set_{68, 66, 67}  // large_stl_set_(1000, 42),
-                              // large_s21_set_(1000, 42)
-  {}
+        stl_set_{3, 53, 73, 6, 57, 2, 46, 4},
+        s21_set_{3, 53, 73, 6, 57, 2, 46, 4} {}
 
   std::set<Key> empty_stl_set_;
   s21::set<Key> empty_s21_set_;
   std::set<Key> stl_set_;
   s21::set<Key> s21_set_;
-  // std::set<Key> large_stl_set_;
-  // s21::set<Key> large_s21_set_;
 };
 
 using TestedTypes = ::testing::Types<char, int, double, DummyObject>;
@@ -99,35 +95,30 @@ TYPED_TEST(SetTest, InsertWithExistingElements) {
 }
 
 // copy contructer
-TEST(SetTest, CopyConstructor) {
-  s21::set<int> s21_set_1{3, 53, 145, 6, 57, 2, 46, 2};
-  s21_set_1.insert(1);
-  s21_set_1.insert(2);
-  s21_set_1.insert(3);
+TYPED_TEST(SetTest, CopyConstructor) {
+  s21::set<TypeParam> s21_set_2(this->s21_set_);
 
-  s21::set<int> s21_set_2(s21_set_1);
-
-  EXPECT_EQ(s21_set_1, s21_set_2);
+  EXPECT_EQ(this->s21_set_, s21_set_2);
 }
 
 // move constructer
-TEST(SetTest, MoveConstructor) {
-  s21::set<int> s21_set_1;
-  s21_set_1.insert(1);
-  s21_set_1.insert(2);
-  s21_set_1.insert(3);
+TYPED_TEST(SetTest, MoveConstructor) {
+  s21::set<TypeParam> s21_set_2(std::move(this->s21_set_));
 
-  s21::set<int> s21_set_2(std::move(s21_set_1));
-
-  EXPECT_EQ(s21_set_2.size(), size_t{3});
-  EXPECT_TRUE(s21_set_2.contains(1));
-  EXPECT_TRUE(s21_set_2.contains(2));
+  EXPECT_EQ(s21_set_2.size(), size_t{8});
   EXPECT_TRUE(s21_set_2.contains(3));
+  EXPECT_TRUE(s21_set_2.contains(53));
+  EXPECT_TRUE(s21_set_2.contains(73));
+  EXPECT_TRUE(s21_set_2.contains(6));
+  EXPECT_TRUE(s21_set_2.contains(57));
+  EXPECT_TRUE(s21_set_2.contains(2));
+  EXPECT_TRUE(s21_set_2.contains(46));
+  EXPECT_TRUE(s21_set_2.contains(4));
 
-  EXPECT_EQ(s21_set_1.size(), size_t{0});
-  EXPECT_FALSE(s21_set_1.contains(1));
-  EXPECT_FALSE(s21_set_1.contains(2));
-  EXPECT_FALSE(s21_set_1.contains(3));
+  EXPECT_EQ(this->s21_set_.size(), size_t{0});
+  EXPECT_FALSE(this->s21_set_.contains(1));
+  EXPECT_FALSE(this->s21_set_.contains(2));
+  EXPECT_FALSE(this->s21_set_.contains(3));
 }
 
 // ConstructorWithSizeAndValue
@@ -142,60 +133,53 @@ TEST(SetTest, ConstructorWithSizeAndValue) {
   EXPECT_TRUE(test_set.contains(value));
 
   s21::set<int> empty_set(0, value);
-  EXPECT_EQ(empty_set.size(), 0);
+  EXPECT_EQ(empty_set.size(), size_t{0});
   EXPECT_FALSE(empty_set.contains(value));
 }
 
 // Move Assignment Operator
-TEST(SetTest, MoveAssignmentOperator) {
-  s21::set<int> s21_set_1 = {1, 2, 3, 4, 5};
-  s21::set<int> s21_set_2;
+TYPED_TEST(SetTest, MoveAssignmentOperator) {
+  s21::set<TypeParam> s21_temp_set{this->s21_set_};
 
-  s21_set_2 = std::move(s21_set_1);
+  this->empty_s21_set_ = std::move(this->s21_set_);
 
-  EXPECT_TRUE(s21_set_1.empty());
-  EXPECT_EQ(s21_set_2.size(), 5);
+  EXPECT_TRUE(this->s21_set_.empty());
+  EXPECT_EQ(this->empty_s21_set_.size(), size_t{8});
 
-  for (int i = 1; i <= 5; ++i) {
-    EXPECT_TRUE(s21_set_2.contains(i));
-  }
+  EXPECT_EQ(s21_temp_set, this->empty_s21_set_);
 }
 
 // erase
-TEST(SetTest, EraseIteratorPos) {
-  s21::set<int> s21_set = {1, 2, 3, 4, 5};
+TYPED_TEST(SetTest, EraseIteratorPos) {
+  auto it = this->s21_set_.find(3);
+  ASSERT_NE(it, this->s21_set_.end());
+  this->s21_set_.erase(it);
 
-  auto it = s21_set.find(3);
-  ASSERT_NE(it, s21_set.end());
-  s21_set.erase(it);
+  EXPECT_EQ(this->s21_set_.size(), size_t{7});
+  EXPECT_FALSE(this->s21_set_.contains(3));
 
-  EXPECT_EQ(s21_set.size(), 4);
-  EXPECT_FALSE(s21_set.contains(3));
+  it = this->s21_set_.find(2);
+  ASSERT_NE(it, this->s21_set_.end());
+  this->s21_set_.erase(it);
 
-  it = s21_set.find(1);
-  ASSERT_NE(it, s21_set.end());
-  s21_set.erase(it);
+  EXPECT_EQ(this->s21_set_.size(), size_t{6});
+  EXPECT_FALSE(this->s21_set_.contains(2));
 
-  EXPECT_EQ(s21_set.size(), 3);
-  EXPECT_FALSE(s21_set.contains(1));
+  it = this->s21_set_.find(57);
+  ASSERT_NE(it, this->s21_set_.end());
+  this->s21_set_.erase(it);
 
-  it = s21_set.find(5);
-  ASSERT_NE(it, s21_set.end());
-  s21_set.erase(it);
+  EXPECT_EQ(this->s21_set_.size(), size_t{5});
+  EXPECT_FALSE(this->s21_set_.contains(57));
 
-  EXPECT_EQ(s21_set.size(), 2);
-  EXPECT_FALSE(s21_set.contains(5));
-
-  EXPECT_FALSE(s21_set.empty());
+  EXPECT_FALSE(this->s21_set_.empty());
 }
 
-TEST(SetTest, EraseIteratorPos_EmptySet) {
-  s21::set<int> s21_set;
+TYPED_TEST(SetTest, EraseIteratorPos_EmptySet) {
+  auto it = this->empty_s21_set_.begin();
+  this->empty_s21_set_.erase(it);
 
-  auto it = s21_set.begin();
-  s21_set.erase(it);
-
-  EXPECT_TRUE(s21_set.empty());
+  EXPECT_TRUE(this->empty_s21_set_.empty());
 }
 
 TEST(SetTest, EraseIteratorPos_SingleElement) {
@@ -214,5 +198,5 @@ TEST(SetTest, EraseIteratorPos_NotFound) {
   ASSERT_EQ(it, s21_set.end());
   s21_set.erase(it);
 
-  EXPECT_EQ(s21_set.size(), 5);
+  EXPECT_EQ(s21_set.size(), size_t{5});
 }
