@@ -129,3 +129,90 @@ TEST(SetTest, MoveConstructor) {
   EXPECT_FALSE(s21_set_1.contains(2));
   EXPECT_FALSE(s21_set_1.contains(3));
 }
+
+// ConstructorWithSizeAndValue
+TEST(SetTest, ConstructorWithSizeAndValue) {
+  size_t size = 5;
+  int value = 42;
+
+  s21::set<int> test_set(size, value);
+
+  EXPECT_EQ(test_set.size(), 1);
+
+  EXPECT_TRUE(test_set.contains(value));
+
+  s21::set<int> empty_set(0, value);
+  EXPECT_EQ(empty_set.size(), 0);
+  EXPECT_FALSE(empty_set.contains(value));
+}
+
+// Move Assignment Operator
+TEST(SetTest, MoveAssignmentOperator) {
+  s21::set<int> s21_set_1 = {1, 2, 3, 4, 5};
+  s21::set<int> s21_set_2;
+
+  s21_set_2 = std::move(s21_set_1);
+
+  EXPECT_TRUE(s21_set_1.empty());
+  EXPECT_EQ(s21_set_2.size(), 5);
+
+  for (int i = 1; i <= 5; ++i) {
+    EXPECT_TRUE(s21_set_2.contains(i));
+  }
+}
+
+// erase
+TEST(SetTest, EraseIteratorPos) {
+  s21::set<int> s21_set = {1, 2, 3, 4, 5};
+
+  auto it = s21_set.find(3);
+  ASSERT_NE(it, s21_set.end());
+  s21_set.erase(it);
+
+  EXPECT_EQ(s21_set.size(), 4);
+  EXPECT_FALSE(s21_set.contains(3));
+
+  it = s21_set.find(1);
+  ASSERT_NE(it, s21_set.end());
+  s21_set.erase(it);
+
+  EXPECT_EQ(s21_set.size(), 3);
+  EXPECT_FALSE(s21_set.contains(1));
+
+  it = s21_set.find(5);
+  ASSERT_NE(it, s21_set.end());
+  s21_set.erase(it);
+
+  EXPECT_EQ(s21_set.size(), 2);
+  EXPECT_FALSE(s21_set.contains(5));
+
+  EXPECT_FALSE(s21_set.empty());
+}
+
+TEST(SetTest, EraseIteratorPos_EmptySet) {
+  s21::set<int> s21_set;
+
+  auto it = s21_set.begin();
+  s21_set.erase(it);
+
+  EXPECT_TRUE(s21_set.empty());
+}
+
+TEST(SetTest, EraseIteratorPos_SingleElement) {
+  s21::set<int> s21_set = {10};
+
+  auto it = s21_set.begin();
+  s21_set.erase(it);
+
+  EXPECT_TRUE(s21_set.empty());
+}
+
+TEST(SetTest, EraseIteratorPos_NotFound) {
+  s21::set<int> s21_set = {1, 2, 3, 4, 5};
+
+  auto it = s21_set.find(6);
+  ASSERT_EQ(it, s21_set.end());
+  s21_set.erase(it);
+
+  EXPECT_EQ(s21_set.size(), 5);
+}
