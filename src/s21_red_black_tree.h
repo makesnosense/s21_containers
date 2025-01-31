@@ -91,16 +91,7 @@ class RedBlackTree {
     root_ = nullptr;
     size_ = 0;
   }
-  RedBlackTree& operator=(const RedBlackTree&) = delete;
 
-  RedBlackTree& operator=(RedBlackTree&& other) noexcept {
-    if (this != &other) {
-      clear();
-      root_ = other.root_;
-      other.root_ = nullptr;
-    }
-    return *this;
-  }
   iterator begin() {
     if (!root_) {
       return end();
@@ -278,6 +269,16 @@ class RedBlackTree {
 
   node_type* get_root() const { return root_; }
 
+  RedBlackTree& operator=(const RedBlackTree&) = delete;
+
+  RedBlackTree& operator=(RedBlackTree&& other) noexcept {
+    if (this != &other) {
+      clear();
+      root_ = other.root_;
+      other.root_ = nullptr;
+    }
+    return *this;
+  }
  private:
   // Helper to get key from value_type
   const key_type& ExtractKeyFromAmbiguousValue(const value_type& value) const {
