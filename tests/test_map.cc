@@ -254,3 +254,151 @@ TYPED_TEST(MapTest, Contains) {
   EXPECT_FALSE(this->s21_map_.contains(52));
   EXPECT_FALSE(this->empty_s21_map_.contains(1));
 }
+
+// Additional erase tests
+TYPED_TEST(MapTest, EraseIteratorPos_EmptyMap) {
+  auto it = this->empty_s21_map_.begin();
+  this->empty_s21_map_.erase(it);
+
+  EXPECT_TRUE(this->empty_s21_map_.empty());
+}
+
+TEST(MapNonTyped, EraseIteratorPos_SingleElement) {
+  s21::map<int, std::string> s21_map = {{10, "test"}};
+
+  auto it = s21_map.begin();
+  s21_map.erase(it);
+
+  EXPECT_TRUE(s21_map.empty());
+}
+
+TEST(MapNonTyped, EraseIteratorPos_NotFound) {
+  s21::map<int, std::string> s21_map = {
+      {1, "one"}, {2, "two"}, {3, "three"}, {4, "four"}, {5, "five"}};
+
+  auto it = s21_map.find(6);
+  EXPECT_EQ(it, s21_map.end());
+  s21_map.erase(it);
+
+  EXPECT_EQ(s21_map.size(), size_t{5});
+}
+
+// Additional swap tests
+TEST(MapNonTyped, Swap_EmptyAndNonEmpty) {
+  s21::map<int, std::string> s21_map1;
+  s21::map<int, std::string> s21_map2 = {{42, "test"}};
+
+  s21_map1.swap(s21_map2);
+
+  EXPECT_TRUE(s21_map2.empty());
+  EXPECT_EQ(s21_map1.size(), size_t{1});
+  EXPECT_EQ(s21_map1.at(42), "test");
+}
+
+TYPED_TEST(MapTest, Swap_BothEmpty) {
+  s21::map<typename TypeParam::first_type, typename TypeParam::second_type>
+      s21_map;
+
+  this->empty_s21_map_.swap(s21_map);
+
+  EXPECT_TRUE(this->empty_s21_map_.empty());
+  EXPECT_TRUE(s21_map.empty());
+}
+
+TYPED_TEST(MapTest, Swap_SameElements) {
+  s21::map<typename TypeParam::first_type, typename TypeParam::second_type>
+      s21_map{this->s21_map_};
+
+  s21_map.swap(this->s21_map_);
+
+  EXPECT_EQ(s21_map.size(), size_t{8});
+  EXPECT_EQ(this->s21_map_.size(), size_t{8});
+
+  EXPECT_EQ(s21_map, this->s21_map_);
+}
+
+// Additional merge tests
+TEST(MapNonTyped, Merge_EmptyIntoNonEmpty) {
+  s21::map<int, std::string> s21_map1 = {
+      {10, "ten"}, {20, "twenty"}, {30, "thirty"}};
+  s21::map<int, std::string> s21_map2;
+
+  s21_map1.merge(s21_map2);
+
+  EXPECT_EQ(s21_map1.size(), size_t{3});
+  EXPECT_EQ(s21_map1.at(10), "ten");
+  EXPECT_EQ(s21_map1.at(20), "twenty");
+  EXPECT_EQ(s21_map1.at(30), "thirty");
+
+  EXPECT_TRUE(s21_map2.empty());
+}
+
+TEST(MapNonTyped, Merge_NonEmptyIntoEmpty) {
+  s21::map<int, std::string> s21_map1;
+  s21::map<int, std::string> s21_map2 = {
+      {100, "hundred"}, {200, "two hundred"}, {300, "three hundred"}};
+
+  s21_map1.merge(s21_map2);
+
+  EXPECT_EQ(s21_map1.size(), size_t{3});
+  EXPECT_EQ(s21_map1.at(100), "hundred");
+  EXPECT_EQ(s21_map1.at(200), "two hundred");
+  EXPECT_EQ(s21_map1.at(300), "three hundred");
+
+  EXPECT_TRUE(s21_map2.empty());
+}
+
+TEST(MapNonTyped, Merge_BothEmpty) {
+  s21::map<int, std::string> s21_map1;
+  s21::map<int, std::string> s21_map2;
+
+  s21_map1.merge(s21_map2);
+
+  EXPECT_TRUE(s21_map1.empty());
+  EXPECT_TRUE(s21_map2.empty());
+}
+
+TEST(MapNonTyped, Merge_SameMaps) {
+  s21::map<int, std::string> s21_map1 = {{1, "one"}, {2, "two"}, {3, "three"}};
+  s21::map<int, std::string> s21_map2 = {{1, "one"}, {2, "two"}, {3, "three"}};
+
+  s21_map1.merge(s21_map2);
+
+  EXPECT_EQ(s21_map1.size(), size_t{3});
+  EXPECT_EQ(s21_map1.at(1), "one");
+  EXPECT_EQ(s21_map1.at(2), "two");
+  EXPECT_EQ(s21_map1.at(3), "three");
+
+  EXPECT_TRUE(s21_map2.empty());
+}
+
+// Additional find tests
+TYPED_TEST(MapTest, Find_FirstElement) {
+  auto s21_it = this->s21_map_.find(46);  // First element in the map
+  auto std_it = this->stl_map_.find(46);
+
+  EXPECT_NE(s21_it, this->s21_map_.end());
+  EXPECT_NE(std_it, this->stl_map_.end());
+
+  EXPECT_EQ(s21_it->first, std_it->first);
+  EXPECT_EQ(s21_it->second, std_it->second);
+}
+
+TYPED_TEST(MapTest, Find_LastElement) {
+  auto s21_it = this->s21_map_.find(106);  // Last element in the map
+  auto std_it = this->stl_map_.find(106);
+
+  EXPECT_NE(s21_it, this->s21_map_.end());
+  EXPECT_NE(std_it, this->stl_map_.end());
+
+  EXPECT_EQ(s21_it->first, std_it->first);
+  EXPECT_EQ(s21_it->second, std_it->second);
+}
+
+TYPED_TEST(MapTest, Find_InEmptyMap) {
+  auto s21_it = this->empty_s21_map_.find(3);
+  auto std_it = this->empty_stl_map_.find(3);
+
+  EXPECT_EQ(s21_it, this->empty_s21_map_.end());
+  EXPECT_EQ(std_it, this->empty_stl_map_.end());
+}
