@@ -167,7 +167,15 @@ class RedBlackTree {
         }
         current = current->right_;
       } else {
-        return {current, false};
+        // Instead of returning {current, false} for duplicates:
+        if (current->right_ == nullptr) {
+          current->right_ = CreateNode(value);
+          current->right_->parent_ = current;
+          ++size_;
+          InsertFixup(current->right_);
+          return {current->right_, true};
+        }
+        current = current->right_;  // Continue to right subtree for duplicate
       }
     }
   }
@@ -239,26 +247,22 @@ class RedBlackTree {
   }
 
   node_type* FindNode(const key_type& key) {
-    if (root_ == nullptr) {
-      return nullptr;
-    }
-
     node_type* current{root_};
-    while (true) {
+    node_type* result{nullptr};
+
+    while (current) {
       if (key < current->GetKey()) {
-        if (current->left_ == nullptr) {
-          return nullptr;
-        }
         current = current->left_;
       } else if (key > current->GetKey()) {
-        if (current->right_ == nullptr) {
-          return nullptr;
-        }
         current = current->right_;
       } else {
-        return current;
+        result = current;  // Found a match
+        // For multiset, continue searching left subtree
+        // to find first occurrence
+        current = current->left_;
       }
     }
+    return result;
   }
 
   iterator erase(iterator pos) {
@@ -274,13 +278,11 @@ class RedBlackTree {
 
   size_type erase(const Key& key) {
     size_type erased_elements{0};
-    node_type* target = FindNode(key);
-    if (target == nullptr) {
-      return erased_elements;  // Key not found
+    node_type* target;
+    while ((target = FindNode(key)) != nullptr) {
+      RemoveNode(target);
+      ++erased_elements;
     }
-
-    RemoveNode(target);
-    ++erased_elements;
     return erased_elements;
   }
 
