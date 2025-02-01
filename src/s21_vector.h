@@ -1,6 +1,7 @@
 #ifndef S21_VECTOR_H
 #define S21_VECTOR_H
 
+#include <initializer_list>
 #include <iterator>
 
 namespace s21 {

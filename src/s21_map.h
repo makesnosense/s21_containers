@@ -1,5 +1,6 @@
 #include <cstddef>
 #include <cstdint>
+#include <initializer_list>
 #include <iostream>
 #include <type_traits>
 #include <utility>
