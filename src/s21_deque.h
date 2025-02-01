@@ -1,11 +1,8 @@
-#include <initializer_list>
-
-#include "s21_base.h"
 
 #ifndef S21_DEQUE_H
 #define S21_DEQUE_H
-
 #include <cstddef>
+#include <initializer_list>
 
 namespace s21 {
 

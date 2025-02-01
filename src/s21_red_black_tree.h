@@ -4,8 +4,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "s21_base.h"
-
 namespace s21 {
 
 enum class NodeColor : int8_t { RED = 0, BLACK = 1 };
