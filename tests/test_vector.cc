@@ -335,6 +335,76 @@ TYPED_TEST(VectorTest, InsertIntoEmptyVector) {
                          this->empty_stl_vec_.begin()));
 }
 
+TYPED_TEST(VectorTest, InsertManyFront) {
+  this->s21_vec_.insert_many(this->s21_vec_.begin(), TypeParam{45},
+                             TypeParam{56}, TypeParam{67});
+  this->stl_vec_.insert(this->stl_vec_.begin(),
+                        {TypeParam{45}, TypeParam{56}, TypeParam{67}});
+
+  EXPECT_EQ(this->s21_vec_.size(), this->stl_vec_.size());
+  EXPECT_TRUE(std::equal(this->s21_vec_.begin(), this->s21_vec_.end(),
+                         this->stl_vec_.begin()));
+}
+
+TYPED_TEST(VectorTest, InsertManyMiddle) {
+  auto mid_pos_s21 = this->s21_vec_.begin() + 1;
+  auto mid_pos_stl = this->stl_vec_.begin() + 1;
+  this->s21_vec_.insert_many(mid_pos_s21, TypeParam{45}, TypeParam{56},
+                             TypeParam{67});
+  this->stl_vec_.insert(mid_pos_stl,
+                        {TypeParam{45}, TypeParam{56}, TypeParam{67}});
+
+  EXPECT_EQ(this->s21_vec_.size(), this->stl_vec_.size());
+  EXPECT_TRUE(std::equal(this->s21_vec_.begin(), this->s21_vec_.end(),
+                         this->stl_vec_.begin()));
+}
+
+TYPED_TEST(VectorTest, InsertManyBack) {
+  this->s21_vec_.insert_many(this->s21_vec_.end(), TypeParam{45}, TypeParam{56},
+                             TypeParam{67});
+  this->stl_vec_.insert(this->stl_vec_.end(),
+                        {TypeParam{45}, TypeParam{56}, TypeParam{67}});
+
+  EXPECT_EQ(this->s21_vec_.size(), this->stl_vec_.size());
+  EXPECT_TRUE(std::equal(this->s21_vec_.begin(), this->s21_vec_.end(),
+                         this->stl_vec_.begin()));
+}
+
+TYPED_TEST(VectorTest, InsertManyEmpty) {
+  auto original_size = this->s21_vec_.size();
+  this->s21_vec_.insert_many(this->s21_vec_.begin());
+  EXPECT_EQ(this->s21_vec_.size(), original_size);
+}
+
+TYPED_TEST(VectorTest, InsertManyBack_2) {
+  this->s21_vec_.insert_many_back(TypeParam{45}, TypeParam{56}, TypeParam{67});
+  this->stl_vec_.insert(this->stl_vec_.end(),
+                        {TypeParam{45}, TypeParam{56}, TypeParam{67}});
+
+  EXPECT_EQ(this->s21_vec_.size(), this->stl_vec_.size());
+  EXPECT_TRUE(std::equal(this->s21_vec_.begin(), this->s21_vec_.end(),
+                         this->stl_vec_.begin()));
+}
+
+TYPED_TEST(VectorTest, InsertManyBackEmpty_2) {
+  auto original_size = this->s21_vec_.size();
+  this->s21_vec_.insert_many_back();
+  EXPECT_EQ(this->s21_vec_.size(), original_size);
+}
+
+TYPED_TEST(VectorTest, InsertManyBackWithExistingElements_2) {
+  this->s21_vec_.insert_many_back(TypeParam{1}, TypeParam{2}, TypeParam{3});
+  this->s21_vec_.insert_many_back(TypeParam{4}, TypeParam{5});
+
+  this->stl_vec_.insert(this->stl_vec_.end(),
+                        {TypeParam{1}, TypeParam{2}, TypeParam{3}});
+  this->stl_vec_.insert(this->stl_vec_.end(), {TypeParam{4}, TypeParam{5}});
+
+  EXPECT_EQ(this->s21_vec_.size(), this->stl_vec_.size());
+  EXPECT_TRUE(std::equal(this->s21_vec_.begin(), this->s21_vec_.end(),
+                         this->stl_vec_.begin()));
+}
+
 // erase
 
 TEST(VectorTestNonTyped, EraseSingleElement) {
