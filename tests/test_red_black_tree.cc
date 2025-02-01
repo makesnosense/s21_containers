@@ -30,10 +30,37 @@ bool ValidateRedBlackTree(const s21::RedBlackTree<Key, T>& tree) {
 }
 
 template <typename Key, typename T>
+bool ValidateBSTProperty(const s21::Node<Key, T>* node, const Key* min_key,
+                         const Key* max_key) {
+  if (!node) return true;
+
+  // Check current node's key against bounds
+  if (min_key && node->GetKey() < *min_key) {
+    std::cerr << "BST property violation: node key less than minimum bound";
+    return false;
+  }
+  if (max_key && node->GetKey() > *max_key) {
+    std::cerr << "BST property violation: node key greater than maximum bound";
+    return false;
+  }
+
+  // Recursively validate left and right subtrees
+  // For left: all keys must be <= current key
+  // For right: all keys must be >= current key
+  return ValidateBSTProperty(node->left_, min_key, &node->GetKey()) &&
+         ValidateBSTProperty(node->right_, &node->GetKey(), max_key);
+}
+
+template <typename Key, typename T>
 bool ValidateProperties(const s21::Node<Key, T>* node, int& black_height) {
   if (!node) {
     black_height = 0;  // Null nodes are black, but we don't count them
     return true;
+  }
+
+  // Add BST property validation
+  if (!ValidateBSTProperty<Key, T>(node, nullptr, nullptr)) {
+    return false;
   }
 
   int left_black_height = 0;
