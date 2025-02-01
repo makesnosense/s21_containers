@@ -1,3 +1,6 @@
+#ifndef S21_MAP_H
+#define S21_MAP_H
+
 #include <cstddef>
 #include <cstdint>
 #include <initializer_list>
@@ -125,3 +128,5 @@ class map {
   RedBlackTree<Key, mapped_type> tree_;
 };
 }  // namespace s21
+
+#endif  // S21_MAP_H

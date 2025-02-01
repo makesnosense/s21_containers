@@ -1,3 +1,6 @@
+#ifndef S21_RED_BLACK_TREE_H
+#define S21_RED_BLACK_TREE_H
+
 #include <cstddef>
 #include <cstdint>
 #include <iostream>
@@ -857,3 +860,5 @@ void print_tree(const RedBlackTree<Key, T>& tree) {
 }
 
 }  // namespace s21
+
+#endif  // S21_RED_BLACK_TREE_H

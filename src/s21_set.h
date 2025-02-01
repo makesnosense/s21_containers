@@ -1,3 +1,6 @@
+#ifndef S21_SET_H
+#define S21_SET_H
+
 #include <cstddef>
 #include <cstdint>
 #include <initializer_list>
@@ -104,3 +107,5 @@ class set {
 };
 
 }  // namespace s21
+
+#endif  // S21_SET_H
