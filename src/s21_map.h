@@ -4,7 +4,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "s21_base.h"
 #include "s21_red_black_tree.h"
 
 namespace s21 {
@@ -61,7 +60,7 @@ class map {
       return it->data_.second;
     }
 
-    return tree_.insert({key, T{}}).first->data_.second;
+    return tree_.insert({key, mapped_type{}}).first->data_.second;
   }
 
   iterator begin() { return tree_.begin(); }
