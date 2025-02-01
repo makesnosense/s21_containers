@@ -19,42 +19,61 @@ class array {
   value_type data[N];
 
  public:
-  array() {
+  constexpr array() {
     for (size_type i = 0; i < N; ++i) {
       data[i] = T();
     }
   }
 
-  reference operator[](size_type index) {
+  constexpr reference operator[](size_type index) {
     if (index >= N) {
       throw std::logic_error("Index out of range");
     }
     return data[index];
   }
 
-  const_reference operator[](size_type index) const {
+  constexpr const_reference operator[](size_type index) const {
     if (index >= N) {
       throw std::logic_error("Index out of range");
     }
     return data[index];
   }
 
-  size_type size() const { return N; }
-  bool empty() { return N == 0; }
+  constexpr size_type size() const { return N; }
+  constexpr bool empty() { return N == 0; }
 
-  void fill(const T& value) {
+  constexpr void fill(const T& value) {
     for (size_type i = 0; i < N; ++i) {
       data[i] = value;
     }
   }
+  constexpr reference at(size_type pos) { return data[pos]; }
+  constexpr reference front() {
+    if (N == 0) {
+      throw std::logic_error("Index out of range");
+    }
+    return data[0];
+  }
+  constexpr reference back() {
+    if (N == 0) {
+      throw std::logic_error("Index out of range");
+    }
+    return data[N - 1];
+  }
 
-  void print() const {
+  constexpr void swap(array& other) {
+    for (size_type i = 0; i < N; ++i) {
+      std::swap(data[i], other.data[i]);
+    }
+  }
+
+  constexpr void print() const {
     for (size_type i = 0; i < N; ++i) {
       std::cout << data[i] << " ";
     }
     std::cout << std::endl;
   }
-  size_type max_size() {
+  constexpr size_type max_size() {
     return (std::numeric_limits<size_type>::max() / sizeof(value_type));
   }
 
