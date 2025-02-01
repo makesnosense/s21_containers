@@ -72,7 +72,7 @@ class vector {
   ~vector() { delete[] data_; }
 
   reference at(size_type position) const {
-    if (position >= size_ || position < 0) {
+    if (position >= size_) {
       throw std::out_of_range("Vector index out of range");
     }
     return data_[position];
@@ -235,6 +235,45 @@ class vector {
     for (size_type i{0}; i < count; ++i) {
       data_[index + i] = value;
     }
+  }
+
+  template <typename... Args>
+  iterator insert_many(const_iterator pos, Args&&... args) {
+    size_type index = static_cast<size_type>(std::distance(cbegin(), pos));
+    size_type count = sizeof...(args);
+
+    if (count == 0) {
+      return iterator(data_ + index);
+    }
+
+    resize(size_ + count);
+
+    for (size_type i = size_ - 1; i >= index + count; --i) {
+      data_[i] = std::move(data_[i - count]);
+    }
+
+    size_type i = index;
+    (void)i;
+
+    size_type j = index;
+    ((data_[j++] = std::forward<Args>(args)), ...);
+
+    return iterator(data_ + index);
+  }
+
+  template <typename... Args>
+  void insert_many_back(Args&&... args) {
+    size_type count = sizeof...(args);
+
+    if (count == 0) {
+      return;
+    }
+
+    resize(size_ + count);
+
+    size_type j = size_ - count;
+
+    ((data_[j++] = std::forward<Args>(args)), ...);
   }
 
   iterator erase(const_iterator position) {
