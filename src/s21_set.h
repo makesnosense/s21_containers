@@ -4,7 +4,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "s21_base.h"
 #include "s21_red_black_tree.h"
 
 namespace s21 {

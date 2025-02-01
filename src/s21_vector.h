@@ -3,8 +3,6 @@
 
 #include <iterator>
 
-#include "s21_base.h"
-
 namespace s21 {
 
 template <typename T, bool is_const>
@@ -13,15 +11,14 @@ class VectorIterator;
 template <typename T>
 class vector {
  public:
-  using traits = container_traits<T>;
   using value_type = T;
-  using reference = typename traits::reference;
-  using const_reference = typename traits::const_reference;
+  using reference = T&;
+  using const_reference = const T;
   using iterator = VectorIterator<T, false>;
   using const_iterator = const VectorIterator<T, true>;
 
   using reverse_iterator = std::reverse_iterator<iterator>;
-  using size_type = typename traits::size_type;
+  using size_type = typename std::size_t;
 
   explicit vector(size_type n = kMinN)
       : data_{nullptr}, size_{n}, capacity_{n} {
@@ -456,7 +453,7 @@ class VectorIterator {
 
 template <typename T>
 bool operator==(const s21::vector<T>& first, const std::vector<T>& other) {
-  using size_type = typename s21::vector<T>::traits::size_type;
+  using size_type = typename s21::vector<T>::size_type;
 
   if (first.size() != other.size()) {
     return false;
