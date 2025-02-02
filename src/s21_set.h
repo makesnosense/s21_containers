@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "s21_red_black_tree.h"
+#include "s21_vector.h"
 
 namespace s21 {
 
@@ -18,9 +19,9 @@ namespace s21 {
 template <typename Key>
 class set {
  public:
+  using node_type = Node<Key>;
   using key_type = Key;
   using value_type = Key;
-  using node_type = Node<Key>;
   using iterator = RedBlackTreeIterator<Key, false, void>;
   using const_iterator = RedBlackTreeIterator<Key, true, void>;
   using size_type = std::size_t;
@@ -77,6 +78,23 @@ class set {
       auto result = tree_.insert(value);
       return {iterator(result.first), result.second};
     }
+  }
+
+  template <typename... Args>
+  s21::vector<std::pair<node_type*, bool>> insert_many(Args&&... args) {
+    s21::vector<std::pair<node_type*, bool>> results;
+    for (const auto& value : {std::forward<Args>(args)...}) {
+      node_type* found{tree_.FindNode(value)};
+      if (found) {
+        continue;
+      } else {
+        auto result = tree_.insert(value);
+        std::pair<node_type*, bool> pair =
+            std::make_pair(result.first, result.second);
+        results.push_back(pair);
+      }
+    }
+    return results;
   }
 
   iterator erase(iterator pos) { return tree_.erase(pos); }
