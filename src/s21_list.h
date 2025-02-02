@@ -237,6 +237,53 @@ class list {
 
     return iterator(new_head);
   }
+  template <typename... Args>
+  void insert_many_back(Args&&... args) {
+    list<T> temp_list{std::forward<Args>(args)...};
+
+    if (temp_list.empty()) {
+      return;
+    }
+
+    if (empty()) {
+      head_ = temp_list.head_;
+      tail_ = temp_list.tail_;
+    } else {
+      tail_->next_ = temp_list.head_;
+      temp_list.head_->pre_ = tail_;
+
+      tail_ = temp_list.tail_;
+    }
+
+    size_ += temp_list.size_;
+
+    temp_list.head_ = nullptr;
+    temp_list.tail_ = nullptr;
+    temp_list.size_ = 0;
+  }
+  template <typename... Args>
+  void insert_many_front(Args&&... args) {
+    list<T> temp_list{std::forward<Args>(args)...};
+
+    if (temp_list.empty()) {
+      return;
+    }
+
+    if (empty()) {
+      head_ = temp_list.head_;
+      tail_ = temp_list.tail_;
+    } else {
+      temp_list.tail_->next_ = head_;
+      head_->pre_ = temp_list.tail_;
+      head_ = temp_list.head_;
+    }
+
+    size_ += temp_list.size_;
+
+    temp_list.head_ = nullptr;
+    temp_list.tail_ = nullptr;
+    temp_list.size_ = 0;
+  }
   void splice(const_iterator pos, list& other) {
     if (other.empty()) return;
 
