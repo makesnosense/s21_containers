@@ -687,9 +687,7 @@ class ListIterator {
       : current_(other.current_) {}
 
   reference operator*() { return current_->data_; }
-
   pointer operator->() { return &current_->data_; }
-
   node_pointer GetCurrent() const { return current_; }
 
   ListIterator& operator++() {
