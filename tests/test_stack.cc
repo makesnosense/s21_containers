@@ -91,24 +91,5 @@ TYPED_TEST(StackTest, MoveAssignmentOperator) {
   EXPECT_EQ(another_stack.top(), value);
 }
 
-TEST(StackTest, stack) {
-  s21::stack<int> mss;
-  s21::stack<int> mss_swap;
-  for (int i = 0; i < 10; i++) {
-    mss.push(i);
-  }
-  mss_swap.push(5);
-  mss_swap.push(5);
-
-  std::cout << mss.size() << "\n";
-  mss.pop();
-  std::cout << mss.size() << "\n";
-  std::cout << mss.top() << "\n";
-
-  mss_swap = mss;
-  mss_swap.swap(mss);
-  EXPECT_TRUE(true);
-  EXPECT_EQ(1, 1);
-}
 #if 0
 #endif
