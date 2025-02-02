@@ -40,7 +40,7 @@ endif
 
 #━━━━━━━━━━Targets━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 test: $(BUILD_DIR)/run_tests
-	./$(BUILD_DIR)/run_tests --gtest_filter=RedBlackTree*
+	./$(BUILD_DIR)/run_tests 
 
 all: coverage valgrind
 
