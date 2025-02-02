@@ -27,16 +27,19 @@ class set {
   using size_type = std::size_t;
 
   set() : tree_{} {}
+
   set(std::initializer_list<value_type> const& items) : tree_{} {
     for (const auto& i : items) {
       insert(i);
     }
   }
+
   set(const set& other) : tree_{} {
     for (auto it = other.begin(); it != other.end(); ++it) {
       insert(*it);
     }
   }
+
   set(set&& other) noexcept : tree_(std::move(other.tree_)) {}
 
   explicit set(size_type size, value_type value) : tree_{} {
@@ -62,7 +65,9 @@ class set {
   const_iterator end() const { return tree_.end(); }
 
   bool empty() { return tree_.empty(); }
+
   size_type size() const { return tree_.size(); }
+
   size_type max_size() {
     return std::numeric_limits<size_type>::max() / sizeof(key_type);
   }

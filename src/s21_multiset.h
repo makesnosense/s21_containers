@@ -22,16 +22,19 @@ class multiset {
   using size_type = std::size_t;
 
   multiset() : tree_{} {}
+
   multiset(std::initializer_list<value_type> const& items) : tree_{} {
     for (const auto& i : items) {
       tree_.insert(i);
     }
   }
+
   multiset(const multiset& other) : tree_{} {
     for (auto it = other.begin(); it != other.end(); ++it) {
       tree_.insert(*it);
     }
   }
+
   multiset(multiset&& other) noexcept : tree_(std::move(other.tree_)) {}
 
   // Additional constructor for multiple identical elements
@@ -53,11 +56,14 @@ class multiset {
 
   iterator begin() { return tree_.begin(); }
   iterator end() { return tree_.end(); }
+
   const_iterator begin() const { return tree_.begin(); }
   const_iterator end() const { return tree_.end(); }
 
   bool empty() { return tree_.empty(); }
+
   size_type size() const { return tree_.size(); }
+
   size_type max_size() {
     return std::numeric_limits<size_type>::max() / sizeof(key_type);
   }

@@ -111,6 +111,7 @@ class RedBlackTree {
     other.root_ = nullptr;
     other.size_ = 0;
   }
+
   ~RedBlackTree() {
     DeleteSubtree(root_);
     root_ = nullptr;
@@ -741,6 +742,7 @@ class RedBlackTreeIterator : public RedBlackTreeIteratorBase<Key, is_const, T> {
 
   // Specialized dereferencing
   reference operator*() const { return current_->data_; }
+
   pointer operator->() const { return &(current_->data_); }
 
   // Increment/decrement using base class implementation
