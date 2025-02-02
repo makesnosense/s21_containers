@@ -65,7 +65,7 @@ class list {
   }
 
   list(size_type n) : head_{nullptr}, tail_{nullptr}, size_{0} {
-    for (size_type i = 0; i < n; i++) {
+    for (size_type i = {0}; i < n; i++) {
       node_type* new_node = new node_type();
       if (!head_) {
         head_ = new_node;
@@ -98,7 +98,7 @@ class list {
 
   explicit list(size_type n, const value_type& value)
       : head_{nullptr}, tail_{nullptr}, size_{0} {
-    for (size_type i = 0; i < n; ++i) {
+    for (size_type i = {0}; i < n; ++i) {
       node_type* new_node = new node_type(value);
       if (!head_) {
         head_ = new_node;
@@ -498,7 +498,7 @@ class list {
       throw std::out_of_range("Index out of range");
     }
     node_type* current = head_;
-    for (size_type i = 0; i < index; ++i) {
+    for (size_type i = {0}; i < index; ++i) {
       current = current->next_;
     }
     return current->data_;
@@ -509,7 +509,7 @@ class list {
       throw std::out_of_range("Index out of range");
     }
     node_type* current = head_;
-    for (size_type i = 0; i < index; ++i) {
+    for (size_type i = {0}; i < index; ++i) {
       current = current->next_;
     }
     return current->data_;
@@ -716,7 +716,7 @@ class ListIterator {
 
   ListIterator operator+(int n) const {
     ListIterator temp = *this;
-    for (int i = 0; i < n && temp.current_ != nullptr; ++i) {
+    for (int i = {0}; i < n && temp.current_ != nullptr; ++i) {
       ++temp;
     }
     return temp;
@@ -724,11 +724,11 @@ class ListIterator {
 
   ListIterator& operator+=(int n) {
     if (n >= 0) {
-      for (int i = 0; i < n && current_ != nullptr; ++i) {
+      for (int i = {0}; i < n && current_ != nullptr; ++i) {
         current_ = current_->next_;
       }
     } else {
-      for (int i = 0; i < -n && current_ != nullptr; ++i) {
+      for (int i = {0}; i < -n && current_ != nullptr; ++i) {
         current_ = current_->pre_;
       }
     }
@@ -737,7 +737,7 @@ class ListIterator {
 
   ListIterator operator-(int n) const {
     ListIterator temp = *this;
-    for (int i = 0; i < n && temp.current_ != nullptr; ++i) {
+    for (int i = {0}; i < n && temp.current_ != nullptr; ++i) {
       temp.current_ = temp.current_->pre_;
     }
     return temp;
@@ -762,7 +762,7 @@ class ListIterator {
   ListIterator& operator-=(int n) { return *this += -n; }
   reference operator[](int n) {
     ListIterator temp = *this;
-    for (int i = 0; i < n && temp.current_ != nullptr; ++i) {
+    for (int i = {0}; i < n && temp.current_ != nullptr; ++i) {
       temp.current_ = temp.current_->next_;
     }
     if (temp.current_ == nullptr) {
