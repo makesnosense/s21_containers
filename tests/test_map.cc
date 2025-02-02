@@ -130,6 +130,66 @@ TYPED_TEST(MapTest, InsertWithExistingElements) {
   EXPECT_EQ(this->empty_s21_map_.size(), this->empty_stl_map_.size());
 }
 
+TYPED_TEST(MapTest, InsertMany) {
+  std::vector<TypeParam> values = {
+      {1, "a"}, {2, "g"}, {3, "d"}, {4, "j"}, {5, "k"}};
+
+  this->empty_s21_map_.insert_many(values[0], values[1], values[2], values[3],
+                                   values[4]);
+
+  EXPECT_EQ(this->empty_s21_map_.size(), values.size());
+
+  auto s21_it = this->empty_s21_map_.begin();
+
+  for (size_t i = 0; i < values.size(); i++) {
+    EXPECT_EQ((*s21_it).second, values[i].second);
+    *s21_it++;
+  }
+}
+
+TYPED_TEST(MapTest, InsertManyDuplicates) {
+  std::vector<TypeParam> values = {
+      {1, "a"}, {2, "g"}, {2, "d"}, {4, "j"}, {5, "k"}};
+
+  auto results = this->empty_s21_map_.insert_many(
+      values[0], values[1], values[2], values[3], values[4]);
+
+  EXPECT_EQ(this->empty_s21_map_.size(), size_t{4});
+
+  EXPECT_NE(results.size(), values.size());
+
+  for (const auto& value : {1, 2, 5, 4}) {
+    EXPECT_TRUE(this->empty_s21_map_.contains(value));
+  }
+
+  EXPECT_TRUE(results[0].second);
+  EXPECT_TRUE(results[1].second);
+  EXPECT_TRUE(results[2].second);
+  EXPECT_TRUE(results[3].second);
+}
+
+TEST(MapTest, OperatorSqaerScobki) {
+  s21::map<int, std::string> empty_s21_map_;
+  empty_s21_map_[int{2}] = "a";
+  empty_s21_map_[int{2}] = "b";
+  empty_s21_map_[int{4}] = "c";
+  empty_s21_map_[int{3}] = "d";
+
+  // this->empty_stl_map_[2] = "a";
+  // this->empty_stl_map_[2] = "b";
+  // this->empty_stl_map_[4] = "c";
+  // this->empty_stl_map_[3] = "d";
+
+  // std::vector<TypeParam> values = {{2, "b"}, {4, "c"}, {3, "d"}};
+  // auto s21_it = this->empty_s21_map_.begin();
+  // for (size_t i = 0; i < values.size(); i++) {
+  //   EXPECT_EQ((*s21_it).second, values[i].second);
+  //   *s21_it++;
+  // }
+
+  // EXPECT_EQ(this->empty_s21_map_.size(), size_t{3});
+}
+
 // // Element access tests
 TYPED_TEST(MapTest, At) {
   EXPECT_EQ(this->s21_map_.at(103), "a");
