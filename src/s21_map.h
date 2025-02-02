@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "s21_red_black_tree.h"
+#include "s21_vector.h"
 
 namespace s21 {
 
@@ -43,10 +44,10 @@ class map {
 
   ~map() = default;
 
-  map& operator=(map&& m) noexcept {
-    if (this != &m) {
-      tree_ = std::move(m.tree_);
-      m.tree_ = RedBlackTree<key_type, mapped_type>();
+  map& operator=(map&& other) noexcept {
+    if (this != &other) {
+      tree_ = std::move(other.tree_);
+      other.tree_ = RedBlackTree<key_type, mapped_type>();
     }
     return *this;
   }
@@ -65,7 +66,10 @@ class map {
       return it->data_.second;
     }
 
-    return tree_.insert({key, mapped_type{}}).first->data_.second;
+    auto result = tree_.insert({key, mapped_type{}});
+    mapped_type& result_value = result.first->data_.second;
+    // return tree_.insert({key, mapped_type{}}).first->data_.second;
+    return result_value;
   }
 
   iterator begin() { return tree_.begin(); }
@@ -105,6 +109,23 @@ class map {
       auto result = tree_.insert(value);
       return {iterator(result.first), result.second};
     }
+  }
+
+  template <typename... Args>
+  s21::vector<std::pair<node_type*, bool>> insert_many(Args&&... args) {
+    s21::vector<std::pair<node_type*, bool>> results;
+    for (const auto& value : {std::forward<Args>(args)...}) {
+      node_type* found{tree_.FindNode(value.first)};
+      if (found) {
+        continue;
+      } else {
+        auto result = tree_.insert(value);
+        std::pair<node_type*, bool> pair =
+            std::make_pair(result.first, result.second);
+        results.push_back(pair);
+      }
+    }
+    return results;
   }
 
   iterator erase(iterator pos) { return tree_.erase(pos); }
