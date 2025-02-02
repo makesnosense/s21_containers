@@ -95,12 +95,6 @@ class array {
     }
   }
 
-  constexpr void print() const {
-    for (size_type i = 0; i < N; ++i) {
-      std::cout << data_[i] << " ";
-    }
-    std::cout << std::endl;
-  }
   constexpr size_type max_size() {
     return (std::numeric_limits<size_type>::max() / sizeof(value_type));
   }
