@@ -1,4 +1,3 @@
-
 #ifndef S21_LIST_H
 #define S21_LIST_H
 
@@ -107,7 +106,7 @@ class list {
     }
   }
 
-    iterator insert(iterator pos, const_reference value) {
+  iterator insert(iterator pos, const_reference value) {
     node_type* new_node = new node_type(value);
 
     if (pos.GetCurrent() == nullptr) {
