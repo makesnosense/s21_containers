@@ -203,7 +203,40 @@ class list {
     size_++;
     return iterator(new_node);
   }
+  template <typename... Args>
+  iterator insert_many(const_iterator pos, Args&&... args) {
+    list<T> temp_list{std::forward<Args>(args)...};
 
+    if (temp_list.empty()) {
+      return iterator(const_cast<node_type*>(pos.GetCurrent()));
+    }
+
+    node_type* pos_node = const_cast<node_type*>(pos.GetCurrent());
+    node_type* new_head = temp_list.head_;
+    node_type* new_tail = temp_list.tail_;
+
+    if (pos_node) {
+      if (pos_node->pre_) {
+        pos_node->pre_->next_ = new_head;
+        new_head->pre_ = pos_node->pre_;
+      } else {
+        head_ = new_head;
+      }
+      new_tail->next_ = pos_node;
+      pos_node->pre_ = new_tail;
+    } else {
+      tail_->next_ = new_head;
+      new_head->pre_ = tail_;
+      tail_ = new_tail;
+    }
+
+    size_ += temp_list.size_;
+    temp_list.head_ = nullptr;
+    temp_list.tail_ = nullptr;
+    temp_list.size_ = 0;
+
+    return iterator(new_head);
+  }
   void splice(const_iterator pos, list& other) {
     if (other.empty()) return;
 
