@@ -7,6 +7,7 @@
 #include <stdexcept>
 
 namespace s21 {
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpadded"
 
