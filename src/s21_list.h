@@ -686,6 +686,8 @@ class ListIterator {
   ListIterator(const ListIterator<T, other_is_const>& other)
       : current_(other.current_) {}
 
+  ~ListIterator() = default;
+
   reference operator*() { return current_->data_; }
   pointer operator->() { return &current_->data_; }
   node_pointer GetCurrent() const { return current_; }
@@ -776,8 +778,6 @@ class ListIterator {
   }
 
   bool operator!=(const ListIterator& other) const { return !(*this == other); }
-
-  ~ListIterator() = default;
 
  private:
   node_pointer current_;
