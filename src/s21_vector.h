@@ -413,8 +413,8 @@ class VectorIterator {
       : ptr_{other.ptr_} {}
 
   operator pointer() const { return ptr_; }
-  reference operator*() { return *ptr_; }
   reference operator[](difference_type n) const { return ptr_[n]; }
+  reference operator*() { return *ptr_; }
 
   VectorIterator& operator++() {
     ++ptr_;

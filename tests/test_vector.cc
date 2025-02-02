@@ -863,3 +863,34 @@ TEST(VectorConstCorrectnessTest, NotCompiling) {
   s21::vector<int>::const_iterator const_it = const_vec.begin();
   EXPECT_EQ(*const_it, 1);
 }
+
+TYPED_TEST(VectorTest, SimpleIterator) {
+  s21::VectorIterator<TypeParam, false> it{};
+
+  it = this->s21_vec_.begin();
+  ++it;
+  it -= 1;
+  const auto hm{*it};
+  EXPECT_EQ(this->stl_vec_[0], hm);
+}
+
+TYPED_TEST(VectorTest, IteratorDereference) {
+  // Add known value to vector
+  this->s21_vec_.push_back(TypeParam{});
+
+  // Get iterator
+  auto it = this->s21_vec_.begin();
+
+  [[maybe_unused]] TypeParam* ptr = it;  // This calls operator pointer()
+
+  // Force dereference operator usage
+  TypeParam& ref = *it;
+  [[maybe_unused]] const auto hm{*it};
+  // Verify we can read through the dereferenced iterator
+  EXPECT_EQ(ref, this->s21_vec_[0]);
+  ++it;
+  it -= 1;
+  // Verify we can write through the dereferenced iterator
+  *it = TypeParam{};
+  EXPECT_EQ(this->s21_vec_[0], TypeParam{});
+}
