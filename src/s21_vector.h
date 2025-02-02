@@ -81,12 +81,10 @@ class vector {
   size_type capacity() { return capacity_; }
 
   iterator begin() { return iterator(data_); }
-
   iterator end() { return iterator(data_ + size_); }
 
   const_iterator begin() const { return const_iterator(data_); }
-
-  const_iterator end() const { return const_iterator(data_ + size_); }
+  = const_iterator end() const { return const_iterator(data_ + size_); }
 
   const_iterator cbegin() const { return const_iterator(data_); }
   const_iterator cend() const { return const_iterator(data_ + size_); }
