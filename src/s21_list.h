@@ -5,6 +5,7 @@
 #include <initializer_list>
 #include <iostream>
 #include <iterator>
+#include <stdexcept>
 
 namespace s21 {
 #pragma GCC diagnostic push
@@ -83,10 +84,11 @@ class list {
       }
     }
   }
-  list(list&& l) noexcept : head_(l.head_), tail_(l.tail_), size_(l.size_) {
-    l.head_ = nullptr;
-    l.tail_ = nullptr;
-    l.size_ = 0;
+  list(list&& other) noexcept
+      : head_(other.head_), tail_(other.tail_), size_(other.size_) {
+    other.head_ = nullptr;
+    other.tail_ = nullptr;
+    other.size_ = 0;
   }
   explicit list(size_type n, const value_type& value)
       : head_{nullptr}, tail_{nullptr}, size_{0} {
@@ -442,7 +444,7 @@ class list {
 
   void pop_back() {
     if (empty()) {
-      throw std::out_of_range("List is empty");
+      throw std::logic_error("List is empty");
     }
 
     if (head_ == tail_) {
@@ -480,8 +482,7 @@ class list {
     } else {
       new_node->pre_ = tail_;
       tail_->next_ = new_node;
-
-      tail_ = new_node;
+      out_of_range
     }
 
     size_++;
@@ -507,7 +508,7 @@ class list {
   }
   void pop_front() {
     if (empty()) {
-      throw std::out_of_range("List is empty");
+      throw std::logic_error("List is empty");
     }
 
     if (head_ == tail_) {
