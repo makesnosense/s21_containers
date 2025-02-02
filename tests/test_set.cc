@@ -124,8 +124,10 @@ TYPED_TEST(SetTest, InsertManyDuplicates) {
 
   EXPECT_NE(results.size(), values.size());
 
-  for (const auto value :
-       {TypeParam{1}, TypeParam{2}, TypeParam{3}, TypeParam{4}}) {
+  std::vector<TypeParam> result = {TypeParam{1}, TypeParam{2}, TypeParam{3},
+                                   TypeParam{4}};
+
+  for (const auto& value : result) {
     EXPECT_TRUE(this->empty_s21_set_.contains(value));
   }
 
