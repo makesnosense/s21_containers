@@ -94,6 +94,46 @@ TYPED_TEST(SetTest, InsertWithExistingElements) {
   EXPECT_EQ(this->empty_s21_set_.size(), this->empty_stl_set_.size());
 }
 
+/////////////////////////////
+
+TYPED_TEST(SetTest, InsertMany) {
+  std::vector<TypeParam> values = {1, 2, 3, 4, 5};
+
+  this->empty_s21_set_.insert_many(values[0], values[1], values[2], values[3],
+                                   values[4]);
+
+  EXPECT_EQ(this->empty_s21_set_.size(), values.size());
+
+  auto s21_it = this->empty_s21_set_.begin();
+
+  for (size_t i = 0; i < values.size(); i++) {
+    EXPECT_EQ(*s21_it, values[i]);
+    *s21_it++;
+  }
+}
+
+TYPED_TEST(SetTest, InsertManyDuplicates) {
+  std::vector<TypeParam> values = {1, 2, 2, 3, 4};
+
+  auto results = this->empty_s21_set_.insert_many(
+      values[0], values[1], values[2], values[3], values[4]);
+
+  EXPECT_EQ(this->empty_s21_set_.size(), 4);
+
+  EXPECT_NE(results.size(), values.size());
+
+  for (const auto& value : {1, 2, 3, 4}) {
+    EXPECT_TRUE(this->empty_s21_set_.contains(value));
+  }
+
+  EXPECT_TRUE(results[0].second);
+  EXPECT_TRUE(results[1].second);
+  EXPECT_TRUE(results[2].second);
+  EXPECT_TRUE(results[3].second);
+}
+
+///////////////////
+
 // copy contructer
 TYPED_TEST(SetTest, CopyConstructor) {
   s21::set<TypeParam> s21_set_2(this->s21_set_);
