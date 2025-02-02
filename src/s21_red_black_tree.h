@@ -32,9 +32,10 @@ class Node {
   // Constructor for Map case
   Node(const key_type& key, const mapped_type& value) : data_(key, value) {}
 
-  Node<Key, T>(const s21::Node<Key, T>&) = delete;
-
+  Node(const Node<Key, T>& other) = delete;
+  Node(Node<Key, T>&& other) = delete;
   Node& operator=(const Node& other) = delete;
+  Node& operator=(Node&&) = delete;
 
   const key_type& GetKey() const { return data_.first; }
   const mapped_type& GetValue() const { return data_.second; }
@@ -55,10 +56,21 @@ class Node<Key, void> {
 
   Node() = default;
 
-  Node<Key, void>(const s21::Node<Key, void>&) = delete;
-
   // Constructor for Set case
   explicit Node(const Key& key) : data_(key) {}
+
+  Node(const Node<Key, void>& other) = delete;
+
+  Node(Node&& other) noexcept
+      : data_(std::move(other.data_)),  // Will use Key's move constructor
+        left_(other.left_),
+        right_(other.right_),
+        parent_(other.parent_),
+        color_(other.color_) {
+    other.left_ = nullptr;
+    other.right_ = nullptr;
+    other.parent_ = nullptr;
+  }
 
   Node& operator=(const Node& other) = delete;
 
