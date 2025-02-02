@@ -124,5 +124,19 @@ TEST(QueueTest, QueueFunctionality) {
   EXPECT_TRUE(queue.empty());
 }
 
+TEST(QueueTest, InsertManyBackFunctionality) {
+  s21::queue<int> queue;
+
+  queue.insert_many_back(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+
+  EXPECT_EQ(queue.size(), size_t{10});
+
+  for (int i = 0; i < 10; ++i) {
+    EXPECT_EQ(queue.front(), i);
+    queue.pop();
+  }
+
+  EXPECT_TRUE(queue.empty());
+}
 #if 0
 #endif
