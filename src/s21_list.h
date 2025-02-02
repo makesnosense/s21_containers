@@ -106,77 +106,8 @@ class list {
       size_++;
     }
   }
-  std::pair<node_type*, node_type*> Split(node_type* head) {
-    node_type* slow = head;
-    node_type* fast = head->next_;
 
-    while (fast != nullptr && fast->next_ != nullptr) {
-      slow = slow->next_;
-      fast = fast->next_->next_;
-    }
-
-    node_type* second_half = slow->next_;
-    slow->next_ = nullptr;
-    if (second_half != nullptr) {
-      second_half->pre_ = nullptr;
-    }
-
-    return {head, second_half};
-  }
-
-  node_type* MergeForSort(node_type* first, node_type* second) {
-    if (first == nullptr) return second;
-    if (second == nullptr) return first;
-
-    node_type* merged_head = nullptr;
-
-    if (first->data_ <= second->data_) {
-      merged_head = first;
-      first = first->next_;
-    } else {
-      merged_head = second;
-      second = second->next_;
-    }
-
-    node_type* current = merged_head;
-
-    while (first != nullptr && second != nullptr) {
-      if (first->data_ <= second->data_) {
-        current->next_ = first;
-        first->pre_ = current;
-        first = first->next_;
-      } else {
-        current->next_ = second;
-        second->pre_ = current;
-        second = second->next_;
-      }
-      current = current->next_;
-    }
-
-    if (first != nullptr) {
-      current->next_ = first;
-      first->pre_ = current;
-    } else if (second != nullptr) {
-      current->next_ = second;
-      second->pre_ = current;
-    }
-
-    return merged_head;
-  }
-
-  node_type* MergeSort(node_type* head) {
-    if (head == nullptr || head->next_ == nullptr) {
-      return head;
-    }
-
-    auto [first_half, second_half] = Split(head);
-
-    first_half = MergeSort(first_half);
-    second_half = MergeSort(second_half);
-
-    return MergeForSort(first_half, second_half);
-  }
-  iterator insert(iterator pos, const_reference value) {
+    iterator insert(iterator pos, const_reference value) {
     node_type* new_node = new node_type(value);
 
     if (pos.GetCurrent() == nullptr) {
@@ -482,7 +413,7 @@ class list {
     } else {
       new_node->pre_ = tail_;
       tail_->next_ = new_node;
-      out_of_range
+      tail_ = new_node;
     }
 
     size_++;
@@ -641,7 +572,78 @@ class list {
   node_type* head_;
   node_type* tail_;
   size_type size_;
+  std::pair<node_type*, node_type*> Split(node_type* head) {
+    node_type* slow = head;
+    node_type* fast = head->next_;
+
+    while (fast != nullptr && fast->next_ != nullptr) {
+      slow = slow->next_;
+      fast = fast->next_->next_;
+    }
+
+    node_type* second_half = slow->next_;
+    slow->next_ = nullptr;
+    if (second_half != nullptr) {
+      second_half->pre_ = nullptr;
+    }
+
+    return {head, second_half};
+  }
+
+  node_type* MergeForSort(node_type* first, node_type* second) {
+    if (first == nullptr) return second;
+    if (second == nullptr) return first;
+
+    node_type* merged_head = nullptr;
+
+    if (first->data_ <= second->data_) {
+      merged_head = first;
+      first = first->next_;
+    } else {
+      merged_head = second;
+      second = second->next_;
+    }
+
+    node_type* current = merged_head;
+
+    while (first != nullptr && second != nullptr) {
+      if (first->data_ <= second->data_) {
+        current->next_ = first;
+        first->pre_ = current;
+        first = first->next_;
+      } else {
+        current->next_ = second;
+        second->pre_ = current;
+        second = second->next_;
+      }
+      current = current->next_;
+    }
+
+    if (first != nullptr) {
+      current->next_ = first;
+      first->pre_ = current;
+    } else if (second != nullptr) {
+      current->next_ = second;
+      second->pre_ = current;
+    }
+
+    return merged_head;
+  }
+
+  node_type* MergeSort(node_type* head) {
+    if (head == nullptr || head->next_ == nullptr) {
+      return head;
+    }
+
+    auto [first_half, second_half] = Split(head);
+
+    first_half = MergeSort(first_half);
+    second_half = MergeSort(second_half);
+
+    return MergeForSort(first_half, second_half);
+  }
 };
+
 template <typename T, bool is_const>
 class ListIterator {
  public:
