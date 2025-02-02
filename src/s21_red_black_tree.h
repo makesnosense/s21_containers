@@ -168,7 +168,7 @@ class RedBlackTree {
           return {new_node, true};
         }
         current = current->left_;
-      } else if (inserted_value_key > current->GetKey()) {
+      } else if (inserted_value_key >= current->GetKey()) {
         if (current->right_ == nullptr) {
           node_type* new_node = CreateNode(value);
           current->right_ = new_node;
@@ -178,17 +178,6 @@ class RedBlackTree {
           return {new_node, true};
         }
         current = current->right_;
-      } else {
-        // Instead of returning {current, false} for duplicates:
-        if (current->right_ == nullptr) {
-          node_type* new_node = CreateNode(value);
-          current->right_ = new_node;
-          new_node->parent_ = current;
-          ++size_;
-          InsertFixup(new_node);
-          return {new_node, true};
-        }
-        current = current->right_;  // Continue to right subtree for duplicate
       }
     }
   }
