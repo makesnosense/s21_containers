@@ -157,7 +157,7 @@ class map {
     return it1 == end() && it2 == other.end();
   }
 
- public:
+ private:
   RedBlackTree<Key, mapped_type> tree_;
 };
 }  // namespace s21
