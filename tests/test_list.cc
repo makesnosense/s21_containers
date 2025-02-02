@@ -183,12 +183,12 @@ TYPED_TEST(ListTest, copy) {
   EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
 }
 TYPED_TEST(ListTest, movedList) {
-  s21::list<int> originalList;
-  originalList.push_back(1);
-  originalList.push_back(2);
-  originalList.push_back(3);
+  s21::list<int> original_list;
+  original_list.push_back(1);
+  original_list.push_back(2);
+  original_list.push_back(3);
 
-  s21::list<int> movedList(std::move(originalList));
+  s21::list<int> movedList(std::move(original_list));
 
   EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
 }
@@ -447,6 +447,29 @@ TEST(ListTest, PopFrontLeak) {
 
   EXPECT_TRUE(list.empty());
   EXPECT_EQ(list.size(), size_t{0});
+}
+TEST(ListTest, insert_many) {
+  s21::list<int> s21_numbers_list;
+  s21_numbers_list.insert(s21_numbers_list.end(), 1);
+  s21_numbers_list.insert(s21_numbers_list.end(), 2);
+  s21_numbers_list.insert(s21_numbers_list.end(), 3);
+  int values_to_insert[] = {4, 5, 6};
+
+  auto it = s21_numbers_list.begin();
+  ++it;
+
+  s21_numbers_list.insert_many(it, values_to_insert[0], values_to_insert[1],
+                               values_to_insert[2]);
+
+  EXPECT_EQ(s21_numbers_list.size(), 6);
+
+  auto it_check = s21_numbers_list.begin();
+  EXPECT_EQ(*it_check++, 1);
+  EXPECT_EQ(*it_check++, 4);
+  EXPECT_EQ(*it_check++, 5);
+  EXPECT_EQ(*it_check++, 6);
+  EXPECT_EQ(*it_check++, 2);
+  EXPECT_EQ(*it_check++, 3);
 }
 #if 0 
 TYPED_TEST(ListTest, begin) {
