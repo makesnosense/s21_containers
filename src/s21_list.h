@@ -333,7 +333,7 @@ class list {
       while (next_node != nullptr && next_node->data_ == current->data_) {
         node_type* duplicate_node = next_node;
         next_node = next_node->next_;
-        size_--;
+        --size_;
 
         delete duplicate_node;
       }
@@ -380,7 +380,7 @@ class list {
     }
 
     delete node_to_delete;
-    size_--;
+    --size_;
   }
 
   void pop_back() {
@@ -392,7 +392,7 @@ class list {
       delete head_;
       head_ = nullptr;
       tail_ = nullptr;
-      size_--;
+      --size_;
       return;
     }
 
@@ -400,7 +400,7 @@ class list {
 
     tail_->next_ = nullptr;
 
-    size_--;
+    --size_;
   }
 
   void push_front(const_reference value) {
@@ -460,7 +460,7 @@ class list {
       delete head_;
       head_ = nullptr;
       tail_ = nullptr;
-      size_--;
+      --size_;
       return;
     }
     head_ = head_->next_;
