@@ -38,7 +38,7 @@ class array {
   }
   constexpr array(std::initializer_list<value_type> const& items) {
     if (items.size() > N) {
-      throw std::logic_error("Index out of range");
+      throw std::out_of_range("Index out of range");
     }
     std::copy(items.begin(), items.end(), data_);
     for (size_type i = items.size(); i < N; ++i) {
@@ -47,14 +47,14 @@ class array {
   }
   constexpr reference operator[](size_type index) {
     if (index >= N) {
-      throw std::logic_error("Index out of range");
+      throw std::out_of_range("Index out of range");
     }
     return data_[index];
   }
 
   constexpr const_reference operator[](size_type index) const {
     if (index >= N) {
-      throw std::logic_error("Index out of range");
+      throw std::out_of_range("Index out of range");
     }
     return data_[index];
   }
@@ -78,13 +78,13 @@ class array {
   constexpr reference at(size_type pos) { return data_[pos]; }
   constexpr reference front() {
     if (N == 0) {
-      throw std::logic_error("Index out of range");
+      throw std::out_of_range("Index out of range");
     }
     return data_[0];
   }
   constexpr reference back() {
     if (N == 0) {
-      throw std::logic_error("Index out of range");
+      throw std::out_of_range("Index out of range");
     }
     return data_[N - 1];
   }
