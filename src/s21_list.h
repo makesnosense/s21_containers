@@ -763,6 +763,7 @@ class ListIterator {
   }
 
   ListIterator& operator-=(int n) { return *this += -n; }
+
   reference operator[](int n) {
     ListIterator temp = *this;
     for (int i{0}; i < n && temp.current_ != nullptr; ++i) {
