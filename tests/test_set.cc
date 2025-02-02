@@ -97,7 +97,8 @@ TYPED_TEST(SetTest, InsertWithExistingElements) {
 /////////////////////////////
 
 TYPED_TEST(SetTest, InsertMany) {
-  std::vector<TypeParam> values = {1, 2, 3, 4, 5};
+  std::vector<TypeParam> values = {TypeParam{1}, TypeParam{2}, TypeParam{3},
+                                   TypeParam{4}, TypeParam{5}};
 
   this->empty_s21_set_.insert_many(values[0], values[1], values[2], values[3],
                                    values[4]);
@@ -113,16 +114,18 @@ TYPED_TEST(SetTest, InsertMany) {
 }
 
 TYPED_TEST(SetTest, InsertManyDuplicates) {
-  std::vector<TypeParam> values = {1, 2, 2, 3, 4};
+  std::vector<TypeParam> values = {TypeParam{1}, TypeParam{2}, TypeParam{2},
+                                   TypeParam{3}, TypeParam{4}};
 
   auto results = this->empty_s21_set_.insert_many(
       values[0], values[1], values[2], values[3], values[4]);
 
-  EXPECT_EQ(this->empty_s21_set_.size(), 4);
+  EXPECT_EQ(this->empty_s21_set_.size(), size_t{4});
 
   EXPECT_NE(results.size(), values.size());
 
-  for (const auto& value : {1, 2, 3, 4}) {
+  for (const auto value :
+       {TypeParam{1}, TypeParam{2}, TypeParam{3}, TypeParam{4}}) {
     EXPECT_TRUE(this->empty_s21_set_.contains(value));
   }
 
