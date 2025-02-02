@@ -268,41 +268,41 @@ class list {
       return;
     }
 
-    node_type* current1 = head_;
-    node_type* current2 = other.head_;
+    node_type* existing_head = head_;
+    node_type* other_head = other.head_;
     node_type* merged_head = nullptr;
     node_type* merged_tail = nullptr;
 
-    if (current1->data_ <= current2->data_) {
-      merged_head = current1;
-      current1 = current1->next_;
+    if (existing_head->data_ <= other_head->data_) {
+      merged_head = existing_head;
+      existing_head = existing_head->next_;
     } else {
-      merged_head = current2;
-      current2 = current2->next_;
+      merged_head = other_head;
+      other_head = other_head->next_;
     }
 
     merged_tail = merged_head;
 
-    while (current1 != nullptr && current2 != nullptr) {
-      if (current1->data_ <= current2->data_) {
-        merged_tail->next_ = current1;
-        current1->pre_ = merged_tail;
-        merged_tail = current1;
-        current1 = current1->next_;
+    while (existing_head != nullptr && other_head != nullptr) {
+      if (existing_head->data_ <= other_head->data_) {
+        merged_tail->next_ = existing_head;
+        existing_head->pre_ = merged_tail;
+        merged_tail = existing_head;
+        existing_head = existing_head->next_;
       } else {
-        merged_tail->next_ = current2;
-        current2->pre_ = merged_tail;
-        merged_tail = current2;
-        current2 = current2->next_;
+        merged_tail->next_ = other_head;
+        other_head->pre_ = merged_tail;
+        merged_tail = other_head;
+        other_head = other_head->next_;
       }
     }
 
-    if (current1 != nullptr) {
-      merged_tail->next_ = current1;
-      current1->pre_ = merged_tail;
-    } else if (current2 != nullptr) {
-      merged_tail->next_ = current2;
-      current2->pre_ = merged_tail;
+    if (existing_head != nullptr) {
+      merged_tail->next_ = existing_head;
+      existing_head->pre_ = merged_tail;
+    } else if (other_head != nullptr) {
+      merged_tail->next_ = other_head;
+      other_head->pre_ = merged_tail;
     }
 
     head_ = merged_head;
