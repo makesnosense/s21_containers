@@ -432,7 +432,8 @@ class list {
   }
 
   void reverse() {
-    if (size_ <= 1) return;
+    constexpr size_type min_size_for_reverse{2};
+    if (size_ < min_size_for_reverse) return;
 
     node_type* current = head_;
     node_type* prev = nullptr;
