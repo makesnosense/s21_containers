@@ -60,6 +60,7 @@ class list {
       size_++;
     }
   }
+
   list(size_type n) : head_{nullptr}, tail_{nullptr}, size_{0} {
     for (size_type i = 0; i < n; i++) {
       node_type* new_node = new node_type();
@@ -74,6 +75,7 @@ class list {
       size_++;
     }
   }
+
   list(const list& other) : head_(nullptr), tail_(nullptr), size_(0) {
     if (other.head_ != nullptr) {
       node_type* current = other.head_;
@@ -83,12 +85,14 @@ class list {
       }
     }
   }
+
   list(list&& other) noexcept
       : head_(other.head_), tail_(other.tail_), size_(other.size_) {
     other.head_ = nullptr;
     other.tail_ = nullptr;
     other.size_ = 0;
   }
+
   explicit list(size_type n, const value_type& value)
       : head_{nullptr}, tail_{nullptr}, size_{0} {
     for (size_type i = 0; i < n; ++i) {
@@ -135,6 +139,7 @@ class list {
     size_++;
     return iterator(new_node);
   }
+
   template <typename... Args>
   iterator insert_many(const_iterator pos, Args&&... args) {
     list<T> temp_list{std::forward<Args>(args)...};
@@ -169,6 +174,7 @@ class list {
 
     return iterator(new_head);
   }
+
   template <typename... Args>
   void insert_many_back(Args&&... args) {
     list<T> temp_list{std::forward<Args>(args)...};
@@ -193,6 +199,7 @@ class list {
     temp_list.tail_ = nullptr;
     temp_list.size_ = 0;
   }
+
   template <typename... Args>
   void insert_many_front(Args&&... args) {
     list<T> temp_list{std::forward<Args>(args)...};
@@ -216,6 +223,7 @@ class list {
     temp_list.tail_ = nullptr;
     temp_list.size_ = 0;
   }
+
   void splice(const_iterator pos, list& other) {
     if (other.empty()) return;
 
@@ -305,6 +313,7 @@ class list {
     other.tail_ = nullptr;
     other.size_ = 0;
   }
+
   void swap(list& other) noexcept {
     if (this != &other) {
       std::swap(head_, other.head_);
@@ -339,6 +348,7 @@ class list {
       current = current->next_;
     }
   }
+
   void sort() {
     if (head_ == nullptr || head_->next_ == nullptr) {
       return;
@@ -351,6 +361,7 @@ class list {
       tail_ = tail_->next_;
     }
   }
+
   void erase(iterator pos) {
     if (pos.GetCurrent() == nullptr) return;
 
@@ -391,6 +402,7 @@ class list {
 
     size_--;
   }
+
   void push_front(const_reference value) {
     node_type* new_node = new node_type(value);
     if (empty()) {
@@ -404,6 +416,7 @@ class list {
 
     size_++;
   }
+
   void push_back(const_reference value) {
     node_type* new_node = new node_type(value);
     if (empty()) {
@@ -436,6 +449,7 @@ class list {
     head_ = tail_;
     tail_ = current;
   }
+
   void pop_front() {
     if (empty()) {
       throw std::logic_error("List is empty");
@@ -467,6 +481,7 @@ class list {
     }
     return current->data_;
   }
+
   reference front() { return head_->data_; }
 
   reference back() { return tail_->data_; }
@@ -496,6 +511,7 @@ class list {
     }
     return current->data_;
   }
+
   bool operator<=(const list& other) const {
     if (size_ < other.size_) {
       return true;
@@ -529,6 +545,7 @@ class list {
     }
     return *this;
   }
+
   bool operator==(const std::list<T>& first) {
     if (first.size() != this->size()) {
       return false;
@@ -571,6 +588,7 @@ class list {
   node_type* head_;
   node_type* tail_;
   size_type size_;
+
   std::pair<node_type*, node_type*> Split(node_type* head) {
     node_type* slow = head;
     node_type* fast = head->next_;
@@ -654,18 +672,23 @@ class ListIterator {
   using node_type = Node<T>;
   using node_pointer =
       std::conditional_t<is_const, const node_type*, node_type*>;
+
   template <typename U, bool other_is_const>
   friend class ListIterator;
+
   ListIterator() = default;
   ListIterator(node_pointer node) : current_(node) {}
+
   template <bool other_is_const,
             typename = std::enable_if_t<is_const || !other_is_const>>
+
   ListIterator(const ListIterator<T, other_is_const>& other)
       : current_(other.current_) {}
 
   reference operator*() { return current_->data_; }
 
   pointer operator->() { return &current_->data_; }
+
   node_pointer GetCurrent() const { return current_; }
 
   ListIterator& operator++() {
@@ -691,6 +714,7 @@ class ListIterator {
     --(*this);
     return temp;
   }
+
   ListIterator operator+(int n) const {
     ListIterator temp = *this;
     for (int i = 0; i < n && temp.current_ != nullptr; ++i) {
@@ -698,6 +722,7 @@ class ListIterator {
     }
     return temp;
   }
+
   ListIterator& operator+=(int n) {
     if (n >= 0) {
       for (int i = 0; i < n && current_ != nullptr; ++i) {
@@ -710,6 +735,7 @@ class ListIterator {
     }
     return *this;
   }
+
   ListIterator operator-(int n) const {
     ListIterator temp = *this;
     for (int i = 0; i < n && temp.current_ != nullptr; ++i) {
@@ -717,6 +743,7 @@ class ListIterator {
     }
     return temp;
   }
+
   difference_type operator-(const ListIterator& other) const {
     if (current_ == other.current_) {
       return 0;
@@ -744,9 +771,11 @@ class ListIterator {
     }
     return *temp;
   }
+
   bool operator==(const ListIterator& other) const {
     return current_ == other.current_;
   }
+
   bool operator!=(const ListIterator& other) const { return !(*this == other); }
 
   ~ListIterator() = default;
