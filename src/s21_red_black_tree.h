@@ -159,33 +159,34 @@ class RedBlackTree {
     while (true) {
       if (inserted_value_key < current->GetKey()) {
         if (current->left_ == nullptr) {
-          current->left_ = CreateNode(value);
-          // current->left_ = new node(value.first, value.second);
-          current->left_->parent_ = current;
+          node_type* new_node = CreateNode(value);
+          current->left_ = new_node;
+          new_node->parent_ = current;
           ++size_;
-          InsertFixup(current->left_);
+          InsertFixup(new_node);
 
-          return {current->left_, true};
+          return {new_node, true};
         }
         current = current->left_;
       } else if (inserted_value_key > current->GetKey()) {
         if (current->right_ == nullptr) {
-          current->right_ = CreateNode(value);
-          // current->right_ = new node(value.first, value.second);
-          current->right_->parent_ = current;
+          node_type* new_node = CreateNode(value);
+          current->right_ = new_node;
+          new_node->parent_ = current;
           ++size_;
-          InsertFixup(current->right_);
-          return {current->right_, true};
+          InsertFixup(new_node);
+          return {new_node, true};
         }
         current = current->right_;
       } else {
         // Instead of returning {current, false} for duplicates:
         if (current->right_ == nullptr) {
-          current->right_ = CreateNode(value);
-          current->right_->parent_ = current;
+          node_type* new_node = CreateNode(value);
+          current->right_ = new_node;
+          new_node->parent_ = current;
           ++size_;
-          InsertFixup(current->right_);
-          return {current->right_, true};
+          InsertFixup(new_node);
+          return {new_node, true};
         }
         current = current->right_;  // Continue to right subtree for duplicate
       }
