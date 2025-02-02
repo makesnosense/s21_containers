@@ -20,6 +20,7 @@ class set {
  public:
   using key_type = Key;
   using value_type = Key;
+  using node_type = Node<Key>;
   using iterator = RedBlackTreeIterator<Key, false, void>;
   using const_iterator = RedBlackTreeIterator<Key, true, void>;
   using size_type = std::size_t;
@@ -27,19 +28,19 @@ class set {
   set() : tree_{} {}
   set(std::initializer_list<value_type> const& items) : tree_{} {
     for (const auto& i : items) {
-      tree_.insert(i);
+      insert(i);
     }
   }
   set(const set& other) : tree_{} {
     for (auto it = other.begin(); it != other.end(); ++it) {
-      tree_.insert(*it);
+      insert(*it);
     }
   }
   set(set&& other) noexcept : tree_(std::move(other.tree_)) {}
 
   explicit set(size_type size, value_type value) : tree_{} {
     for (size_type i{0}; i < size; i++) {
-      tree_.insert(value);
+      insert(value);
     }
   }
 
@@ -68,8 +69,14 @@ class set {
   void clear() { tree_.clear(); }
 
   std::pair<iterator, bool> insert(const value_type& value) {
-    auto result = tree_.insert(value);
-    return {iterator(result.first), result.second};
+    // let's try to find first
+    node_type* found{tree_.FindNode(value)};
+    if (found) {
+      return {iterator(found), false};
+    } else {
+      auto result = tree_.insert(value);
+      return {iterator(result.first), result.second};
+    }
   }
 
   iterator erase(iterator pos) { return tree_.erase(pos); }
@@ -78,7 +85,7 @@ class set {
 
   void merge(set& other) {
     for (auto it = other.begin(); it != other.end();) {
-      tree_.insert(*it);
+      insert(*it);
       it = other.erase(it);
     }
   }

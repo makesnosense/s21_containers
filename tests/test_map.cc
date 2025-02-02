@@ -21,6 +21,7 @@ class MapTest : public testing::Test {
       : empty_stl_map_(),
         empty_s21_map_(),
         stl_map_{{key_type(103), mapped_type("a")},
+                 {key_type(103), mapped_type("dup")},
                  {key_type(53), mapped_type("b")},
                  {key_type(73), mapped_type("c")},
                  {key_type(106), mapped_type("d")},
@@ -29,6 +30,7 @@ class MapTest : public testing::Test {
                  {key_type(46), mapped_type("g")},
                  {key_type(104), mapped_type("h")}},
         s21_map_{{key_type(103), mapped_type("a")},
+                 {key_type(103), mapped_type("dup")},
                  {key_type(53), mapped_type("b")},
                  {key_type(73), mapped_type("c")},
                  {key_type(106), mapped_type("d")},
@@ -402,3 +404,16 @@ TYPED_TEST(MapTest, Find_InEmptyMap) {
   EXPECT_EQ(s21_it, this->empty_s21_map_.end());
   EXPECT_EQ(std_it, this->empty_stl_map_.end());
 }
+
+// TEST(MapTest, meow) {
+// #include <set>
+//   std::multiset meow{1, 2, 3, 4, 5, 5, 5, 5, 5, 5,
+//                      5, 6, 7, 8, 9, 9, 9, 9, 9, 9};
+
+//   meow.erase(5);
+//   meow.erase(9);
+//   // Forward iteration
+//   for (auto it = meow.begin(); it != meow.end(); ++it) {
+//     std::cout << *it << ' ';
+//   }
+// }

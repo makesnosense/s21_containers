@@ -18,9 +18,10 @@ namespace s21 {
 template <typename Key, typename T>
 class map {
  public:
-  using value_type = typename Node<Key, T>::value_type;
+  using value_type = std::pair<const Key, T>;
   using key_type = Key;
   using mapped_type = T;
+  using node_type = Node<Key, T>;
   using iterator = RedBlackTreeIterator<Key, false, T>;
   using const_iterator = RedBlackTreeIterator<Key, true, T>;
   using size_type = std::size_t;
@@ -29,13 +30,13 @@ class map {
 
   map(std::initializer_list<value_type> const& items) : tree_{} {
     for (const auto& item : items) {
-      tree_.insert(item);
+      insert(item);
     }
   }
 
   map(const map& m) : tree_{} {
     for (auto it = m.begin(); it != m.end(); ++it) {
-      tree_.insert(*it);
+      insert(*it);
     }
   }
   map(map&& m) noexcept : tree_(std::move(m.tree_)) {}
@@ -85,21 +86,32 @@ class map {
   void clear() { tree_.clear(); }
 
   std::pair<iterator, bool> insert(const value_type& value) {
-    auto result = tree_.insert(value);
-    return {iterator(result.first), result.second};
+    key_type key = value.first;
+    node_type* found{tree_.FindNode(key)};
+    if (found) {
+      return {iterator(found), false};
+    } else {
+      auto result = tree_.insert(value);
+      return {iterator(result.first), result.second};
+    }
   }
 
   std::pair<iterator, bool> insert(const key_type& key, const T& obj) {
-    value_type value{key, obj};
-    auto result = tree_.insert(value);
-    return {iterator(result.first), result.second};
+    node_type* found{tree_.FindNode(key)};
+    if (found) {
+      return {iterator(found), false};
+    } else {
+      value_type value{key, obj};
+      auto result = tree_.insert(value);
+      return {iterator(result.first), result.second};
+    }
   }
 
   iterator erase(iterator pos) { return tree_.erase(pos); }
   void swap(map& other) noexcept { std::swap(tree_, other.tree_); }
   void merge(map& other) {
     for (auto it = other.begin(); it != other.end();) {
-      tree_.insert(*it);
+      insert(*it);
       it = other.erase(it);
     }
   }
@@ -124,7 +136,7 @@ class map {
     return it1 == end() && it2 == other.end();
   }
 
- private:
+ public:
   RedBlackTree<Key, mapped_type> tree_;
 };
 }  // namespace s21
