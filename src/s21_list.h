@@ -9,6 +9,7 @@
 namespace s21 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpadded"
+
 template <typename T>
 struct Node {
   using value_type = T;
@@ -22,10 +23,12 @@ struct Node {
   Node& operator=(const Node&) = default;
   ~Node() = default;
 };
+
 #pragma GCC diagnostic pop
 
 template <typename T, bool is_const>
 class ListIterator;
+
 template <typename T>
 class list {
  public:
@@ -57,7 +60,7 @@ class list {
         new_node->pre_ = tail_;
         tail_ = new_node;
       }
-      size_++;
+      ++size_;
     }
   }
 
@@ -72,7 +75,7 @@ class list {
         new_node->pre_ = tail_;
         tail_ = new_node;
       }
-      size_++;
+      ++size_;
     }
   }
 
@@ -106,9 +109,11 @@ class list {
         new_node->pre_ = tail_;
         tail_ = new_node;
       }
-      size_++;
+      ++size_;
     }
   }
+
+  ~list() { clear(); };
 
   iterator insert(iterator pos, const_reference value) {
     node_type* new_node = new node_type(value);
@@ -136,7 +141,7 @@ class list {
       current_node->pre_ = new_node;
     }
 
-    size_++;
+    ++size_;
     return iterator(new_node);
   }
 
@@ -414,7 +419,7 @@ class list {
       head_ = new_node;
     }
 
-    size_++;
+    ++size_;
   }
 
   void push_back(const_reference value) {
@@ -428,7 +433,7 @@ class list {
       tail_ = new_node;
     }
 
-    size_++;
+    ++size_;
   }
 
   void reverse() {
@@ -484,11 +489,8 @@ class list {
   }
 
   reference front() { return head_->data_; }
-
   reference back() { return tail_->data_; }
-
   size_type size() const { return size_; }
-
   bool empty() const noexcept { return size_ == 0; }
 
   T& operator[](size_type index) {
@@ -582,8 +584,6 @@ class list {
     tail_ = nullptr;
     size_ = 0;
   }
-
-  ~list() { clear(); };
 
  private:
   node_type* head_;
@@ -719,7 +719,7 @@ class ListIterator {
   ListIterator operator+(int n) const {
     ListIterator temp = *this;
     for (int i = 0; i < n && temp.current_ != nullptr; ++i) {
-      temp++;
+      ++temp;
     }
     return temp;
   }
