@@ -158,8 +158,10 @@ TYPED_TEST(MapTest, InsertManyDuplicates) {
 
   EXPECT_NE(results.size(), values.size());
 
-  for (const auto& value : {1, 2, 5, 4}) {
-    EXPECT_TRUE(this->empty_s21_map_.contains(value));
+  std::vector<TypeParam> result = {{1, "a"}, {2, "d"}, {4, "j"}, {5, "k"}};
+
+  for (const auto& value : result) {
+    EXPECT_TRUE(this->empty_s21_map_.contains(value.first));
   }
 
   EXPECT_TRUE(results[0].second);
