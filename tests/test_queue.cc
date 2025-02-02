@@ -124,7 +124,7 @@ TEST(QueueTest, QueueFunctionality) {
   EXPECT_TRUE(queue.empty());
 }
 
-TEST(QueueTest, InsertManyBackFunctionality) {
+TEST(QueueTest, InsertManyBack) {
   s21::queue<int> queue;
 
   queue.insert_many_back(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
