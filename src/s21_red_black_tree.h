@@ -527,9 +527,7 @@ class RedBlackTree {
       if (IsInnerChild(us)) {
         InsertFixupTreatInnerChild(us);
       } else {
-        print_tree(*this);
         InsertFixupTreatOuterChild(us);
-        print_tree(*this);
       }
     }
     // Ensure root remains black after any modifications
