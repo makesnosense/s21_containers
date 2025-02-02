@@ -168,26 +168,21 @@ TYPED_TEST(MapTest, InsertManyDuplicates) {
   EXPECT_TRUE(results[3].second);
 }
 
-TEST(MapTest, OperatorSqaerScobki) {
+TYPED_TEST(MapTest, OperatorSqaerScobki) {
   s21::map<int, std::string> empty_s21_map_;
-  empty_s21_map_[int{2}] = "a";
-  empty_s21_map_[int{2}] = "b";
-  empty_s21_map_[int{4}] = "c";
-  empty_s21_map_[int{3}] = "d";
+  this->empty_s21_map_[int{2}] = "a";
+  this->empty_s21_map_[int{2}] = "b";
+  this->empty_s21_map_[int{4}] = "c";
+  this->empty_s21_map_[int{3}] = "d";
 
-  // this->empty_stl_map_[2] = "a";
-  // this->empty_stl_map_[2] = "b";
-  // this->empty_stl_map_[4] = "c";
-  // this->empty_stl_map_[3] = "d";
+  std::vector<TypeParam> values = {{2, "b"}, {3, "d"}, {4, "c"}};
+  auto s21_it = this->empty_s21_map_.begin();
+  for (size_t i = 0; i < values.size(); i++) {
+    EXPECT_EQ((*s21_it).second, values[i].second);
+    *s21_it++;
+  }
 
-  // std::vector<TypeParam> values = {{2, "b"}, {4, "c"}, {3, "d"}};
-  // auto s21_it = this->empty_s21_map_.begin();
-  // for (size_t i = 0; i < values.size(); i++) {
-  //   EXPECT_EQ((*s21_it).second, values[i].second);
-  //   *s21_it++;
-  // }
-
-  // EXPECT_EQ(this->empty_s21_map_.size(), size_t{3});
+  EXPECT_EQ(this->empty_s21_map_.size(), size_t{3});
 }
 
 // // Element access tests
