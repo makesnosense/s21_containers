@@ -85,5 +85,46 @@ TYPED_TEST(ArrayTest, OutOfRangeAccess) {
   EXPECT_THROW(arr[5], std::logic_error);
 }
 
+// iterator
+TYPED_TEST(ArrayTest, ComparisonOperators) {
+  s21::array<TypeParam, 5> arr = {TypeParam(55), TypeParam(66), TypeParam(77)};
+  typename s21::array<TypeParam, 5>::iterator iter1{arr.end()};
+  typename s21::array<TypeParam, 5>::iterator iter2{arr.end()};
+
+  --iter2;
+  --iter2;
+
+  EXPECT_TRUE(iter1 > iter2);
+  EXPECT_FALSE(iter2 > iter1);
+  EXPECT_TRUE(iter2 < iter1);
+  EXPECT_FALSE(iter1 < iter2);
+  EXPECT_TRUE(iter1 >= iter1);
+  EXPECT_TRUE(iter1 >= iter2);
+  EXPECT_FALSE(iter2 >= iter1);
+  EXPECT_TRUE(iter2 <= iter2);
+  EXPECT_TRUE(iter2 <= iter1);
+  EXPECT_FALSE(iter1 <= iter2);
+}
+
+TYPED_TEST(ArrayTest, ComparisonOperators2) {
+  s21::array<TypeParam, 5> arr = {TypeParam(55), TypeParam(66), TypeParam(77)};
+  typename s21::array<TypeParam, 5>::const_iterator iter1(arr.end());
+  typename s21::array<TypeParam, 5>::const_iterator iter2(arr.end());
+
+  --iter2;
+  --iter2;
+
+  EXPECT_TRUE(iter1 > iter2);
+  EXPECT_FALSE(iter2 > iter1);
+  EXPECT_TRUE(iter2 < iter1);
+  EXPECT_FALSE(iter1 < iter2);
+  EXPECT_TRUE(iter1 >= iter1);
+  EXPECT_TRUE(iter1 >= iter2);
+  EXPECT_FALSE(iter2 >= iter1);
+  EXPECT_TRUE(iter2 <= iter2);
+  EXPECT_TRUE(iter2 <= iter1);
+  EXPECT_FALSE(iter1 <= iter2);
+}
+
 #if 0
 #endif
