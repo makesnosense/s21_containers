@@ -93,21 +93,21 @@ class map {
     key_type key = value.first;
     node_type* found{tree_.FindNode(key)};
     if (found) {
-      return {iterator(found), false};
+      return {iterator(found, &tree_), false};
     } else {
       auto result = tree_.insert(value);
-      return {iterator(result.first), result.second};
+      return {iterator(result.first, &tree_), result.second};
     }
   }
 
   std::pair<iterator, bool> insert(const key_type& key, const T& obj) {
     node_type* found{tree_.FindNode(key)};
     if (found) {
-      return {iterator(found), false};
+      return {iterator(found, &tree_), false};
     } else {
       value_type value{key, obj};
       auto result = tree_.insert(value);
-      return {iterator(result.first), result.second};
+      return {iterator(result.first, &tree_), result.second};
     }
   }
 
@@ -137,10 +137,12 @@ class map {
     }
   }
 
-  iterator find(const key_type& key) { return iterator(tree_.FindNode(key)); }
+  iterator find(const key_type& key) {
+    return iterator(tree_.FindNode(key), &tree_);
+  }
 
   bool contains(const key_type& key) {
-    return iterator(tree_.FindNode(key)) != tree_.end();
+    return iterator(tree_.FindNode(key), &tree_) != tree_.end();
   }
 
   bool operator==(const map& other) const {

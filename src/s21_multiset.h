@@ -73,7 +73,7 @@ class multiset {
   // modified insert - always returns iterator, no bool needed
   iterator insert(const value_type& value) {
     auto result = tree_.insert(value);
-    return iterator(result.first);
+    return iterator(result.first, &tree_);
   }
 
   iterator erase(iterator pos) { return tree_.erase(pos); }
@@ -108,7 +108,9 @@ class multiset {
   }
 
   // Returns first occurrence
-  iterator find(const key_type& key) { return iterator(tree_.FindNode(key)); }
+  iterator find(const key_type& key) {
+    return iterator(tree_.FindNode(key), &tree_);
+  }
 
   // Returns range of elements matching key
   std::pair<iterator, iterator> equal_range(const key_type& key) {
