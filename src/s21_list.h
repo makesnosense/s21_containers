@@ -522,22 +522,31 @@ class list {
 
   void reverse() {
     constexpr size_type min_size_for_reverse{2};
+
     if (size_ < min_size_for_reverse) return;
 
-    node_type* current = head_;
-    node_type* prev = nullptr;
-    node_type* next = nullptr;
+    tail_ = head_;
+    node_type* previous{end_sentinel_};
+    node_type* current{head_};
+    node_type* next{nullptr};
 
-    while (current) {
+    end_sentinel_->pre_ = current;
+
+    while (current != end_sentinel_) {
+      // saving next because we'll break link upon reverse
       next = current->next_;
-      current->next_ = prev;
+
+      // reversing pointers
+      current->next_ = previous;
       current->pre_ = next;
-      prev = current;
+
+      // shifting variables forward
+      previous = current;
       current = next;
     }
 
-    head_ = tail_;
-    tail_ = current;
+    // after we reach end_sentinel at current, previous is our head
+    head_ = previous;
   }
 
   void pop_front() {
