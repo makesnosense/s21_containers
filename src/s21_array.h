@@ -11,14 +11,14 @@ template <typename T, bool is_const>
 class ArrayIterator;
 template <typename T, std::size_t N>
 class array {
+ public:
   using value_type = T;
   using reference = T&;
   using const_reference = const T&;
   using size_type = std::size_t;
-  using iterator = s21::ArrayIterator<T, false>;
-  using const_iterator = s21::ArrayIterator<T, true>;
+  using iterator = ArrayIterator<T, false>;
+  using const_iterator = ArrayIterator<T, true>;
 
- public:
   constexpr array() {
     for (size_type i = 0; i < N; ++i) {
       data_[i] = T();
@@ -121,6 +121,8 @@ class ArrayIterator {
 
  public:
   explicit ArrayIterator(pointer other) : ptr_(other) {}
+
+  operator pointer() const { return ptr_; }
 
   reference operator*() { return *ptr_; }
 
