@@ -173,9 +173,6 @@ class deque {
 
     --front_element_index_;
 
-    // std::cout << "front_chunk: " << front_chunk_index_ << '\n'
-    //           << "front_element_index_: " << front_element_index_ << '\n'
-    //           << "value: " << value << '\n';
     map_[front_chunk_index_]->data_[front_element_index_] = value;
 
     ++size_;
@@ -188,7 +185,6 @@ class deque {
       }
 
       if (map_[back_chunk_index_] == nullptr) {
-        // ++back_chunk_index_;
         AddChunkAt(back_chunk_index_);
       }
       back_vacant_index_ = 0;
@@ -363,10 +359,9 @@ class DequeIterator {
 
   template <typename U, bool other_is_const>
   friend class DequeIterator;
-  /////////
+
   using container_type = std::conditional_t<is_const, const deque<T>, deque<T>>;
   using container_pointer = container_type*;
-  /////////
 
   DequeIterator() = default;
 
