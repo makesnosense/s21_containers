@@ -22,6 +22,11 @@ class stack {
   stack(stack &&other) noexcept : data_(std::move(other.data_)) {}
   stack(std::initializer_list<T> const &init) : stack(init) {}
 
+  template <typename... Args>
+  void insert_many_back(Args &&...args) {
+    (push(std::forward<Args>(args)), ...);
+  }
+
   void push(const_reference value) { data_.push_front(value); }
 
   void pop() {

@@ -12,29 +12,78 @@
 template <typename T>
 class ArrayTest : public testing::Test {
  protected:
-  ArrayTest() : empty_stl_array_(), empty_s21_array_() {};
-
-  std::array<T, 5> empty_stl_array_;
-  s21::array<T, 5> empty_s21_array_;
+  ArrayTest() {};
 };
+
 using TestedTypes = ::testing::Types<char, int, double, DummyObject>;
 TYPED_TEST_SUITE(ArrayTest, TestedTypes, );
 
-TEST(ArrayTest, array) {
-  s21::array<int, 5> myArray;
-
-  myArray.fill(0);
-
-  myArray[0] = 1;
-  myArray[1] = 2;
-  myArray[2] = 3;
-
-  myArray.print();
-  myArray.empty();
-  myArray.max_size();
-
-  EXPECT_TRUE(true);
-  EXPECT_EQ(1, 1);
+TYPED_TEST(ArrayTest, DefaultConstructor) {
+  s21::array<TypeParam, 5> arr;
+  EXPECT_EQ(arr.size(), size_t{5});
 }
+
+TYPED_TEST(ArrayTest, FillAndAccess) {
+  s21::array<TypeParam, 5> arr;
+  arr.fill(TypeParam());
+
+  for (size_t i = 0; i < arr.size(); ++i) {
+    EXPECT_EQ(arr[i], TypeParam());
+  }
+  arr[0] = TypeParam(1);
+  arr[1] = TypeParam(2);
+
+  EXPECT_EQ(arr[0], TypeParam(1));
+  EXPECT_EQ(arr[1], TypeParam(2));
+}
+
+TYPED_TEST(ArrayTest, AtMethod) {
+  s21::array<TypeParam, 5> arr;
+  arr.fill(TypeParam(10));
+
+  EXPECT_EQ(arr.at(0), TypeParam(10));
+  EXPECT_EQ(arr.at(4), TypeParam(10));
+}
+
+TYPED_TEST(ArrayTest, FrontAndBack) {
+  s21::array<TypeParam, 5> arr;
+  arr.fill(TypeParam(20));
+
+  EXPECT_EQ(arr.front(), TypeParam(20));
+  EXPECT_EQ(arr.back(), TypeParam(20));
+}
+
+TYPED_TEST(ArrayTest, Swap) {
+  s21::array<TypeParam, 5> arr1;
+  s21::array<TypeParam, 5> arr2;
+
+  arr1.fill(TypeParam(1));
+  arr2.fill(TypeParam(2));
+
+  arr1.swap(arr2);
+
+  for (size_t i = 0; i < arr1.size(); ++i) {
+    EXPECT_EQ(arr1[i], TypeParam(2));
+    EXPECT_EQ(arr2[i], TypeParam(1));
+  }
+}
+
+TYPED_TEST(ArrayTest, InitializerListConstructor) {
+  s21::array<TypeParam, 5> arr = {TypeParam(1), TypeParam(2), TypeParam(3)};
+
+  EXPECT_EQ(arr[0], TypeParam(1));
+  EXPECT_EQ(arr[1], TypeParam(2));
+  EXPECT_EQ(arr[2], TypeParam(3));
+
+  EXPECT_EQ(arr[3], TypeParam());
+  EXPECT_EQ(arr[4], TypeParam());
+}
+
+TYPED_TEST(ArrayTest, OutOfRangeAccess) {
+  s21::array<TypeParam, 5> arr;
+
+  EXPECT_THROW(arr[5], std::logic_error);
+}
+
 #if 0
 #endif

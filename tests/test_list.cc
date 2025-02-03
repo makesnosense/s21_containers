@@ -65,11 +65,10 @@ TYPED_TEST(ListTest, max_size) {
 TYPED_TEST(ListTest, reverse) {
   this->s21_list_.reverse();
   this->stl_list_.reverse();
-  auto it2 = this->stl_list_.begin();
-  for (auto it = this->s21_list_.begin(); it != this->s21_list_.end(); ++it) {
-    EXPECT_EQ(*it, *it2);
-
-    ++it2;
+  auto stl_it = this->stl_list_.begin();
+  for (auto s21_it = this->s21_list_.begin(); s21_it != this->s21_list_.end();
+       ++s21_it, ++stl_it) {
+    EXPECT_EQ(*s21_it, *stl_it);
   }
 }
 
@@ -130,12 +129,16 @@ TYPED_TEST(ListTest, unique) {
 
   EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
 }
+
 TYPED_TEST(ListTest, CopyAssignmentOperator) {
   this->s21_list_ = this->empty_s21_list_;
   this->stl_list_ = this->empty_stl_list_;
 
   auto stl_it = this->empty_stl_list_.begin();
-  for (auto i = this->empty_s21_list_.begin(); i != this->empty_s21_list_.end();
+  // auto stl_it_end = this->empty_s21_list_.end();
+
+  // std::cout << "\n\n\n\n" << *stl_it_end << "\n\n\n\n";
+  for (auto i = this->empty_stl_list_.begin(); i != this->empty_stl_list_.end();
        ++i) {
     EXPECT_EQ(*i, *stl_it);
 
@@ -144,6 +147,7 @@ TYPED_TEST(ListTest, CopyAssignmentOperator) {
 
   EXPECT_EQ(this->empty_s21_list_.size(), this->s21_list_.size());
 }
+
 TYPED_TEST(ListTest, swap) {
   this->s21_list_.swap(this->s21_list_for_swap);
   this->stl_list_.swap(this->stl_list_for_swap);
@@ -155,6 +159,7 @@ TYPED_TEST(ListTest, swap) {
     ++stl_it;
   }
 }
+
 TYPED_TEST(ListTest, merge) {
   this->s21_list_.merge(this->s21_list_for_swap);
   this->stl_list_.merge(this->stl_list_for_swap);
@@ -166,32 +171,37 @@ TYPED_TEST(ListTest, merge) {
     ++stl_it;
   }
 }
+
 TYPED_TEST(ListTest, insert) {
   auto stl_it = this->stl_list_.begin();
   auto s21_it = this->s21_list_.begin();
 
-  this->stl_list_.insert(stl_it, 2);
-  this->s21_list_.insert(s21_it, 2);
+  this->stl_list_.insert(stl_it, 70);
+  this->s21_list_.insert(s21_it, 70);
+  this->stl_list_.insert(stl_it, 80);
+  this->s21_list_.insert(s21_it, 80);
+  this->stl_list_.insert(stl_it, 90);
+  this->s21_list_.insert(s21_it, 90);
   stl_it = this->stl_list_.begin();
-  for (auto i = this->s21_list_.begin(); i != this->s21_list_.end(); ++i) {
-    EXPECT_EQ(*i, *stl_it);
-
-    ++stl_it;
+  for (auto s21_it = this->s21_list_.begin(); s21_it != this->s21_list_.end();
+       ++s21_it, ++stl_it) {
+    EXPECT_EQ(*s21_it, *stl_it);
   }
 }
+
 TYPED_TEST(ListTest, copy) {
   EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
 }
-TYPED_TEST(ListTest, movedList) {
-  s21::list<int> originalList;
-  originalList.push_back(1);
-  originalList.push_back(2);
-  originalList.push_back(3);
 
-  s21::list<int> movedList(std::move(originalList));
+TYPED_TEST(ListTest, MovedList) {
+  s21::list<TypeParam> original_list;
+  original_list.push_back(70);
+  original_list.push_back(72);
+  original_list.push_back(73);
 
-  EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
+  s21::list<TypeParam> moved_list(std::move(original_list));
 }
+
 TYPED_TEST(ListTest, splice) {
   this->empty_s21_list_.push_back(1);
   this->empty_s21_list_.push_back(2);
@@ -224,6 +234,7 @@ TEST(ListTest, all_of) {
 
   EXPECT_EQ(s21_all_even, stl_all_even);
 }
+
 TEST(ListTest, any_of) {
   s21::list<int> s21_numbers_list{2, 4, 6, 8, 11};
   std::list<int> stl_numbers_list{2, 4, 6, 8, 11};
@@ -236,6 +247,7 @@ TEST(ListTest, any_of) {
                   [](int n) { return n % 2 == 0; });
   EXPECT_EQ(s21_all_even, stl_all_even);
 }
+
 TEST(ListTest, none_of) {
   s21::list<int> s21_numbers_list{2, 4, 6, 8, 11};
   std::list<int> stl_numbers_list{2, 4, 6, 8, 11};
@@ -248,6 +260,7 @@ TEST(ListTest, none_of) {
                    [](int n) { return n < 0; });
   EXPECT_EQ(s21_all_even, stl_all_even);
 }
+
 TEST(ListTest, for_each) {
   s21::list<int> s21_numbers_list{1, 2, 3, 4, 5};
   std::list<int> stl_numbers_list{1, 2, 3, 4, 5};
@@ -259,6 +272,7 @@ TEST(ListTest, for_each) {
                 [](int& n) { ++n; });
   EXPECT_TRUE(s21_numbers_list == stl_numbers_list);
 }
+
 TEST(ListTest, for_each_n) {
   s21::list<int> s21_numbers_list{1, 2, 3, 4, 5};
   std::list<int> stl_numbers_list{1, 2, 3, 4, 5};
@@ -268,6 +282,7 @@ TEST(ListTest, for_each_n) {
 
   EXPECT_TRUE(s21_numbers_list == stl_numbers_list);
 }
+
 TEST(ListTest, count) {
   s21::list<int> s21_numbers_list{1, 2, 3, 4, 5};
   std::list<int> stl_numbers_list{1, 2, 3, 4, 5};
@@ -279,6 +294,7 @@ TEST(ListTest, count) {
 
   EXPECT_EQ(s21_all_even, stl_all_even);
 }
+
 TEST(ListTest, count_if) {
   s21::list<int> s21_numbers_list{1, 2, 3, 4, 5};
   std::list<int> stl_numbers_list{1, 2, 3, 4, 5};
@@ -291,6 +307,7 @@ TEST(ListTest, count_if) {
 
   EXPECT_EQ(s21_all_even, stl_all_even);
 }
+
 TEST(ListTest, find) {
   s21::list<int> s21_numbers_list{1, 2, 3, 4, 5};
   std::list<int> stl_numbers_list{1, 2, 3, 4, 5};
@@ -301,6 +318,7 @@ TEST(ListTest, find) {
       std::find(stl_numbers_list.begin(), stl_numbers_list.end(), 3);
   EXPECT_EQ(*s21_all_even, *stl_all_even);
 }
+
 TEST(ListTest, find_if) {
   s21::list<int> s21_numbers_list{1, 3, 5, 7, 8, 10};
   std::list<int> stl_numbers_list{1, 3, 5, 7, 8, 10};
@@ -314,6 +332,7 @@ TEST(ListTest, find_if) {
 
   EXPECT_EQ(*s21_all_even, *stl_all_even);
 }
+
 TEST(ListTest, find_if_not) {
   s21::list<int> s21_numbers_list{1, 3, 5, 7, 8, 10};
   std::list<int> stl_numbers_list{1, 3, 5, 7, 8, 10};
@@ -327,6 +346,7 @@ TEST(ListTest, find_if_not) {
 
   EXPECT_EQ(*s21_all_even, *stl_all_even);
 }
+
 TEST(ListTest, find_end) {
   s21::list<int> s21_numbers_list{1, 2, 1, 2, 3, 4, 1, 2};
   s21::list<int> s21_numbers_list_end{1, 2};
@@ -342,6 +362,7 @@ TEST(ListTest, find_end) {
 
   EXPECT_EQ(*s21_all_even, *stl_all_even);
 }
+
 TEST(ListTest, find_first_of) {
   s21::list<char> s21_char_list{'f', 'c', 'e', 'd', 'b', 'a'};
   s21::list<char> s21_char_list_find{'D', 'F'};
@@ -359,6 +380,7 @@ TEST(ListTest, find_first_of) {
 
   EXPECT_EQ(*s21_all_even, *stl_all_even);
 }
+
 TEST(ListTest, adjacent_find) {
   s21::list<int> s21_numbers_list{1, 2, 3, 3, 5};
   std::list<int> stl_numbers_list{1, 2, 3, 3, 5};
@@ -369,6 +391,7 @@ TEST(ListTest, adjacent_find) {
       std::adjacent_find(stl_numbers_list.begin(), stl_numbers_list.end());
   EXPECT_EQ(*s21_all_even, *stl_all_even);
 }
+
 TEST(ListTest, search) {
   s21::list<int> s21_numbers_list{1, 2, 3, 4};
   std::list<int> stl_numbers_list{1, 2, 3, 4};
@@ -390,6 +413,7 @@ TEST(ListTest, search_n) {
 
   EXPECT_EQ(*s21_all_even, *stl_all_even);
 }
+
 TEST(ListTest, mismatch) {
   s21::list<int> s21_numbers_list{1, 2, 3, 4, 5};
   s21::list<int> s21_numbers_list_test{1, 2, 0, 4, 5};
@@ -400,6 +424,7 @@ TEST(ListTest, mismatch) {
 
   EXPECT_TRUE(*s21_all_even.first);
 }
+
 TEST(ListTest, equal) {
   s21::list<int> s21_numbers_list{1, 2, 3, 4, 5};
   s21::list<int> s21_numbers_list_equal{1, 2, 3, 4, 5};
@@ -420,6 +445,7 @@ TEST(ListTest, equal) {
                 std::equal(stl_numbers_list.begin(), stl_numbers_list.end(),
                            stl_numbers_list_not_equal.begin())));
 }
+
 TEST(ListTest, copyit) {
   s21::list<int> s21_numbers_list{1, 2, 3, 4, 5};
   s21::list<int> s21_numbers_list_copy(5);
@@ -448,17 +474,69 @@ TEST(ListTest, PopFrontLeak) {
   EXPECT_TRUE(list.empty());
   EXPECT_EQ(list.size(), size_t{0});
 }
-#if 0 
-TYPED_TEST(ListTest, begin) {
-  auto s21_it = this->s21_list_.begin();
-  auto stl_it = this->stl_list_.begin();
-  EXPECT_EQ(s21_it, stl_it);
+
+TEST(ListTest, insert_many) {
+  s21::list<int> s21_numbers_list;
+  s21_numbers_list.insert(s21_numbers_list.end(), 1);
+  s21_numbers_list.insert(s21_numbers_list.end(), 2);
+  s21_numbers_list.insert(s21_numbers_list.end(), 3);
+  int values_to_insert[] = {4, 5, 6};
+
+  auto it = s21_numbers_list.begin();
+  ++it;
+
+  s21_numbers_list.insert_many(it, values_to_insert[0], values_to_insert[1],
+                               values_to_insert[2]);
+
+  EXPECT_EQ(s21_numbers_list.size(), size_t{6});
+
+  auto it_check = s21_numbers_list.begin();
+  EXPECT_EQ(*it_check++, 1);
+  EXPECT_EQ(*it_check++, 4);
+  EXPECT_EQ(*it_check++, 5);
+  EXPECT_EQ(*it_check++, 6);
+  EXPECT_EQ(*it_check++, 2);
+  EXPECT_EQ(*it_check++, 3);
 }
 
-TYPED_TEST(ListTest, end) {
-  auto s21_it = this->s21_list_.end();
-  auto stl_it = this->stl_list_.end();
-  (void)stl_it;
-  EXPECT_EQ(1, 1);
+TEST(ListTest, insert_many_back) {
+  s21::list<int> s21_numbers_list;
+  s21_numbers_list.insert(s21_numbers_list.end(), 1);
+  s21_numbers_list.insert(s21_numbers_list.end(), 2);
+  s21_numbers_list.insert(s21_numbers_list.end(), 3);
+  int values_to_insert[] = {4, 5, 6};
+
+  s21_numbers_list.insert_many_back(values_to_insert[0], values_to_insert[1],
+                                    values_to_insert[2]);
+
+  EXPECT_EQ(s21_numbers_list.size(), size_t{6});
+
+  auto it_check = s21_numbers_list.begin();
+  EXPECT_EQ(*it_check++, 1);
+  EXPECT_EQ(*it_check++, 2);
+  EXPECT_EQ(*it_check++, 3);
+  EXPECT_EQ(*it_check++, 4);
+  EXPECT_EQ(*it_check++, 5);
+  EXPECT_EQ(*it_check++, 6);
 }
-#endif
+
+TEST(ListTest, insert_many_front) {
+  s21::list<int> s21_numbers_list;
+  s21_numbers_list.insert(s21_numbers_list.end(), 1);
+  s21_numbers_list.insert(s21_numbers_list.end(), 2);
+  s21_numbers_list.insert(s21_numbers_list.end(), 3);
+  int values_to_insert[] = {4, 5, 6};
+
+  s21_numbers_list.insert_many_front(values_to_insert[0], values_to_insert[1],
+                                     values_to_insert[2]);
+
+  EXPECT_EQ(s21_numbers_list.size(), size_t{6});
+
+  auto it_check = s21_numbers_list.begin();
+  EXPECT_EQ(*it_check++, 4);
+  EXPECT_EQ(*it_check++, 5);
+  EXPECT_EQ(*it_check++, 6);
+  EXPECT_EQ(*it_check++, 1);
+  EXPECT_EQ(*it_check++, 2);
+  EXPECT_EQ(*it_check++, 3);
+}

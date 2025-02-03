@@ -7,58 +7,172 @@
 #include <stdexcept>
 
 namespace s21 {
-
+template <typename T, bool is_const>
+class ArrayIterator;
 template <typename T, std::size_t N>
 class array {
   using value_type = T;
   using reference = T&;
   using const_reference = const T&;
   using size_type = std::size_t;
-
- private:
-  value_type data[N];
+  using iterator = s21::ArrayIterator<T, false>;
+  using const_iterator = s21::ArrayIterator<T, true>;
 
  public:
-  array() {
+  constexpr array() {
     for (size_type i = 0; i < N; ++i) {
-      data[i] = T();
+      data_[i] = T();
     }
   }
-
-  reference operator[](size_type index) {
+  constexpr array(array&& other) noexcept {
+    for (size_type i = 0; i < N; ++i) {
+      data_[i] = std::move(other.data_[i]);
+    }
+  }
+  constexpr array(const array& other) {
+    for (size_type i = 0; i < N; ++i) {
+      data_[i] = other.data_[i];
+    }
+  }
+  constexpr array(std::initializer_list<value_type> const& items) {
+    if (items.size() > N) {
+      throw std::out_of_range("Index out of range");
+    }
+    std::copy(items.begin(), items.end(), data_);
+    for (size_type i = items.size(); i < N; ++i) {
+      data_[i] = T();
+    }
+  }
+  constexpr reference operator[](size_type index) {
     if (index >= N) {
-      throw std::logic_error("Index out of range");
+      throw std::out_of_range("Index out of range");
     }
-    return data[index];
+    return data_[index];
   }
 
-  const_reference operator[](size_type index) const {
+  constexpr const_reference operator[](size_type index) const {
     if (index >= N) {
-      throw std::logic_error("Index out of range");
+      throw std::out_of_range("Index out of range");
     }
-    return data[index];
+    return data_[index];
+  }
+  constexpr array& operator=(array&& other) noexcept {
+    if (this != &other) {
+      for (size_type i = 0; i < N; ++i) {
+        data_[i] = std::move(other.data_[i]);
+      }
+    }
+    return *this;
   }
 
-  size_type size() const { return N; }
-  bool empty() { return N == 0; }
+  constexpr size_type size() const { return N; }
+  constexpr bool empty() { return N == 0; }
 
-  void fill(const T& value) {
-    for (size_type i = 0; i < N; ++i) {
-      data[i] = value;
+  constexpr void fill(const T& value) {
+    for (size_type i{0}; i < N; ++i) {
+      data_[i] = value;
+    }
+  }
+  constexpr reference at(size_type pos) { return data_[pos]; }
+  constexpr reference front() {
+    if (N == 0) {
+      throw std::out_of_range("Index out of range");
+    }
+    return data_[0];
+  }
+  constexpr reference back() {
+    if (N == 0) {
+      throw std::out_of_range("Index out of range");
+    }
+    return data_[N - 1];
+  }
+
+  constexpr void swap(array& other) {
+    for (size_type i{0}; i < N; ++i) {
+      std::swap(data_[i], other.data_[i]);
     }
   }
 
-  void print() const {
-    for (size_type i = 0; i < N; ++i) {
-      std::cout << data[i] << " ";
-    }
-    std::cout << std::endl;
-  }
-  size_type max_size() {
+  constexpr size_type max_size() {
     return (std::numeric_limits<size_type>::max() / sizeof(value_type));
   }
+  iterator begin() { return iterator(data_); }
 
+  iterator end() { return iterator(data_ + N); }
+  iterator data() { return iterator(data_); }
   ~array() = default;
+
+ private:
+  value_type data_[N];
+};
+
+template <typename T, bool is_const>
+class ArrayIterator {
+ public:
+  using value_type = T;
+  using reference = std::conditional_t<is_const, const T&, T&>;
+  using pointer = std::conditional_t<is_const, const T*, T*>;
+  using difference_type = std::ptrdiff_t;
+  using iterator_category = std::random_access_iterator_tag;
+
+ public:
+  explicit ArrayIterator(pointer other) : ptr_(other) {}
+
+  reference operator*() { return *ptr_; }
+
+  pointer operator->() { return ptr_; }
+
+  ArrayIterator& operator++() {
+    ++ptr_;
+    return *this;
+  }
+  ArrayIterator operator++(int) {
+    ArrayIterator temp = *this;
+    ++ptr_;
+    return temp;
+  }
+
+  ArrayIterator& operator--() {
+    --ptr_;
+    return *this;
+  }
+
+  ArrayIterator operator--(int) {
+    ArrayIterator temp = *this;
+    --ptr_;
+    return temp;
+  }
+
+  ArrayIterator operator+(difference_type n) const {
+    return ArrayIterator(ptr_ + n);
+  }
+
+  ArrayIterator operator-(difference_type n) const {
+    return ArrayIterator(ptr_ - n);
+  }
+
+  bool operator==(const ArrayIterator& other) const {
+    return ptr_ == other.ptr_;
+  }
+
+  bool operator!=(const ArrayIterator& other) const {
+    return ptr_ != other.ptr_;
+  }
+
+  bool operator<(const ArrayIterator& other) const { return ptr_ < other.ptr_; }
+
+  bool operator<=(const ArrayIterator& other) const {
+    return ptr_ <= other.ptr_;
+  }
+
+  bool operator>(const ArrayIterator& other) const { return ptr_ > other.ptr_; }
+
+  bool operator>=(const ArrayIterator& other) const {
+    return ptr_ >= other.ptr_;
+  }
+
+ private:
+  pointer ptr_;
 };
 
 }  // namespace s21
