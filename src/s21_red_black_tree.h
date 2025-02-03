@@ -1,10 +1,11 @@
+#ifndef S21_RED_BLACK_TREE_H
+#define S21_RED_BLACK_TREE_H
+
 #include <cstddef>
 #include <cstdint>
 #include <iostream>
 #include <type_traits>
 #include <utility>
-
-#include "s21_base.h"
 
 namespace s21 {
 
@@ -31,9 +32,10 @@ class Node {
   // Constructor for Map case
   Node(const key_type& key, const mapped_type& value) : data_(key, value) {}
 
-  Node<Key, T>(const s21::Node<Key, T>&) = delete;
-
+  Node(const Node<Key, T>& other) = delete;
+  Node(Node<Key, T>&& other) = delete;
   Node& operator=(const Node& other) = delete;
+  Node& operator=(Node&&) = delete;
 
   const key_type& GetKey() const { return data_.first; }
   const mapped_type& GetValue() const { return data_.second; }
@@ -54,10 +56,21 @@ class Node<Key, void> {
 
   Node() = default;
 
-  Node<Key, void>(const s21::Node<Key, void>&) = delete;
-
   // Constructor for Set case
   explicit Node(const Key& key) : data_(key) {}
+
+  Node(const Node<Key, void>& other) = delete;
+
+  Node(Node&& other) noexcept
+      : data_(std::move(other.data_)),  // Will use Key's move constructor
+        left_(other.left_),
+        right_(other.right_),
+        parent_(other.parent_),
+        color_(other.color_) {
+    other.left_ = nullptr;
+    other.right_ = nullptr;
+    other.parent_ = nullptr;
+  }
 
   Node& operator=(const Node& other) = delete;
 
@@ -68,8 +81,10 @@ class Node<Key, void> {
 
 template <typename Key, typename T>
 class RedBlackTree;
+
 template <typename Key, bool is_const, typename T = void>
 class RedBlackTreeIterator;
+
 template <typename Key, typename T>
 void print_tree(const RedBlackTree<Key, T>& tree);
 
@@ -98,6 +113,7 @@ class RedBlackTree {
     other.root_ = nullptr;
     other.size_ = 0;
   }
+
   ~RedBlackTree() {
     DeleteSubtree(root_);
     root_ = nullptr;
@@ -112,10 +128,10 @@ class RedBlackTree {
     while (current->left_) {
       current = current->left_;
     }
-    return iterator(current);
+    return iterator(current, this);
   }
 
-  iterator end() { return iterator(nullptr); }
+  iterator end() { return iterator(nullptr, this); }
 
   size_type size() const { return size_; }
 
@@ -127,10 +143,10 @@ class RedBlackTree {
     while (current->left_) {
       current = current->left_;
     }
-    return const_iterator(current);
+    return const_iterator(current, this);
   }
 
-  const_iterator end() const { return const_iterator(nullptr); }
+  const_iterator end() const { return const_iterator(nullptr, this); }
 
   std::pair<node_type*, bool> insert(const value_type& value) {
     if (root_ == nullptr) {
@@ -146,28 +162,98 @@ class RedBlackTree {
     while (true) {
       if (inserted_value_key < current->GetKey()) {
         if (current->left_ == nullptr) {
-          current->left_ = CreateNode(value);
-          // current->left_ = new node(value.first, value.second);
-          current->left_->parent_ = current;
+          node_type* new_node = CreateNode(value);
+          current->left_ = new_node;
+          new_node->parent_ = current;
           ++size_;
-          InsertFixup(current->left_);
+          InsertFixup(new_node);
 
-          return {current->left_, true};
+          return {new_node, true};
         }
         current = current->left_;
-      } else if (inserted_value_key > current->GetKey()) {
+      } else if (inserted_value_key >= current->GetKey()) {
         if (current->right_ == nullptr) {
-          current->right_ = CreateNode(value);
-          // current->right_ = new node(value.first, value.second);
-          current->right_->parent_ = current;
+          node_type* new_node = CreateNode(value);
+          current->right_ = new_node;
+          new_node->parent_ = current;
           ++size_;
-          InsertFixup(current->right_);
-          return {current->right_, true};
+          InsertFixup(new_node);
+          return {new_node, true};
         }
         current = current->right_;
-      } else {
-        return {current, false};
       }
+    }
+  }
+
+  node_type* FindNode(const key_type& key) {
+    node_type* current{root_};
+    node_type* result{nullptr};
+
+    while (current) {
+      if (key < current->GetKey()) {
+        current = current->left_;
+      } else if (key > current->GetKey()) {
+        current = current->right_;
+      } else {
+        result = current;  // Found a match
+        // For multiset, continue searching left subtree
+        // to find first occurrence
+        current = current->left_;
+      }
+    }
+    return result;
+  }
+
+  iterator erase(iterator pos) {
+    iterator next{pos};
+    ++next;
+    RemoveNode(pos.current_);
+    return next;
+  }
+
+  size_type erase(const Key& key) {
+    size_type erased_elements{0};
+    node_type* target;
+    while ((target = FindNode(key)) != nullptr) {
+      RemoveNode(target);
+      ++erased_elements;
+    }
+    return erased_elements;
+  }
+
+  void clear() { DeleteSubtree(root_); }
+
+  bool empty() { return size_ == 0; }
+
+  node_type* get_root() const { return root_; }
+
+  RedBlackTree& operator=(const RedBlackTree&) = delete;
+
+  RedBlackTree& operator=(RedBlackTree&& other) noexcept {
+    if (this != &other) {
+      clear();
+      root_ = other.root_;
+      other.root_ = nullptr;
+      size_ = other.size_;
+    }
+    return *this;
+  }
+
+  node_type* GetMax(node_type* us) const {
+    node_type* current = us;
+    while (current->right_ != nullptr) {
+      current = current->right_;
+    }
+    return current;
+  }
+
+ private:
+  // Helper to get key from value_type
+  const key_type& ExtractKeyFromAmbiguousValue(const value_type& value) const {
+    if constexpr (std::is_same_v<T, void>) {
+      return value;  // For Set: value is the key
+    } else {
+      return value.first;  // For Map: value is a pair
     }
   }
 
@@ -234,80 +320,6 @@ class RedBlackTree {
 
     if (us_is_root) {
       root_ = left_child;
-    }
-  }
-
-  node_type* FindNode(const key_type& key) {
-    if (root_ == nullptr) {
-      return nullptr;
-    }
-
-    node_type* current{root_};
-    while (true) {
-      if (key < current->GetKey()) {
-        if (current->left_ == nullptr) {
-          return nullptr;
-        }
-        current = current->left_;
-      } else if (key > current->GetKey()) {
-        if (current->right_ == nullptr) {
-          return nullptr;
-        }
-        current = current->right_;
-      } else {
-        return current;
-      }
-    }
-  }
-
-  iterator erase(iterator pos) {
-    iterator next{pos};
-    if (next != nullptr) {
-      ++next;
-    } else {
-      return iterator();
-    }
-    RemoveNode(pos.current_);
-    return next;
-  }
-
-  size_type erase(const Key& key) {
-    size_type erased_elements{0};
-    node_type* target = FindNode(key);
-    if (target == nullptr) {
-      return erased_elements;  // Key not found
-    }
-
-    RemoveNode(target);
-    ++erased_elements;
-    return erased_elements;
-  }
-
-  void clear() { DeleteSubtree(root_); }
-
-  bool empty() { return size_ == 0; }
-
-  node_type* get_root() const { return root_; }
-
-  RedBlackTree& operator=(const RedBlackTree&) = delete;
-
-  RedBlackTree& operator=(RedBlackTree&& other) noexcept {
-    if (this != &other) {
-      clear();
-      root_ = other.root_;
-      other.root_ = nullptr;
-      size_ = other.size_;
-    }
-    return *this;
-  }
-
- private:
-  // Helper to get key from value_type
-  const key_type& ExtractKeyFromAmbiguousValue(const value_type& value) const {
-    if constexpr (std::is_same_v<T, void>) {
-      return value;  // For Set: value is the key
-    } else {
-      return value.first;  // For Map: value is a pair
     }
   }
 
@@ -471,14 +483,6 @@ class RedBlackTree {
     node_type* current = us;
     while (current->left_ != nullptr) {
       current = current->left_;
-    }
-    return current;
-  }
-
-  node_type* GetMax(node_type* us) {
-    node_type* current = us;
-    while (current->right_ != nullptr) {
-      current = current->right_;
     }
     return current;
   }
@@ -657,10 +661,31 @@ class RedBlackTreeIteratorBase {
  protected:
   using node_type =
       std::conditional_t<is_const, const Node<Key, T>, Node<Key, T>>;
-  node_type* current_{nullptr};
+  using tree_type = const RedBlackTree<Key, T>;
 
-  RedBlackTreeIteratorBase() = default;
-  explicit RedBlackTreeIteratorBase(node_type* node) : current_(node) {}
+  RedBlackTreeIteratorBase() = delete;
+  RedBlackTreeIteratorBase(node_type* node, tree_type* tree)
+      : current_(node), tree_(tree) {}
+
+ public:
+  tree_type* get_tree() const { return tree_; }
+
+  // Common operators
+  bool operator==(const RedBlackTreeIteratorBase& other) const {
+    return current_ == other.current_;
+  }
+
+  bool operator!=(const RedBlackTreeIteratorBase& other) const {
+    return !(*this == other);
+  }
+
+  bool operator==(std::nullptr_t) const { return current_ == nullptr; }
+
+  bool operator!=(std::nullptr_t) const { return current_ != nullptr; }
+
+ protected:
+  node_type* current_{nullptr};
+  tree_type* tree_;
 
   // Common traversal logic
   void increment() {
@@ -680,6 +705,10 @@ class RedBlackTreeIteratorBase {
   }
 
   void decrement() {
+    if (current_ == nullptr && tree_) {
+      current_ = tree_->GetMax(tree_->get_root());
+      return;
+    }
     if (current_->left_) {
       current_ = current_->left_;
       while (current_->right_) {
@@ -694,20 +723,6 @@ class RedBlackTreeIteratorBase {
       current_ = parent;
     }
   }
-
- public:
-  // Common operators
-  bool operator==(const RedBlackTreeIteratorBase& other) const {
-    return current_ == other.current_;
-  }
-
-  bool operator!=(const RedBlackTreeIteratorBase& other) const {
-    return !(*this == other);
-  }
-
-  bool operator==(std::nullptr_t) const { return current_ == nullptr; }
-
-  bool operator!=(std::nullptr_t) const { return current_ != nullptr; }
 };
 
 // Map version
@@ -725,17 +740,20 @@ class RedBlackTreeIterator : public RedBlackTreeIteratorBase<Key, is_const, T> {
   using Base::current_;
 
   // Constructors
-  RedBlackTreeIterator() : Base() {}
-  explicit RedBlackTreeIterator(typename Base::node_type* node) : Base(node) {}
+  RedBlackTreeIterator() = delete;
+  RedBlackTreeIterator(typename Base::node_type* node,
+                       typename Base::tree_type* tree)
+      : Base(node, tree) {}
 
   template <bool other_is_const,
             typename = std::enable_if_t<(is_const || !other_is_const)>>
   RedBlackTreeIterator(
       const RedBlackTreeIterator<Key, other_is_const, T>& other)
-      : Base(other.current_) {}
+      : Base(other.current_, other.get_tree()) {}
 
   // Specialized dereferencing
   reference operator*() const { return current_->data_; }
+
   pointer operator->() const { return &(current_->data_); }
 
   // Increment/decrement using base class implementation
@@ -775,13 +793,15 @@ class RedBlackTreeIterator<Key, is_const, void>
   using Base = RedBlackTreeIteratorBase<Key, is_const, void>;
   using Base::current_;
 
-  RedBlackTreeIterator() : Base() {}
-  explicit RedBlackTreeIterator(typename Base::node_type* node) : Base(node) {}
+  RedBlackTreeIterator() = delete;
+  RedBlackTreeIterator(typename Base::node_type* node,
+                       typename Base::tree_type* tree)
+      : Base(node, tree) {}
 
   template <bool other_is_const,
             typename = std::enable_if_t<(is_const || !other_is_const)>>
   RedBlackTreeIterator(const RedBlackTreeIterator<Key, other_is_const>& other)
-      : Base(other.current_) {}
+      : Base(other.current_, other.get_tree()) {}
 
   // Specialized dereferencing
   reference operator*() const { return current_->data_; }
@@ -859,3 +879,5 @@ void print_tree(const RedBlackTree<Key, T>& tree) {
 }
 
 }  // namespace s21
+
+#endif  // S21_RED_BLACK_TREE_H

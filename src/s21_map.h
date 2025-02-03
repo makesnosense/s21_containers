@@ -1,11 +1,15 @@
+#ifndef S21_MAP_H
+#define S21_MAP_H
+
 #include <cstddef>
 #include <cstdint>
+#include <initializer_list>
 #include <iostream>
 #include <type_traits>
 #include <utility>
 
-#include "s21_base.h"
 #include "s21_red_black_tree.h"
+#include "s21_vector.h"
 
 namespace s21 {
 
@@ -15,9 +19,10 @@ namespace s21 {
 template <typename Key, typename T>
 class map {
  public:
-  using value_type = typename Node<Key, T>::value_type;
+  using value_type = std::pair<const Key, T>;
   using key_type = Key;
   using mapped_type = T;
+  using node_type = Node<Key, T>;
   using iterator = RedBlackTreeIterator<Key, false, T>;
   using const_iterator = RedBlackTreeIterator<Key, true, T>;
   using size_type = std::size_t;
@@ -26,23 +31,23 @@ class map {
 
   map(std::initializer_list<value_type> const& items) : tree_{} {
     for (const auto& item : items) {
-      tree_.insert(item);
+      insert(item);
     }
   }
 
-  map(const map& m) : tree_{} {
-    for (auto it = m.begin(); it != m.end(); ++it) {
-      tree_.insert(*it);
+  map(const map& other) : tree_{} {
+    for (auto it = other.begin(); it != other.end(); ++it) {
+      insert(*it);
     }
   }
   map(map&& m) noexcept : tree_(std::move(m.tree_)) {}
 
   ~map() = default;
 
-  map& operator=(map&& m) noexcept {
-    if (this != &m) {
-      tree_ = std::move(m.tree_);
-      m.tree_ = RedBlackTree<key_type, mapped_type>();
+  map& operator=(map&& other) noexcept {
+    if (this != &other) {
+      tree_ = std::move(other.tree_);
+      other.tree_ = RedBlackTree<key_type, mapped_type>();
     }
     return *this;
   }
@@ -61,7 +66,10 @@ class map {
       return it->data_.second;
     }
 
-    return tree_.insert({key, T{}}).first->data_.second;
+    auto result = tree_.insert({key, mapped_type{}});
+    mapped_type& result_value = result.first->data_.second;
+    // return tree_.insert({key, mapped_type{}}).first->data_.second;
+    return result_value;
   }
 
   iterator begin() { return tree_.begin(); }
@@ -82,29 +90,59 @@ class map {
   void clear() { tree_.clear(); }
 
   std::pair<iterator, bool> insert(const value_type& value) {
-    auto result = tree_.insert(value);
-    return {iterator(result.first), result.second};
+    key_type key = value.first;
+    node_type* found{tree_.FindNode(key)};
+    if (found) {
+      return {iterator(found, &tree_), false};
+    } else {
+      auto result = tree_.insert(value);
+      return {iterator(result.first, &tree_), result.second};
+    }
   }
 
   std::pair<iterator, bool> insert(const key_type& key, const T& obj) {
-    value_type value{key, obj};
-    auto result = tree_.insert(value);
-    return {iterator(result.first), result.second};
+    node_type* found{tree_.FindNode(key)};
+    if (found) {
+      return {iterator(found, &tree_), false};
+    } else {
+      value_type value{key, obj};
+      auto result = tree_.insert(value);
+      return {iterator(result.first, &tree_), result.second};
+    }
+  }
+
+  template <typename... Args>
+  s21::vector<std::pair<node_type*, bool>> insert_many(Args&&... args) {
+    s21::vector<std::pair<node_type*, bool>> results;
+    for (const auto& value : {std::forward<Args>(args)...}) {
+      node_type* found{tree_.FindNode(value.first)};
+      if (found) {
+        continue;
+      } else {
+        auto result = tree_.insert(value);
+        std::pair<node_type*, bool> pair =
+            std::make_pair(result.first, result.second);
+        results.push_back(pair);
+      }
+    }
+    return results;
   }
 
   iterator erase(iterator pos) { return tree_.erase(pos); }
   void swap(map& other) noexcept { std::swap(tree_, other.tree_); }
   void merge(map& other) {
     for (auto it = other.begin(); it != other.end();) {
-      tree_.insert(*it);
+      insert(*it);
       it = other.erase(it);
     }
   }
 
-  iterator find(const key_type& key) { return iterator(tree_.FindNode(key)); }
+  iterator find(const key_type& key) {
+    return iterator(tree_.FindNode(key), &tree_);
+  }
 
   bool contains(const key_type& key) {
-    return iterator(tree_.FindNode(key)) != tree_.end();
+    return iterator(tree_.FindNode(key), &tree_) != tree_.end();
   }
 
   bool operator==(const map& other) const {
@@ -125,3 +163,5 @@ class map {
   RedBlackTree<Key, mapped_type> tree_;
 };
 }  // namespace s21
+
+#endif  // S21_MAP_H

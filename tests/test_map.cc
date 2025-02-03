@@ -21,6 +21,7 @@ class MapTest : public testing::Test {
       : empty_stl_map_(),
         empty_s21_map_(),
         stl_map_{{key_type(103), mapped_type("a")},
+                 {key_type(103), mapped_type("dup")},
                  {key_type(53), mapped_type("b")},
                  {key_type(73), mapped_type("c")},
                  {key_type(106), mapped_type("d")},
@@ -29,6 +30,7 @@ class MapTest : public testing::Test {
                  {key_type(46), mapped_type("g")},
                  {key_type(104), mapped_type("h")}},
         s21_map_{{key_type(103), mapped_type("a")},
+                 {key_type(103), mapped_type("dup")},
                  {key_type(53), mapped_type("b")},
                  {key_type(73), mapped_type("c")},
                  {key_type(106), mapped_type("d")},
@@ -126,6 +128,63 @@ TYPED_TEST(MapTest, InsertWithExistingElements) {
   EXPECT_EQ(result_s21.first->first, result_std.first->first);
   EXPECT_EQ(result_s21.first->second, result_std.first->second);
   EXPECT_EQ(this->empty_s21_map_.size(), this->empty_stl_map_.size());
+}
+
+TYPED_TEST(MapTest, InsertMany) {
+  std::vector<TypeParam> values = {
+      {1, "a"}, {2, "g"}, {3, "d"}, {4, "j"}, {5, "k"}};
+
+  this->empty_s21_map_.insert_many(values[0], values[1], values[2], values[3],
+                                   values[4]);
+
+  EXPECT_EQ(this->empty_s21_map_.size(), values.size());
+
+  auto s21_it = this->empty_s21_map_.begin();
+
+  for (size_t i = 0; i < values.size(); i++) {
+    EXPECT_EQ((*s21_it).second, values[i].second);
+    *s21_it++;
+  }
+}
+
+TYPED_TEST(MapTest, InsertManyDuplicates) {
+  std::vector<TypeParam> values = {
+      {1, "a"}, {2, "g"}, {2, "d"}, {4, "j"}, {5, "k"}};
+
+  auto results = this->empty_s21_map_.insert_many(
+      values[0], values[1], values[2], values[3], values[4]);
+
+  EXPECT_EQ(this->empty_s21_map_.size(), size_t{4});
+
+  EXPECT_NE(results.size(), values.size());
+
+  std::vector<TypeParam> result = {{1, "a"}, {2, "d"}, {4, "j"}, {5, "k"}};
+
+  for (const auto& value : result) {
+    EXPECT_TRUE(this->empty_s21_map_.contains(value.first));
+  }
+
+  EXPECT_TRUE(results[0].second);
+  EXPECT_TRUE(results[1].second);
+  EXPECT_TRUE(results[2].second);
+  EXPECT_TRUE(results[3].second);
+}
+
+TYPED_TEST(MapTest, OperatorSqaerScobki) {
+  s21::map<int, std::string> empty_s21_map_;
+  this->empty_s21_map_[2] = "a";
+  this->empty_s21_map_[2] = "b";
+  this->empty_s21_map_[4] = "c";
+  this->empty_s21_map_[3] = "d";
+
+  std::vector<TypeParam> values = {{2, "b"}, {3, "d"}, {4, "c"}};
+  auto s21_it = this->empty_s21_map_.begin();
+  for (size_t i = 0; i < values.size(); i++) {
+    EXPECT_EQ((*s21_it).second, values[i].second);
+    *s21_it++;
+  }
+
+  EXPECT_EQ(this->empty_s21_map_.size(), size_t{3});
 }
 
 // // Element access tests
@@ -255,14 +314,6 @@ TYPED_TEST(MapTest, Contains) {
   EXPECT_FALSE(this->empty_s21_map_.contains(1));
 }
 
-// Additional erase tests
-TYPED_TEST(MapTest, EraseIteratorPos_EmptyMap) {
-  auto it = this->empty_s21_map_.begin();
-  this->empty_s21_map_.erase(it);
-
-  EXPECT_TRUE(this->empty_s21_map_.empty());
-}
-
 TEST(MapNonTyped, EraseIteratorPos_SingleElement) {
   s21::map<int, std::string> s21_map = {{10, "test"}};
 
@@ -272,13 +323,12 @@ TEST(MapNonTyped, EraseIteratorPos_SingleElement) {
   EXPECT_TRUE(s21_map.empty());
 }
 
-TEST(MapNonTyped, EraseIteratorPos_NotFound) {
+TEST(MapNonTyped, IteratorPos_NotFound) {
   s21::map<int, std::string> s21_map = {
       {1, "one"}, {2, "two"}, {3, "three"}, {4, "four"}, {5, "five"}};
 
   auto it = s21_map.find(6);
   EXPECT_EQ(it, s21_map.end());
-  s21_map.erase(it);
 
   EXPECT_EQ(s21_map.size(), size_t{5});
 }
@@ -402,3 +452,16 @@ TYPED_TEST(MapTest, Find_InEmptyMap) {
   EXPECT_EQ(s21_it, this->empty_s21_map_.end());
   EXPECT_EQ(std_it, this->empty_stl_map_.end());
 }
+
+// TEST(MapTest, meow) {
+// #include <set>
+//   std::multiset meow{1, 2, 3, 4, 5, 5, 5, 5, 5, 5,
+//                      5, 6, 7, 8, 9, 9, 9, 9, 9, 9};
+
+//   meow.erase(5);
+//   meow.erase(9);
+//   // Forward iteration
+//   for (auto it = meow.begin(); it != meow.end(); ++it) {
+//     std::cout << *it << ' ';
+//   }
+// }

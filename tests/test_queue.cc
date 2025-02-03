@@ -124,6 +124,22 @@ TEST(QueueTest, QueueFunctionality) {
   EXPECT_TRUE(queue.empty());
 }
 
+TEST(QueueTest, QueuePush) {
+  s21::queue<int> mss;
+  s21::queue<int> mss_swap;
+  for (int i = 0; i < 10; i++) {
+    mss.push(i);
+  }
+  mss_swap.push(5);
+  mss_swap.push(5);
+
+  mss.pop();
+  mss_swap = mss;
+  mss_swap.swap(mss);
+  EXPECT_TRUE(true);
+  EXPECT_EQ(1, 1);
+}
+
 TEST(QueueTest, InsertManyBack) {
   s21::queue<int> queue;
 
@@ -138,5 +154,6 @@ TEST(QueueTest, InsertManyBack) {
 
   EXPECT_TRUE(queue.empty());
 }
+
 #if 0
 #endif

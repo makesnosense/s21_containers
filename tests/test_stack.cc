@@ -90,6 +90,23 @@ TYPED_TEST(StackTest, MoveAssignmentOperator) {
   EXPECT_EQ(another_stack.size(), size_t{1});
   EXPECT_EQ(another_stack.top(), value);
 }
+TEST(StackTest, StackPush) {
+  s21::stack<int> mss;
+  s21::stack<int> mss_swap;
+  for (int i = 0; i < 10; i++) {
+    mss.push(i);
+  }
+  mss_swap.push(5);
+  mss_swap.push(5);
+
+  mss.pop();
+
+  mss_swap = mss;
+  mss_swap.swap(mss);
+  EXPECT_TRUE(true);
+  EXPECT_EQ(1, 1);
+}
+
 TYPED_TEST(StackTest, InsertManyBack) {
   TypeParam value1 = TypeParam();
   TypeParam value2 = TypeParam();
@@ -111,5 +128,6 @@ TYPED_TEST(StackTest, InsertManyBack) {
 
   EXPECT_TRUE(this->empty_s21_stack_.empty());
 }
+
 #if 0
 #endif

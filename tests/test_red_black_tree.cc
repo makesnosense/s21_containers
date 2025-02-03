@@ -5,6 +5,7 @@
 #pragma GCC diagnostic pop
 
 #include <algorithm>
+#include <string>
 #include <vector>
 
 #include "random.h"
@@ -30,10 +31,37 @@ bool ValidateRedBlackTree(const s21::RedBlackTree<Key, T>& tree) {
 }
 
 template <typename Key, typename T>
+bool ValidateBSTProperty(const s21::Node<Key, T>* node, const Key* min_key,
+                         const Key* max_key) {
+  if (!node) return true;
+
+  // Check current node's key against bounds
+  if (min_key && node->GetKey() < *min_key) {
+    std::cerr << "BST property violation: node key less than minimum bound";
+    return false;
+  }
+  if (max_key && node->GetKey() > *max_key) {
+    std::cerr << "BST property violation: node key greater than maximum bound";
+    return false;
+  }
+
+  // Recursively validate left and right subtrees
+  // For left: all keys must be <= current key
+  // For right: all keys must be >= current key
+  return ValidateBSTProperty(node->left_, min_key, &node->GetKey()) &&
+         ValidateBSTProperty(node->right_, &node->GetKey(), max_key);
+}
+
+template <typename Key, typename T>
 bool ValidateProperties(const s21::Node<Key, T>* node, int& black_height) {
   if (!node) {
     black_height = 0;  // Null nodes are black, but we don't count them
     return true;
+  }
+
+  // Add BST property validation
+  if (!ValidateBSTProperty<Key, T>(node, nullptr, nullptr)) {
+    return false;
   }
 
   int left_black_height = 0;
@@ -1470,4 +1498,101 @@ TEST(RedBlackTreeSetTest, DecrementIterator) {
 
   EXPECT_EQ(tree.size(), size_t{5});
   EXPECT_TRUE(tree.FindNode(3) == nullptr);
+}
+
+// Test iterator traversal for Set
+TEST(RedBlackTreeSetTest, DecrementIteratorAfterEnd) {
+  s21::RedBlackTree<int> tree;
+  tree.insert(1);
+  tree.insert(3);
+  tree.insert(2);
+  tree.insert(4);
+  tree.insert(5);
+  tree.insert(6);
+
+  [[maybe_unused]] auto it = tree.end();
+
+  --it;
+
+  tree.erase(3);
+
+  EXPECT_EQ(tree.size(), size_t{5});
+  EXPECT_TRUE(tree.FindNode(3) == nullptr);
+}
+
+TEST(RedBlackTreeSetTest, DecrementEndIteratorBehavior) {
+  // STL set
+  std::set<int> std_set{};
+  s21::RedBlackTree<int> s21_tree{};
+
+  // Empty containers
+  auto std_it = std_set.end();
+  auto s21_it = s21_tree.end();
+
+  // Should not be able to decrement end() on empty containers
+  // STL behavior is undefined here, so we'll skip this case
+
+  // Add some elements
+  for (int i = 1; i <= 5; ++i) {
+    std_set.insert(i);
+    s21_tree.insert(i);
+  }
+
+  // Test decrementing end() with non-empty containers
+  std_it = std_set.end();
+  s21_it = s21_tree.end();
+
+  --std_it;  // Now points to 5
+  --s21_it;  // Should also point to 5
+
+  EXPECT_EQ(*std_it, *s21_it);  // Both should be 5
+
+  // Test multiple decrements from end()
+  std_it = std_set.end();
+  s21_it = s21_tree.end();
+
+  --std_it;  // 5
+  --std_it;  // 4
+  --std_it;  // 3
+
+  --s21_it;  // 5
+  --s21_it;  // 4
+  --s21_it;  // 3
+
+  EXPECT_EQ(*std_it, *s21_it);  // Both should be 3
+}
+
+TEST(RedBlackTreeMapTest, DecrementEndIteratorBehavior) {
+  // STL map
+  std::map<int, std::string> std_map{};
+  s21::RedBlackTree<int, std::string> s21_tree{};
+
+  // Add some elements
+  for (int i = 1; i <= 5; ++i) {
+    std_map.insert({i, "value" + std::to_string(i)});
+    s21_tree.insert({i, "value" + std::to_string(i)});
+  }
+
+  // Test decrementing end()
+  auto std_it = std_map.end();
+  auto s21_it = s21_tree.end();
+
+  --std_it;  // Now points to {5, "value5"}
+  --s21_it;  // Should also point to {5, "value5"}
+
+  EXPECT_EQ(std_it->first, s21_it->first);
+  EXPECT_EQ(std_it->second, s21_it->second);
+
+  // Test multiple decrements
+  std_it = std_map.end();
+  s21_it = s21_tree.end();
+
+  --std_it;  // {5, "value5"}
+  --std_it;  // {4, "value4"}
+
+  --s21_it;  // {5, "value5"}
+  --s21_it;  // {4, "value4"}
+
+  EXPECT_EQ(std_it->first, s21_it->first);
+  EXPECT_EQ(std_it->second, s21_it->second);
 }

@@ -15,8 +15,9 @@ CXXFLAGS := $(STD_FLAGS) $(WARN_FLAGS) $(DEPENDENCY_FLAGS) $(INCLUDE_DIRS) $(DEB
 TESTS_LINKER_FLAGS := -lgtest_main -lgtest -pthread
 COVERAGE_FLAGS := -fprofile-arcs -ftest-coverage
 GCOVR_THEME := --html-theme github.dark-green
-GCOVR_CONFIG_FLAGS := --html --html-single-page=js-enabled --html-details 
-GCOVR_FLAGS := $(GCOVR_CONFIG_FLAGS) $(GCOVR_THEME)
+GCOVR_CONFIG_FLAGS := --html --html-single-page=js-enabled --html-details
+GCOVR_EXCLUDES := --exclude-unreachable-branches --exclude-throw-branches --exclude-noncode-lines
+GCOVR_FLAGS := $(GCOVR_CONFIG_FLAGS) $(GCOVR_EXCLUDES) $(GCOVR_THEME)
 VALGRIND_FLAGS := --tool=memcheck --leak-check=full --show-leak-kinds=all --show-reachable=yes --track-origins=yes --verbose
 
 #━━━━━━━━━━Directory Structure━━━━━━━━━━━━━━━━━━━━━━
@@ -40,7 +41,7 @@ endif
 
 #━━━━━━━━━━Targets━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 test: $(BUILD_DIR)/run_tests
-	./$(BUILD_DIR)/run_tests --gtest_filter=RedBlackTree*
+	./$(BUILD_DIR)/run_tests 
 
 all: coverage valgrind
 

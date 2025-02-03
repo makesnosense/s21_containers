@@ -1,9 +1,8 @@
 #ifndef S21_VECTOR_H
 #define S21_VECTOR_H
 
+#include <initializer_list>
 #include <iterator>
-
-#include "s21_base.h"
 
 namespace s21 {
 
@@ -13,15 +12,14 @@ class VectorIterator;
 template <typename T>
 class vector {
  public:
-  using traits = container_traits<T>;
   using value_type = T;
-  using reference = typename traits::reference;
-  using const_reference = typename traits::const_reference;
+  using reference = T&;
+  using const_reference = const T;
   using iterator = VectorIterator<T, false>;
   using const_iterator = const VectorIterator<T, true>;
 
   using reverse_iterator = std::reverse_iterator<iterator>;
-  using size_type = typename traits::size_type;
+  using size_type = typename std::size_t;
 
   explicit vector(size_type n = kMinN)
       : data_{nullptr}, size_{n}, capacity_{n} {
@@ -74,7 +72,7 @@ class vector {
   ~vector() { delete[] data_; }
 
   reference at(size_type position) const {
-    if (position >= size_ || position < 0) {
+    if (position >= size_) {
       throw std::out_of_range("Vector index out of range");
     }
     return data_[position];
@@ -83,11 +81,9 @@ class vector {
   size_type capacity() { return capacity_; }
 
   iterator begin() { return iterator(data_); }
-
   iterator end() { return iterator(data_ + size_); }
 
   const_iterator begin() const { return const_iterator(data_); }
-
   const_iterator end() const { return const_iterator(data_ + size_); }
 
   const_iterator cbegin() const { return const_iterator(data_); }
@@ -239,6 +235,45 @@ class vector {
     }
   }
 
+  template <typename... Args>
+  iterator insert_many(const_iterator pos, Args&&... args) {
+    size_type index = static_cast<size_type>(std::distance(cbegin(), pos));
+    size_type count = sizeof...(args);
+
+    if (count == 0) {
+      return iterator(data_ + index);
+    }
+
+    resize(size_ + count);
+
+    for (size_type i = size_ - 1; i >= index + count; --i) {
+      data_[i] = std::move(data_[i - count]);
+    }
+
+    size_type i = index;
+    (void)i;
+
+    size_type j = index;
+    ((data_[j++] = std::forward<Args>(args)), ...);
+
+    return iterator(data_ + index);
+  }
+
+  template <typename... Args>
+  void insert_many_back(Args&&... args) {
+    size_type count = sizeof...(args);
+
+    if (count == 0) {
+      return;
+    }
+
+    resize(size_ + count);
+
+    size_type j = size_ - count;
+
+    ((data_[j++] = std::forward<Args>(args)), ...);
+  }
+
   iterator erase(const_iterator position) {
     if (size_ == 0) {
       return end();
@@ -376,8 +411,8 @@ class VectorIterator {
       : ptr_{other.ptr_} {}
 
   operator pointer() const { return ptr_; }
-  reference operator*() { return *ptr_; }
   reference operator[](difference_type n) const { return ptr_[n]; }
+  reference operator*() { return *ptr_; }
 
   VectorIterator& operator++() {
     ++ptr_;
@@ -456,7 +491,7 @@ class VectorIterator {
 
 template <typename T>
 bool operator==(const s21::vector<T>& first, const std::vector<T>& other) {
-  using size_type = typename s21::vector<T>::traits::size_type;
+  using size_type = typename s21::vector<T>::size_type;
 
   if (first.size() != other.size()) {
     return false;

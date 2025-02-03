@@ -1,11 +1,15 @@
+#ifndef S21_SET_H
+#define S21_SET_H
+
 #include <cstddef>
 #include <cstdint>
+#include <initializer_list>
 #include <iostream>
 #include <type_traits>
 #include <utility>
 
-#include "s21_base.h"
 #include "s21_red_black_tree.h"
+#include "s21_vector.h"
 
 namespace s21 {
 
@@ -15,6 +19,7 @@ namespace s21 {
 template <typename Key>
 class set {
  public:
+  using node_type = Node<Key>;
   using key_type = Key;
   using value_type = Key;
   using iterator = RedBlackTreeIterator<Key, false, void>;
@@ -22,21 +27,24 @@ class set {
   using size_type = std::size_t;
 
   set() : tree_{} {}
+
   set(std::initializer_list<value_type> const& items) : tree_{} {
     for (const auto& i : items) {
-      tree_.insert(i);
+      insert(i);
     }
   }
+
   set(const set& other) : tree_{} {
     for (auto it = other.begin(); it != other.end(); ++it) {
-      tree_.insert(*it);
+      insert(*it);
     }
   }
+
   set(set&& other) noexcept : tree_(std::move(other.tree_)) {}
 
   explicit set(size_type size, value_type value) : tree_{} {
     for (size_type i{0}; i < size; i++) {
-      tree_.insert(value);
+      insert(value);
     }
   }
 
@@ -57,7 +65,9 @@ class set {
   const_iterator end() const { return tree_.end(); }
 
   bool empty() { return tree_.empty(); }
+
   size_type size() const { return tree_.size(); }
+
   size_type max_size() {
     return std::numeric_limits<size_type>::max() / sizeof(key_type);
   }
@@ -65,8 +75,31 @@ class set {
   void clear() { tree_.clear(); }
 
   std::pair<iterator, bool> insert(const value_type& value) {
-    auto result = tree_.insert(value);
-    return {iterator(result.first), result.second};
+    // let's try to find first
+    node_type* found{tree_.FindNode(value)};
+    if (found) {
+      return {iterator(found, &tree_), false};
+    } else {
+      auto result = tree_.insert(value);
+      return {iterator(result.first, &tree_), result.second};
+    }
+  }
+
+  template <typename... Args>
+  s21::vector<std::pair<node_type*, bool>> insert_many(Args&&... args) {
+    s21::vector<std::pair<node_type*, bool>> results;
+    for (const auto& value : {std::forward<Args>(args)...}) {
+      node_type* found{tree_.FindNode(value)};
+      if (found) {
+        continue;
+      } else {
+        auto result = tree_.insert(value);
+        std::pair<node_type*, bool> pair =
+            std::make_pair(result.first, result.second);
+        results.push_back(pair);
+      }
+    }
+    return results;
   }
 
   iterator erase(iterator pos) { return tree_.erase(pos); }
@@ -75,14 +108,16 @@ class set {
 
   void merge(set& other) {
     for (auto it = other.begin(); it != other.end();) {
-      tree_.insert(*it);
+      insert(*it);
       it = other.erase(it);
     }
   }
 
-  iterator find(const key_type& key) { return iterator(tree_.FindNode(key)); }
+  iterator find(const key_type& key) {
+    return iterator(tree_.FindNode(key), &tree_);
+  }
   bool contains(const key_type& key) {
-    return iterator(tree_.FindNode(key)) != tree_.end();
+    return iterator(tree_.FindNode(key), &tree_) != tree_.end();
   }
 
   bool operator==(const set& other) const {
@@ -104,3 +139,5 @@ class set {
 };
 
 }  // namespace s21
+
+#endif  // S21_SET_H

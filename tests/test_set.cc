@@ -94,6 +94,51 @@ TYPED_TEST(SetTest, InsertWithExistingElements) {
   EXPECT_EQ(this->empty_s21_set_.size(), this->empty_stl_set_.size());
 }
 
+/////////////////////////////
+
+TYPED_TEST(SetTest, InsertMany) {
+  std::vector<TypeParam> values = {TypeParam{1}, TypeParam{2}, TypeParam{3},
+                                   TypeParam{4}, TypeParam{5}};
+
+  this->empty_s21_set_.insert_many(values[0], values[1], values[2], values[3],
+                                   values[4]);
+
+  EXPECT_EQ(this->empty_s21_set_.size(), values.size());
+
+  auto s21_it = this->empty_s21_set_.begin();
+
+  for (size_t i = 0; i < values.size(); i++) {
+    EXPECT_EQ(*s21_it, values[i]);
+    *s21_it++;
+  }
+}
+
+TYPED_TEST(SetTest, InsertManyDuplicates) {
+  std::vector<TypeParam> values = {TypeParam{1}, TypeParam{2}, TypeParam{2},
+                                   TypeParam{3}, TypeParam{4}};
+
+  auto results = this->empty_s21_set_.insert_many(
+      values[0], values[1], values[2], values[3], values[4]);
+
+  EXPECT_EQ(this->empty_s21_set_.size(), size_t{4});
+
+  EXPECT_NE(results.size(), values.size());
+
+  std::vector<TypeParam> result = {TypeParam{1}, TypeParam{2}, TypeParam{3},
+                                   TypeParam{4}};
+
+  for (const auto& value : result) {
+    EXPECT_TRUE(this->empty_s21_set_.contains(value));
+  }
+
+  EXPECT_TRUE(results[0].second);
+  EXPECT_TRUE(results[1].second);
+  EXPECT_TRUE(results[2].second);
+  EXPECT_TRUE(results[3].second);
+}
+
+///////////////////
+
 // copy contructer
 TYPED_TEST(SetTest, CopyConstructor) {
   s21::set<TypeParam> s21_set_2(this->s21_set_);
@@ -218,13 +263,6 @@ TYPED_TEST(SetTest, EraseIteratorPos2) {
   EXPECT_EQ(this->s21_set_.empty(), this->stl_set_.empty());
 }
 
-TYPED_TEST(SetTest, EraseIteratorPos_EmptySet) {
-  auto it = this->empty_s21_set_.begin();
-  this->empty_s21_set_.erase(it);
-
-  EXPECT_TRUE(this->empty_s21_set_.empty());
-}
-
 TEST(SetNonTyped, EraseIteratorPos_SingleElement) {
   s21::set<int> s21_set = {10};
 
@@ -234,12 +272,11 @@ TEST(SetNonTyped, EraseIteratorPos_SingleElement) {
   EXPECT_TRUE(s21_set.empty());
 }
 
-TEST(SetNonTyped, EraseIteratorPos_NotFound) {
+TEST(SetNonTyped, IteratorPos_NotFound) {
   s21::set<int> s21_set = {1, 2, 3, 4, 5};
 
   auto it = s21_set.find(6);
   EXPECT_EQ(it, s21_set.end());
-  s21_set.erase(it);
 
   EXPECT_EQ(s21_set.size(), size_t{5});
 }

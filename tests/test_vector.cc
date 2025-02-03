@@ -335,6 +335,76 @@ TYPED_TEST(VectorTest, InsertIntoEmptyVector) {
                          this->empty_stl_vec_.begin()));
 }
 
+TYPED_TEST(VectorTest, InsertManyFront) {
+  this->s21_vec_.insert_many(this->s21_vec_.begin(), TypeParam{45},
+                             TypeParam{56}, TypeParam{67});
+  this->stl_vec_.insert(this->stl_vec_.begin(),
+                        {TypeParam{45}, TypeParam{56}, TypeParam{67}});
+
+  EXPECT_EQ(this->s21_vec_.size(), this->stl_vec_.size());
+  EXPECT_TRUE(std::equal(this->s21_vec_.begin(), this->s21_vec_.end(),
+                         this->stl_vec_.begin()));
+}
+
+TYPED_TEST(VectorTest, InsertManyMiddle) {
+  auto mid_pos_s21 = this->s21_vec_.begin() + 1;
+  auto mid_pos_stl = this->stl_vec_.begin() + 1;
+  this->s21_vec_.insert_many(mid_pos_s21, TypeParam{45}, TypeParam{56},
+                             TypeParam{67});
+  this->stl_vec_.insert(mid_pos_stl,
+                        {TypeParam{45}, TypeParam{56}, TypeParam{67}});
+
+  EXPECT_EQ(this->s21_vec_.size(), this->stl_vec_.size());
+  EXPECT_TRUE(std::equal(this->s21_vec_.begin(), this->s21_vec_.end(),
+                         this->stl_vec_.begin()));
+}
+
+TYPED_TEST(VectorTest, InsertManyBack) {
+  this->s21_vec_.insert_many(this->s21_vec_.end(), TypeParam{45}, TypeParam{56},
+                             TypeParam{67});
+  this->stl_vec_.insert(this->stl_vec_.end(),
+                        {TypeParam{45}, TypeParam{56}, TypeParam{67}});
+
+  EXPECT_EQ(this->s21_vec_.size(), this->stl_vec_.size());
+  EXPECT_TRUE(std::equal(this->s21_vec_.begin(), this->s21_vec_.end(),
+                         this->stl_vec_.begin()));
+}
+
+TYPED_TEST(VectorTest, InsertManyEmpty) {
+  auto original_size = this->s21_vec_.size();
+  this->s21_vec_.insert_many(this->s21_vec_.begin());
+  EXPECT_EQ(this->s21_vec_.size(), original_size);
+}
+
+TYPED_TEST(VectorTest, InsertManyBack_2) {
+  this->s21_vec_.insert_many_back(TypeParam{45}, TypeParam{56}, TypeParam{67});
+  this->stl_vec_.insert(this->stl_vec_.end(),
+                        {TypeParam{45}, TypeParam{56}, TypeParam{67}});
+
+  EXPECT_EQ(this->s21_vec_.size(), this->stl_vec_.size());
+  EXPECT_TRUE(std::equal(this->s21_vec_.begin(), this->s21_vec_.end(),
+                         this->stl_vec_.begin()));
+}
+
+TYPED_TEST(VectorTest, InsertManyBackEmpty_2) {
+  auto original_size = this->s21_vec_.size();
+  this->s21_vec_.insert_many_back();
+  EXPECT_EQ(this->s21_vec_.size(), original_size);
+}
+
+TYPED_TEST(VectorTest, InsertManyBackWithExistingElements_2) {
+  this->s21_vec_.insert_many_back(TypeParam{1}, TypeParam{2}, TypeParam{3});
+  this->s21_vec_.insert_many_back(TypeParam{4}, TypeParam{5});
+
+  this->stl_vec_.insert(this->stl_vec_.end(),
+                        {TypeParam{1}, TypeParam{2}, TypeParam{3}});
+  this->stl_vec_.insert(this->stl_vec_.end(), {TypeParam{4}, TypeParam{5}});
+
+  EXPECT_EQ(this->s21_vec_.size(), this->stl_vec_.size());
+  EXPECT_TRUE(std::equal(this->s21_vec_.begin(), this->s21_vec_.end(),
+                         this->stl_vec_.begin()));
+}
+
 // erase
 
 TEST(VectorTestNonTyped, EraseSingleElement) {
@@ -792,4 +862,35 @@ TEST(VectorConstCorrectnessTest, NotCompiling) {
   const s21::vector<int> const_vec{1, 2, 3};
   s21::vector<int>::const_iterator const_it = const_vec.begin();
   EXPECT_EQ(*const_it, 1);
+}
+
+TYPED_TEST(VectorTest, SimpleIterator) {
+  s21::VectorIterator<TypeParam, false> it{};
+
+  it = this->s21_vec_.begin();
+  ++it;
+  it -= 1;
+  const auto hm{*it};
+  EXPECT_EQ(this->stl_vec_[0], hm);
+}
+
+TYPED_TEST(VectorTest, IteratorDereference) {
+  // Add known value to vector
+  this->s21_vec_.push_back(TypeParam{});
+
+  // Get iterator
+  auto it = this->s21_vec_.begin();
+
+  [[maybe_unused]] TypeParam* ptr = it;  // This calls operator pointer()
+
+  // Force dereference operator usage
+  TypeParam& ref = *it;
+  [[maybe_unused]] const auto hm{*it};
+  // Verify we can read through the dereferenced iterator
+  EXPECT_EQ(ref, this->s21_vec_[0]);
+  ++it;
+  it -= 1;
+  // Verify we can write through the dereferenced iterator
+  *it = TypeParam{};
+  EXPECT_EQ(this->s21_vec_[0], TypeParam{});
 }

@@ -1,7 +1,8 @@
-#include "s21_base.h"
 
 #ifndef S21_DEQUE_H
 #define S21_DEQUE_H
+#include <cstddef>
+#include <initializer_list>
 
 namespace s21 {
 
@@ -11,13 +12,12 @@ class DequeIterator;
 template <typename T>
 class deque {
  public:
-  using traits = container_traits<T>;
-  using value_type = typename traits::value_type;
+  using value_type = T;
   using pointer = T*;
   using const_pointer = const T*;
-  using reference = typename traits::reference;
-  using const_reference = typename traits::const_reference;
-  using size_type = typename traits::size_type;
+  using reference = T&;
+  using const_reference = const T&;
+  using size_type = std::size_t;
 
   using iterator = DequeIterator<T, false>;
   using const_iterator = DequeIterator<T, true>;
@@ -530,7 +530,7 @@ std::ostream& operator<<(std::ostream& out, deque<T>& q) {
 
 template <typename T>
 bool operator==(const s21::deque<T>& first, const std::deque<T>& other) {
-  using size_type = typename s21::deque<T>::traits::size_type;
+  using size_type = typename s21::deque<T>::size_type;
 
   if (first.size() != other.size()) {
     return false;
