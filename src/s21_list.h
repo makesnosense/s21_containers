@@ -14,7 +14,7 @@ namespace s21 {
 template <typename T>
 struct Node {
   using value_type = T;
-  alignas(alignof(value_type)) value_type data_;
+  value_type data_;
   Node* next_;
   Node* pre_;
 
@@ -89,18 +89,21 @@ class list {
     end_sentinel_->pre_ = tail_;
   }
 
-  list(const list& other) : head_(nullptr), tail_(nullptr), size_(0) {
-    if (other.head_ != nullptr) {
-      node_type* current = other.head_;
-      while (current != nullptr) {
-        push_back(current->data_);
-        current = current->next_;
-      }
+  list(const list& other)
+      : head_{nullptr},
+        tail_{nullptr},
+        size_{0},
+        end_sentinel_{new node_type()} {
+    for (const auto& item : other) {
+      push_back(item);
     }
   }
 
   list(list&& other) noexcept
-      : head_(other.head_), tail_(other.tail_), size_(other.size_) {
+      : head_{other.head_},
+        tail_{other.tail_},
+        size_{other.size_},
+        end_sentinel_{new node_type()} {
     other.head_ = nullptr;
     other.tail_ = nullptr;
     other.size_ = 0;
@@ -129,14 +132,28 @@ class list {
   list& operator=(const list& other) {
     if (this != &other) {
       clear();
-
-      node_type* current = other.head_;
-      while (current != nullptr) {
-        push_back(current->data_);
-        current = current->next_;
+      for (const auto& item : other) {
+        push_back(item);
       }
     }
+    return *this;
+  }
 
+  list& operator=(list&& other) noexcept {
+    if (this != &other) {
+      clear();
+      delete end_sentinel_;
+
+      head_ = other.head_;
+      tail_ = other.tail_;
+      size_ = other.size_;
+      end_sentinel_ = other.end_sentinel_;
+
+      other.head_ = nullptr;
+      other.tail_ = nullptr;
+      other.end_sentinel_ = nullptr;
+      other.size_ = 0;
+    }
     return *this;
   }
 
@@ -287,12 +304,90 @@ class list {
     other.size_ = 0;
   }
 
-  void merge(list& other) {
-    if (other.head_ == nullptr) {
-      return;
+  // void merge(list& other) {
+  //   if (other.head_ == nullptr) {
+  //     return;
+  //   }
+
+  //   if (head_ == nullptr) {
+  //     head_ = other.head_;
+  //     tail_ = other.tail_;
+  //     size_ = other.size_;
+
+  //     other.head_ = nullptr;
+  //     other.tail_ = nullptr;
+  //     other.size_ = 0;
+  //     return;
+  //   }
+
+  //   node_type* existing_head = head_;
+  //   node_type* other_head = other.head_;
+  //   node_type* merged_head = nullptr;
+  //   node_type* merged_tail = nullptr;
+
+  //   if (existing_head->data_ <= other_head->data_) {
+  //     merged_head = existing_head;
+  //     existing_head = existing_head->next_;
+  //   } else {
+  //     merged_head = other_head;
+  //     other_head = other_head->next_;
+  //   }
+
+  //   merged_tail = merged_head;
+
+  //   while (existing_head != nullptr && other_head != nullptr) {
+  //     if (existing_head->data_ <= other_head->data_) {
+  //       merged_tail->next_ = existing_head;
+  //       existing_head->pre_ = merged_tail;
+  //       merged_tail = existing_head;
+  //       existing_head = existing_head->next_;
+  //     } else {
+  //       merged_tail->next_ = other_head;
+  //       other_head->pre_ = merged_tail;
+  //       merged_tail = other_head;
+  //       other_head = other_head->next_;
+  //     }
+  //   }
+
+  //   if (existing_head != nullptr) {
+  //     merged_tail->next_ = existing_head;
+  //     existing_head->pre_ = merged_tail;
+  //   } else if (other_head != nullptr) {
+  //     merged_tail->next_ = other_head;
+  //     other_head->pre_ = merged_tail;
+  //   }
+
+  //   head_ = merged_head;
+  //   tail_ = merged_tail;
+  //   size_ += other.size_;
+
+  //   other.head_ = nullptr;
+  //   other.tail_ = nullptr;
+  //   other.size_ = 0;
+
+  //   tail_->next_ = end_sentinel_;
+  //   end_sentinel_->pre_ = tail_;
+  // }
+
+  void link_nodes(node_type* prev, node_type* curr) {
+    if (prev) {
+      prev->next_ = curr;
+    } else {
+      head_ = curr;
     }
 
-    if (head_ == nullptr) {
+    if (curr) {
+      curr->pre_ = prev;
+    } else {
+      tail_ = prev;
+    }
+  }
+
+  void merge(list& other) {
+    if (other.empty()) {
+      return;
+    }
+    if (empty()) {
       head_ = other.head_;
       tail_ = other.tail_;
       size_ = other.size_;
@@ -303,45 +398,37 @@ class list {
       return;
     }
 
-    node_type* existing_head = head_;
-    node_type* other_head = other.head_;
-    node_type* merged_head = nullptr;
-    node_type* merged_tail = nullptr;
+    node_type* current = head_;
+    node_type* other_current = other.head_;
+    node_type* prev = nullptr;
 
-    if (existing_head->data_ <= other_head->data_) {
-      merged_head = existing_head;
-      existing_head = existing_head->next_;
-    } else {
-      merged_head = other_head;
-      other_head = other_head->next_;
-    }
-
-    merged_tail = merged_head;
-
-    while (existing_head != nullptr && other_head != nullptr) {
-      if (existing_head->data_ <= other_head->data_) {
-        merged_tail->next_ = existing_head;
-        existing_head->pre_ = merged_tail;
-        merged_tail = existing_head;
-        existing_head = existing_head->next_;
+    while (current && other_current) {
+      if (current->data_ <= other_current->data_) {
+        prev = current;
+        current = current->next_;
       } else {
-        merged_tail->next_ = other_head;
-        other_head->pre_ = merged_tail;
-        merged_tail = other_head;
-        other_head = other_head->next_;
+        node_type* other_next = other_current->next_;
+        node_type* curr_next = current;
+
+        link_nodes(prev, other_current);
+        link_nodes(other_current, curr_next);
+
+        prev = other_current;
+        other_current = other_next;
       }
     }
 
-    if (existing_head != nullptr) {
-      merged_tail->next_ = existing_head;
-      existing_head->pre_ = merged_tail;
-    } else if (other_head != nullptr) {
-      merged_tail->next_ = other_head;
-      other_head->pre_ = merged_tail;
+    if (other_current) {
+      link_nodes(prev, other_current);
+
+      while (other_current->next_) {
+        other_current = other_current->next_;
+      }
+      tail_ = other_current;
     }
 
-    head_ = merged_head;
-    tail_ = merged_tail;
+    tail_->next_ = end_sentinel_;
+    end_sentinel_->pre_ = tail_;
     size_ += other.size_;
 
     other.head_ = nullptr;
@@ -354,6 +441,7 @@ class list {
       std::swap(head_, other.head_);
       std::swap(tail_, other.tail_);
       std::swap(size_, other.size_);
+      std::swap(end_sentinel_, other.end_sentinel_);
     }
   }
 
@@ -454,7 +542,6 @@ class list {
 
   void push_back(const_reference value) {
     node_type* new_node = new node_type(value);
-    end_sentinel_ = new node_type();
     if (empty()) {
       head_ = new_node;
       tail_ = new_node;
@@ -463,11 +550,14 @@ class list {
       tail_->next_ = new_node;
       tail_ = new_node;
     }
-
     ++size_;
     tail_->next_ = end_sentinel_;
     end_sentinel_->pre_ = tail_;
   }
+
+  // Add const member functions
+  const_reference front() const { return head_->data_; }
+  const_reference back() const { return tail_->data_; }
 
   void reverse() {
     constexpr size_type min_size_for_reverse{2};
@@ -521,9 +611,37 @@ class list {
     return current->data_;
   }
 
+  iterator begin() const {
+    if (empty()) {
+      return end();
+    }
+    return iterator(head_);
+  }
+  iterator end() const { return iterator(end_sentinel_); }
+
+  // const_iterator begin() const { return const_iterator(head_); }
+  // const_iterator end() const { return const_iterator(end_sentinel_); }
+
+  void clear() {
+    node_type* current = head_;
+    while (current != nullptr) {
+      node_type* next_node = current->next_;
+      if (current != end_sentinel_) {  // Don't delete sentinel
+        delete current;
+      }
+      current = next_node;
+    }
+    head_ = nullptr;
+    tail_ = nullptr;
+    end_sentinel_->pre_ = nullptr;  // Reset sentinel connections
+    size_ = 0;
+  }
+
   reference front() { return head_->data_; }
   reference back() { return tail_->data_; }
+
   size_type size() const { return size_; }
+
   bool empty() const noexcept { return size_ == 0; }
 
   T& operator[](size_type index) {
@@ -586,24 +704,6 @@ class list {
     }
 
     return true;
-  }
-
-  iterator begin() { return iterator(head_); }
-  iterator end() { return iterator(end_sentinel_); }
-
-  void clear() {
-    node_type* current = head_;
-    while (current != nullptr) {
-      node_type* next_node = current->next_;
-      if (current != end_sentinel_) {  // Don't delete sentinel
-        delete current;
-      }
-      current = next_node;
-    }
-    head_ = nullptr;
-    tail_ = nullptr;
-    end_sentinel_->pre_ = nullptr;  // Reset sentinel connections
-    size_ = 0;
   }
 
  private:
