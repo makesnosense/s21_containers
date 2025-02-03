@@ -90,7 +90,7 @@ TYPED_TEST(StackTest, MoveAssignmentOperator) {
   EXPECT_EQ(another_stack.size(), size_t{1});
   EXPECT_EQ(another_stack.top(), value);
 }
-TEST(StackTest, StackPush) {
+TEST(StackTestNonTyped, StackPush) {
   s21::stack<int> mss;
   s21::stack<int> mss_swap;
   for (int i = 0; i < 10; i++) {

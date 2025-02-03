@@ -452,16 +452,3 @@ TYPED_TEST(MapTest, Find_InEmptyMap) {
   EXPECT_EQ(s21_it, this->empty_s21_map_.end());
   EXPECT_EQ(std_it, this->empty_stl_map_.end());
 }
-
-// TEST(MapTest, meow) {
-// #include <set>
-//   std::multiset meow{1, 2, 3, 4, 5, 5, 5, 5, 5, 5,
-//                      5, 6, 7, 8, 9, 9, 9, 9, 9, 9};
-
-//   meow.erase(5);
-//   meow.erase(9);
-//   // Forward iteration
-//   for (auto it = meow.begin(); it != meow.end(); ++it) {
-//     std::cout << *it << ' ';
-//   }
-// }

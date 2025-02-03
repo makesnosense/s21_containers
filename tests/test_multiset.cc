@@ -27,11 +27,9 @@ class MultisetTest : public testing::Test {
 using TestedTypes = ::testing::Types<int, double>;
 TYPED_TEST_SUITE(MultisetTest, TestedTypes, );
 
-// Tests specific to multiset functionality
 TYPED_TEST(MultisetTest, InsertDuplicates) {
   TypeParam value{42};
 
-  // Insert same value multiple times
   this->empty_s21_mset_.insert(value);
   this->empty_s21_mset_.insert(value);
   this->empty_s21_mset_.insert(value);
@@ -50,7 +48,7 @@ TYPED_TEST(MultisetTest, LowerUpperBound) {
 }
 
 TEST(MultisetNonTyped, MultipleIdenticalElements) {
-  s21::multiset<int> mset(5, 42);  // Constructor with count and value
+  s21::multiset<int> mset(5, 42);
   EXPECT_EQ(mset.size(), size_t{5});
   EXPECT_EQ(mset.count(42), size_t{5});
 }
@@ -64,7 +62,7 @@ TEST(MultisetNonTyped, EraseRange) {
     first = mset.erase(first);
   }
 
-  EXPECT_EQ(mset.size(), size_t{2});  // Only the 3s should remain
+  EXPECT_EQ(mset.size(), size_t{2});
   EXPECT_EQ(mset.count(3), size_t{2});
 }
 
@@ -72,9 +70,7 @@ TYPED_TEST(MultisetTest, AnotherCount) {
   EXPECT_EQ(this->s21_mset_.count(53), this->stl_mset_.count(53));
 }
 
-// Tests for special multiset operations
 TYPED_TEST(MultisetTest, EqualRange) {
-  // Test equal_range on element with multiple occurrences
   auto range = this->s21_mset_.equal_range(53);
   size_t count = 0;
   for (auto it = range.first; it != range.second; ++it) {
@@ -108,8 +104,8 @@ TYPED_TEST(MultisetTest, InsertIteratorValidity) {
   auto it1 = this->empty_s21_mset_.insert(value);
   auto it2 = this->empty_s21_mset_.insert(value);
 
-  EXPECT_NE(it1, it2);    // Different iterators for same value
-  EXPECT_EQ(*it1, *it2);  // But pointing to same value
+  EXPECT_NE(it1, it2);
+  EXPECT_EQ(*it1, *it2);
 }
 
 TEST(MultisetNonTyped, SwapWithDuplicates) {
@@ -130,13 +126,11 @@ TEST(MultisetNonTyped, SwapWithDuplicates) {
 TEST(MultisetNonTyped, ComplexOperations) {
   s21::multiset<int> mset;
 
-  // Insert elements with duplicates
   for (int i = 0; i < 5; ++i) {
-    mset.insert(1);  // 5 ones
-    mset.insert(2);  // 5 twos
+    mset.insert(1);
+    mset.insert(2);
   }
 
-  // Test lower_bound and upper_bound
   auto lower = mset.lower_bound(1);
   auto upper = mset.upper_bound(1);
 
@@ -147,11 +141,9 @@ TEST(MultisetNonTyped, ComplexOperations) {
   }
   EXPECT_EQ(count, size_t{5});
 
-  // Erase some elements and verify state
-  mset.erase(lower);  // Remove one occurrence
+  mset.erase(lower);
   EXPECT_EQ(mset.count(1), size_t{4});
 
-  // Verify iterators still work after modification
   auto new_lower = mset.lower_bound(1);
   EXPECT_NE(new_lower, lower);
   EXPECT_EQ(*new_lower, 1);
