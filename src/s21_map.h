@@ -35,8 +35,8 @@ class map {
     }
   }
 
-  map(const map& m) : tree_{} {
-    for (auto it = m.begin(); it != m.end(); ++it) {
+  map(const map& other) : tree_{} {
+    for (auto it = other.begin(); it != other.end(); ++it) {
       insert(*it);
     }
   }
