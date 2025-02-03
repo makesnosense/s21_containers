@@ -344,8 +344,8 @@ class list {
       } else {
         node_type* other_next = other_current->next_;
 
-        link_nodes(prev, other_current);
-        link_nodes(other_current, current);
+        LinkNodes(prev, other_current);
+        LinkNodes(other_current, current);
 
         prev = other_current;
         other_current = other_next;
@@ -354,7 +354,7 @@ class list {
 
     // Append remaining nodes from other list
     if (other_current) {
-      link_nodes(prev, other_current);
+      LinkNodes(prev, other_current);
 
       // Find the new tail
       while (other_current->next_) {
@@ -652,7 +652,7 @@ class list {
 
  private:
   // Helper function to link nodes together safely
-  void link_nodes(node_type* prev, node_type* curr) {
+  void LinkNodes(node_type* prev, node_type* curr) {
     if (prev) {
       prev->next_ = curr;
     } else {
