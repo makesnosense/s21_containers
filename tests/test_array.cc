@@ -20,7 +20,7 @@ TYPED_TEST_SUITE(ArrayTest, TestedTypes, );
 
 TYPED_TEST(ArrayTest, DefaultConstructor) {
   s21::array<TypeParam, 5> arr;
-  EXPECT_EQ(arr.size(), 5);
+  EXPECT_EQ(arr.size(), size_t{5});
 }
 
 TYPED_TEST(ArrayTest, FillAndAccess) {

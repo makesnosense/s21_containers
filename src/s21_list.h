@@ -1,6 +1,7 @@
 #ifndef S21_LIST_H
 #define S21_LIST_H
 
+#include <cstddef>
 #include <initializer_list>
 #include <iostream>
 #include <iterator>
@@ -48,12 +49,17 @@ class list {
   using const_iterator = const ListIterator<T, true>;
   using size_type = std::size_t;
 
-  list() : head_{nullptr}, tail_{nullptr}, size_{0} {
-    end_sentinel_ = new node_type();
-  }
-  explicit list(std::initializer_list<value_type> init)
-      : head_{nullptr}, tail_{nullptr}, size_{0} {
-    end_sentinel_ = new node_type();
+  list()
+      : head_{nullptr},
+        tail_{nullptr},
+        size_{0},
+        end_sentinel_{new node_type()} {}
+
+  list(std::initializer_list<value_type> init)
+      : head_{nullptr},
+        tail_{nullptr},
+        size_{0},
+        end_sentinel_{new node_type()} {
     for (const T& value : init) {
       node_type* new_node = new node_type(value);
       if (!head_) {
@@ -66,13 +72,15 @@ class list {
       }
       ++size_;
     }
-
     tail_->next_ = end_sentinel_;
     end_sentinel_->pre_ = tail_;
   }
 
-  list(size_type n) : head_{nullptr}, tail_{nullptr}, size_{0} {
-    end_sentinel_ = new node_type();
+  list(size_type n)
+      : head_{nullptr},
+        tail_{nullptr},
+        size_{0},
+        end_sentinel_{new node_type()} {
     for (size_type i{0}; i < n; i++) {
       node_type* new_node = new node_type();
       if (!head_) {
@@ -85,8 +93,11 @@ class list {
       }
       ++size_;
     }
-    tail_->next_ = end_sentinel_;
-    end_sentinel_->pre_ = tail_;
+
+    if (tail_) {  // Only set links if list is not empty
+      tail_->next_ = end_sentinel_;
+      end_sentinel_->pre_ = tail_;
+    }
   }
 
   list(const list& other)
@@ -103,10 +114,11 @@ class list {
       : head_{other.head_},
         tail_{other.tail_},
         size_{other.size_},
-        end_sentinel_{new node_type()} {
+        end_sentinel_{other.end_sentinel_} {
     other.head_ = nullptr;
     other.tail_ = nullptr;
     other.size_ = 0;
+    other.end_sentinel_ = nullptr;
   }
 
   explicit list(size_type n, const value_type& value)
@@ -165,7 +177,7 @@ class list {
   iterator insert(iterator pos, const_reference value) {
     node_type* new_node = new node_type(value);
 
-    if (pos.GetCurrent() == nullptr) {
+    if (pos.get_current() == end_sentinel_) {
       if (tail_ != nullptr) {
         tail_->next_ = new_node;
         new_node->pre_ = tail_;
@@ -174,8 +186,13 @@ class list {
         head_ = new_node;
         tail_ = new_node;
       }
+      // Update tail and sentinel connections
+      tail_ = new_node;  // This was missing
+      tail_->next_ = end_sentinel_;
+      end_sentinel_->pre_ = tail_;
     } else {
-      node_type* current_node = pos.GetCurrent();
+      // Inserting in the middle
+      node_type* current_node = pos.get_current();
 
       if (current_node->pre_ != nullptr) {
         current_node->pre_->next_ = new_node;
@@ -197,10 +214,10 @@ class list {
     list<T> temp_list{std::forward<Args>(args)...};
 
     if (temp_list.empty()) {
-      return iterator(const_cast<node_type*>(pos.GetCurrent()));
+      return iterator(const_cast<node_type*>(pos.get_current()));
     }
 
-    node_type* pos_node = const_cast<node_type*>(pos.GetCurrent());
+    node_type* pos_node = const_cast<node_type*>(pos.get_current());
     node_type* new_head = temp_list.head_;
     node_type* new_tail = temp_list.tail_;
 
@@ -238,15 +255,21 @@ class list {
     if (empty()) {
       head_ = temp_list.head_;
       tail_ = temp_list.tail_;
+      tail_->next_ = end_sentinel_;
+      end_sentinel_->pre_ = tail_;
+
     } else {
       tail_->next_ = temp_list.head_;
-      temp_list.head_->pre_ = tail_;
 
+      temp_list.head_->pre_ = tail_;
       tail_ = temp_list.tail_;
+      tail_->next_ = end_sentinel_;
+      end_sentinel_->pre_ = tail_;
     }
 
     size_ += temp_list.size_;
 
+    // Prevent double deletion of nodes
     temp_list.head_ = nullptr;
     temp_list.tail_ = nullptr;
     temp_list.size_ = 0;
@@ -279,7 +302,7 @@ class list {
   void splice(const_iterator pos, list& other) {
     if (other.empty()) return;
 
-    node_type* pos_node = const_cast<node_type*>(pos.GetCurrent());
+    node_type* pos_node = const_cast<node_type*>(pos.get_current());
     node_type* other_head = other.head_;
     node_type* other_tail = other.tail_;
 
@@ -304,85 +327,6 @@ class list {
     other.size_ = 0;
   }
 
-  // void merge(list& other) {
-  //   if (other.head_ == nullptr) {
-  //     return;
-  //   }
-
-  //   if (head_ == nullptr) {
-  //     head_ = other.head_;
-  //     tail_ = other.tail_;
-  //     size_ = other.size_;
-
-  //     other.head_ = nullptr;
-  //     other.tail_ = nullptr;
-  //     other.size_ = 0;
-  //     return;
-  //   }
-
-  //   node_type* existing_head = head_;
-  //   node_type* other_head = other.head_;
-  //   node_type* merged_head = nullptr;
-  //   node_type* merged_tail = nullptr;
-
-  //   if (existing_head->data_ <= other_head->data_) {
-  //     merged_head = existing_head;
-  //     existing_head = existing_head->next_;
-  //   } else {
-  //     merged_head = other_head;
-  //     other_head = other_head->next_;
-  //   }
-
-  //   merged_tail = merged_head;
-
-  //   while (existing_head != nullptr && other_head != nullptr) {
-  //     if (existing_head->data_ <= other_head->data_) {
-  //       merged_tail->next_ = existing_head;
-  //       existing_head->pre_ = merged_tail;
-  //       merged_tail = existing_head;
-  //       existing_head = existing_head->next_;
-  //     } else {
-  //       merged_tail->next_ = other_head;
-  //       other_head->pre_ = merged_tail;
-  //       merged_tail = other_head;
-  //       other_head = other_head->next_;
-  //     }
-  //   }
-
-  //   if (existing_head != nullptr) {
-  //     merged_tail->next_ = existing_head;
-  //     existing_head->pre_ = merged_tail;
-  //   } else if (other_head != nullptr) {
-  //     merged_tail->next_ = other_head;
-  //     other_head->pre_ = merged_tail;
-  //   }
-
-  //   head_ = merged_head;
-  //   tail_ = merged_tail;
-  //   size_ += other.size_;
-
-  //   other.head_ = nullptr;
-  //   other.tail_ = nullptr;
-  //   other.size_ = 0;
-
-  //   tail_->next_ = end_sentinel_;
-  //   end_sentinel_->pre_ = tail_;
-  // }
-
-  void link_nodes(node_type* prev, node_type* curr) {
-    if (prev) {
-      prev->next_ = curr;
-    } else {
-      head_ = curr;
-    }
-
-    if (curr) {
-      curr->pre_ = prev;
-    } else {
-      tail_ = prev;
-    }
-  }
-
   void merge(list& other) {
     if (other.empty()) {
       return;
@@ -392,45 +336,62 @@ class list {
       tail_ = other.tail_;
       size_ = other.size_;
 
+      // Set end sentinel for this list
+      tail_->next_ = end_sentinel_;
+      end_sentinel_->pre_ = tail_;
+
+      // Detach nodes from other list
       other.head_ = nullptr;
       other.tail_ = nullptr;
       other.size_ = 0;
+      other.end_sentinel_->pre_ = nullptr;
       return;
     }
 
+    // Track current positions in both lists
     node_type* current = head_;
     node_type* other_current = other.head_;
     node_type* prev = nullptr;
 
+    // Detach other list's nodes from its sentinel
+    other.end_sentinel_->pre_ = nullptr;
+    if (other.tail_) {
+      other.tail_->next_ = nullptr;
+    }
+
+    // Merge nodes in sorted order
     while (current && other_current) {
       if (current->data_ <= other_current->data_) {
         prev = current;
         current = current->next_;
       } else {
         node_type* other_next = other_current->next_;
-        node_type* curr_next = current;
 
-        link_nodes(prev, other_current);
-        link_nodes(other_current, curr_next);
+        LinkNodes(prev, other_current);
+        LinkNodes(other_current, current);
 
         prev = other_current;
         other_current = other_next;
       }
     }
 
+    // Append remaining nodes from other list
     if (other_current) {
-      link_nodes(prev, other_current);
+      LinkNodes(prev, other_current);
 
+      // Find the new tail
       while (other_current->next_) {
         other_current = other_current->next_;
       }
       tail_ = other_current;
     }
 
+    // Update sentinel links and size
     tail_->next_ = end_sentinel_;
     end_sentinel_->pre_ = tail_;
     size_ += other.size_;
 
+    // Clear the other list
     other.head_ = nullptr;
     other.tail_ = nullptr;
     other.size_ = 0;
@@ -486,9 +447,9 @@ class list {
   }
 
   void erase(iterator pos) {
-    if (pos.GetCurrent() == nullptr) return;
+    if (pos.get_current() == nullptr) return;
 
-    node_type* node_to_delete = pos.GetCurrent();
+    node_type* node_to_delete = pos.get_current();
 
     if (node_to_delete->pre_) {
       node_to_delete->pre_->next_ = node_to_delete->next_;
@@ -633,7 +594,9 @@ class list {
     }
     head_ = nullptr;
     tail_ = nullptr;
-    end_sentinel_->pre_ = nullptr;  // Reset sentinel connections
+    if (end_sentinel_) {
+      end_sentinel_->pre_ = nullptr;
+    }  // Reset sentinel connections
     size_ = 0;
   }
 
@@ -711,6 +674,22 @@ class list {
   node_type* tail_{nullptr};
   size_type size_{};
   node_type* end_sentinel_{nullptr};
+
+ private:
+  // Helper function to link nodes together safely
+  void LinkNodes(node_type* prev, node_type* curr) {
+    if (prev) {
+      prev->next_ = curr;
+    } else {
+      head_ = curr;
+    }
+
+    if (curr) {
+      curr->pre_ = prev;
+    } else {
+      tail_ = prev;
+    }
+  }
 
   std::pair<node_type*, node_type*> Split(node_type* head) {
     node_type* slow = head;
@@ -812,7 +791,7 @@ class ListIterator {
 
   reference operator*() { return current_->data_; }
   pointer operator->() { return &current_->data_; }
-  node_pointer GetCurrent() const { return current_; }
+  node_pointer get_current() const { return current_; }
 
   ListIterator& operator++() {
     current_ = current_->next_;
