@@ -305,7 +305,6 @@ class list {
   }
 
   void merge(list& other) {
-    // Handle empty lists cases
     if (other.empty()) {
       return;
     }
@@ -314,9 +313,15 @@ class list {
       tail_ = other.tail_;
       size_ = other.size_;
 
+      // Set end sentinel for this list
+      tail_->next_ = end_sentinel_;
+      end_sentinel_->pre_ = tail_;
+
+      // Detach nodes from other list
       other.head_ = nullptr;
       other.tail_ = nullptr;
       other.size_ = 0;
+      other.end_sentinel_->pre_ = nullptr;
       return;
     }
 
@@ -325,6 +330,12 @@ class list {
     node_type* other_current = other.head_;
     node_type* prev = nullptr;
 
+    // Detach other list's nodes from its sentinel
+    other.end_sentinel_->pre_ = nullptr;
+    if (other.tail_) {
+      other.tail_->next_ = nullptr;
+    }
+
     // Merge nodes in sorted order
     while (current && other_current) {
       if (current->data_ <= other_current->data_) {
@@ -332,10 +343,9 @@ class list {
         current = current->next_;
       } else {
         node_type* other_next = other_current->next_;
-        node_type* curr_next = current;
 
         link_nodes(prev, other_current);
-        link_nodes(other_current, curr_next);
+        link_nodes(other_current, current);
 
         prev = other_current;
         other_current = other_next;
