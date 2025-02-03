@@ -2,7 +2,6 @@
 #define S21_QUEUE_H
 
 #include <initializer_list>
-#include <iostream>
 
 #include "s21_deque.h"
 
@@ -14,6 +13,7 @@ class queue {
   deque<T> data_;
 
  public:
+  using size_type = std::size_t;
   using value_type = T;
   using reference = T &;
   using const_reference = const T &;
@@ -55,7 +55,7 @@ class queue {
   }
   void swap(queue &other) noexcept { std::swap(data_, other.data_); }
 
-  size_t size() const { return data_.size(); }
+  size_type size() const { return data_.size(); }
 
   bool empty() const { return const_cast<deque<T> &>(data_).empty(); }
 
