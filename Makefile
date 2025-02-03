@@ -8,7 +8,7 @@ STD_FLAGS := -std=c++17 -pedantic
 WARN_FLAGS := -Werror -Wextra -Wall -Weffc++ -Wconversion -Wsign-conversion -Wpadded
 DEPENDENCY_FLAGS := -MMD -MP
 INCLUDE_DIRS := -I./src
-DEBUG_FLAG := -g
+# DEBUG_FLAG := -g
 CXXFLAGS := $(STD_FLAGS) $(WARN_FLAGS) $(DEPENDENCY_FLAGS) $(INCLUDE_DIRS) $(DEBUG_FLAG)
 
 #━━━━━━━━━━Test and Coverage Configuration━━━━━━━━━━
@@ -41,7 +41,7 @@ endif
 
 #━━━━━━━━━━Targets━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 test: $(BUILD_DIR)/run_tests
-	./$(BUILD_DIR)/run_tests 
+	./$(BUILD_DIR)/run_tests
 
 all: coverage valgrind
 
