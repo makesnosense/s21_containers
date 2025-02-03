@@ -1,6 +1,7 @@
 #ifndef S21_LIST_H
 #define S21_LIST_H
 
+#include <cstddef>
 #include <initializer_list>
 #include <iostream>
 #include <iterator>
@@ -48,12 +49,17 @@ class list {
   using const_iterator = const ListIterator<T, true>;
   using size_type = std::size_t;
 
-  list() : head_{nullptr}, tail_{nullptr}, size_{0} {
-    end_sentinel_ = new node_type();
-  }
-  explicit list(std::initializer_list<value_type> init)
-      : head_{nullptr}, tail_{nullptr}, size_{0} {
-    end_sentinel_ = new node_type();
+  list()
+      : head_{nullptr},
+        tail_{nullptr},
+        size_{0},
+        end_sentinel_{new node_type()} {}
+
+  list(std::initializer_list<value_type> init)
+      : head_{nullptr},
+        tail_{nullptr},
+        size_{0},
+        end_sentinel_{new node_type()} {
     for (const T& value : init) {
       node_type* new_node = new node_type(value);
       if (!head_) {
@@ -66,13 +72,15 @@ class list {
       }
       ++size_;
     }
-
     tail_->next_ = end_sentinel_;
     end_sentinel_->pre_ = tail_;
   }
 
-  list(size_type n) : head_{nullptr}, tail_{nullptr}, size_{0} {
-    end_sentinel_ = new node_type();
+  list(size_type n)
+      : head_{nullptr},
+        tail_{nullptr},
+        size_{0},
+        end_sentinel_{new node_type()} {
     for (size_type i{0}; i < n; i++) {
       node_type* new_node = new node_type();
       if (!head_) {
@@ -85,8 +93,11 @@ class list {
       }
       ++size_;
     }
-    tail_->next_ = end_sentinel_;
-    end_sentinel_->pre_ = tail_;
+
+    if (tail_) {  // Only set links if list is not empty
+      tail_->next_ = end_sentinel_;
+      end_sentinel_->pre_ = tail_;
+    }
   }
 
   list(const list& other)
@@ -103,10 +114,11 @@ class list {
       : head_{other.head_},
         tail_{other.tail_},
         size_{other.size_},
-        end_sentinel_{new node_type()} {
+        end_sentinel_{other.end_sentinel_} {
     other.head_ = nullptr;
     other.tail_ = nullptr;
     other.size_ = 0;
+    other.end_sentinel_ = nullptr;
   }
 
   explicit list(size_type n, const value_type& value)
@@ -165,7 +177,7 @@ class list {
   iterator insert(iterator pos, const_reference value) {
     node_type* new_node = new node_type(value);
 
-    if (pos.GetCurrent() == nullptr) {
+    if (pos.get_current() == end_sentinel_) {
       if (tail_ != nullptr) {
         tail_->next_ = new_node;
         new_node->pre_ = tail_;
@@ -174,8 +186,13 @@ class list {
         head_ = new_node;
         tail_ = new_node;
       }
+      // Update tail and sentinel connections
+      tail_ = new_node;  // This was missing
+      tail_->next_ = end_sentinel_;
+      end_sentinel_->pre_ = tail_;
     } else {
-      node_type* current_node = pos.GetCurrent();
+      // Inserting in the middle
+      node_type* current_node = pos.get_current();
 
       if (current_node->pre_ != nullptr) {
         current_node->pre_->next_ = new_node;
@@ -197,10 +214,10 @@ class list {
     list<T> temp_list{std::forward<Args>(args)...};
 
     if (temp_list.empty()) {
-      return iterator(const_cast<node_type*>(pos.GetCurrent()));
+      return iterator(const_cast<node_type*>(pos.get_current()));
     }
 
-    node_type* pos_node = const_cast<node_type*>(pos.GetCurrent());
+    node_type* pos_node = const_cast<node_type*>(pos.get_current());
     node_type* new_head = temp_list.head_;
     node_type* new_tail = temp_list.tail_;
 
@@ -238,15 +255,21 @@ class list {
     if (empty()) {
       head_ = temp_list.head_;
       tail_ = temp_list.tail_;
+      tail_->next_ = end_sentinel_;
+      end_sentinel_->pre_ = tail_;
+
     } else {
       tail_->next_ = temp_list.head_;
-      temp_list.head_->pre_ = tail_;
 
+      temp_list.head_->pre_ = tail_;
       tail_ = temp_list.tail_;
+      tail_->next_ = end_sentinel_;
+      end_sentinel_->pre_ = tail_;
     }
 
     size_ += temp_list.size_;
 
+    // Prevent double deletion of nodes
     temp_list.head_ = nullptr;
     temp_list.tail_ = nullptr;
     temp_list.size_ = 0;
@@ -279,7 +302,7 @@ class list {
   void splice(const_iterator pos, list& other) {
     if (other.empty()) return;
 
-    node_type* pos_node = const_cast<node_type*>(pos.GetCurrent());
+    node_type* pos_node = const_cast<node_type*>(pos.get_current());
     node_type* other_head = other.head_;
     node_type* other_tail = other.tail_;
 
@@ -424,9 +447,9 @@ class list {
   }
 
   void erase(iterator pos) {
-    if (pos.GetCurrent() == nullptr) return;
+    if (pos.get_current() == nullptr) return;
 
-    node_type* node_to_delete = pos.GetCurrent();
+    node_type* node_to_delete = pos.get_current();
 
     if (node_to_delete->pre_) {
       node_to_delete->pre_->next_ = node_to_delete->next_;
@@ -571,7 +594,9 @@ class list {
     }
     head_ = nullptr;
     tail_ = nullptr;
-    end_sentinel_->pre_ = nullptr;  // Reset sentinel connections
+    if (end_sentinel_) {
+      end_sentinel_->pre_ = nullptr;
+    }  // Reset sentinel connections
     size_ = 0;
   }
 
@@ -766,7 +791,7 @@ class ListIterator {
 
   reference operator*() { return current_->data_; }
   pointer operator->() { return &current_->data_; }
-  node_pointer GetCurrent() const { return current_; }
+  node_pointer get_current() const { return current_; }
 
   ListIterator& operator++() {
     current_ = current_->next_;
