@@ -304,86 +304,8 @@ class list {
     other.size_ = 0;
   }
 
-  // void merge(list& other) {
-  //   if (other.head_ == nullptr) {
-  //     return;
-  //   }
-
-  //   if (head_ == nullptr) {
-  //     head_ = other.head_;
-  //     tail_ = other.tail_;
-  //     size_ = other.size_;
-
-  //     other.head_ = nullptr;
-  //     other.tail_ = nullptr;
-  //     other.size_ = 0;
-  //     return;
-  //   }
-
-  //   node_type* existing_head = head_;
-  //   node_type* other_head = other.head_;
-  //   node_type* merged_head = nullptr;
-  //   node_type* merged_tail = nullptr;
-
-  //   if (existing_head->data_ <= other_head->data_) {
-  //     merged_head = existing_head;
-  //     existing_head = existing_head->next_;
-  //   } else {
-  //     merged_head = other_head;
-  //     other_head = other_head->next_;
-  //   }
-
-  //   merged_tail = merged_head;
-
-  //   while (existing_head != nullptr && other_head != nullptr) {
-  //     if (existing_head->data_ <= other_head->data_) {
-  //       merged_tail->next_ = existing_head;
-  //       existing_head->pre_ = merged_tail;
-  //       merged_tail = existing_head;
-  //       existing_head = existing_head->next_;
-  //     } else {
-  //       merged_tail->next_ = other_head;
-  //       other_head->pre_ = merged_tail;
-  //       merged_tail = other_head;
-  //       other_head = other_head->next_;
-  //     }
-  //   }
-
-  //   if (existing_head != nullptr) {
-  //     merged_tail->next_ = existing_head;
-  //     existing_head->pre_ = merged_tail;
-  //   } else if (other_head != nullptr) {
-  //     merged_tail->next_ = other_head;
-  //     other_head->pre_ = merged_tail;
-  //   }
-
-  //   head_ = merged_head;
-  //   tail_ = merged_tail;
-  //   size_ += other.size_;
-
-  //   other.head_ = nullptr;
-  //   other.tail_ = nullptr;
-  //   other.size_ = 0;
-
-  //   tail_->next_ = end_sentinel_;
-  //   end_sentinel_->pre_ = tail_;
-  // }
-
-  void link_nodes(node_type* prev, node_type* curr) {
-    if (prev) {
-      prev->next_ = curr;
-    } else {
-      head_ = curr;
-    }
-
-    if (curr) {
-      curr->pre_ = prev;
-    } else {
-      tail_ = prev;
-    }
-  }
-
   void merge(list& other) {
+    // Handle empty lists cases
     if (other.empty()) {
       return;
     }
@@ -398,10 +320,12 @@ class list {
       return;
     }
 
+    // Track current positions in both lists
     node_type* current = head_;
     node_type* other_current = other.head_;
     node_type* prev = nullptr;
 
+    // Merge nodes in sorted order
     while (current && other_current) {
       if (current->data_ <= other_current->data_) {
         prev = current;
@@ -418,19 +342,23 @@ class list {
       }
     }
 
+    // Append remaining nodes from other list
     if (other_current) {
       link_nodes(prev, other_current);
 
+      // Find the new tail
       while (other_current->next_) {
         other_current = other_current->next_;
       }
       tail_ = other_current;
     }
 
+    // Update sentinel links and size
     tail_->next_ = end_sentinel_;
     end_sentinel_->pre_ = tail_;
     size_ += other.size_;
 
+    // Clear the other list
     other.head_ = nullptr;
     other.tail_ = nullptr;
     other.size_ = 0;
@@ -711,6 +639,22 @@ class list {
   node_type* tail_{nullptr};
   size_type size_{};
   node_type* end_sentinel_{nullptr};
+
+ private:
+  // Helper function to link nodes together safely
+  void link_nodes(node_type* prev, node_type* curr) {
+    if (prev) {
+      prev->next_ = curr;
+    } else {
+      head_ = curr;
+    }
+
+    if (curr) {
+      curr->pre_ = prev;
+    } else {
+      tail_ = prev;
+    }
+  }
 
   std::pair<node_type*, node_type*> Split(node_type* head) {
     node_type* slow = head;
