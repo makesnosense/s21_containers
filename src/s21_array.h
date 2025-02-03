@@ -17,9 +17,6 @@ class array {
   using size_type = std::size_t;
   using iterator = s21::ArrayIterator<T>;
 
- private:
-  value_type data_[N];
-
  public:
   constexpr array() {
     for (size_type i = 0; i < N; ++i) {
@@ -71,7 +68,7 @@ class array {
   constexpr bool empty() { return N == 0; }
 
   constexpr void fill(const T& value) {
-    for (size_type i = 0; i < N; ++i) {
+    for (size_type i{0}; i < N; ++i) {
       data_[i] = value;
     }
   }
@@ -90,7 +87,7 @@ class array {
   }
 
   constexpr void swap(array& other) {
-    for (size_type i = 0; i < N; ++i) {
+    for (size_type i{0}; i < N; ++i) {
       std::swap(data_[i], other.data_[i]);
     }
   }
@@ -103,7 +100,11 @@ class array {
   iterator end() { return iterator(data_ + N); }
   iterator data() { return iterator(data_); }
   ~array() = default;
+
+ private:
+  value_type data_[N];
 };
+
 template <typename T>
 class ArrayIterator {
  public:
@@ -113,56 +114,64 @@ class ArrayIterator {
   using difference_type = std::ptrdiff_t;
   using iterator_category = std::random_access_iterator_tag;
 
- private:
-  pointer ptr;
-
  public:
-  explicit ArrayIterator(pointer p) : ptr(p) {}
+  explicit ArrayIterator(pointer other) : ptr_(other) {}
 
-  reference operator*() { return *ptr; }
+  reference operator*() { return *ptr_; }
 
-  pointer operator->() { return ptr; }
+  pointer operator->() { return ptr_; }
 
   ArrayIterator& operator++() {
-    ++ptr;
+    ++ptr_;
     return *this;
   }
   ArrayIterator operator++(int) {
     ArrayIterator temp = *this;
-    ++ptr;
+    ++ptr_;
     return temp;
   }
 
   ArrayIterator& operator--() {
-    --ptr;
+    --ptr_;
     return *this;
   }
 
   ArrayIterator operator--(int) {
     ArrayIterator temp = *this;
-    --ptr;
+    --ptr_;
     return temp;
   }
 
   ArrayIterator operator+(difference_type n) const {
-    return ArrayIterator(ptr + n);
+    return ArrayIterator(ptr_ + n);
   }
 
   ArrayIterator operator-(difference_type n) const {
-    return ArrayIterator(ptr - n);
+    return ArrayIterator(ptr_ - n);
   }
 
-  bool operator==(const ArrayIterator& other) const { return ptr == other.ptr; }
+  bool operator==(const ArrayIterator& other) const {
+    return ptr_ == other.ptr_;
+  }
 
-  bool operator!=(const ArrayIterator& other) const { return ptr != other.ptr; }
+  bool operator!=(const ArrayIterator& other) const {
+    return ptr_ != other.ptr_;
+  }
 
-  bool operator<(const ArrayIterator& other) const { return ptr < other.ptr; }
+  bool operator<(const ArrayIterator& other) const { return ptr_ < other.ptr_; }
 
-  bool operator<=(const ArrayIterator& other) const { return ptr <= other.ptr; }
+  bool operator<=(const ArrayIterator& other) const {
+    return ptr_ <= other.ptr_;
+  }
 
-  bool operator>(const ArrayIterator& other) const { return ptr > other.ptr; }
+  bool operator>(const ArrayIterator& other) const { return ptr_ > other.ptr_; }
 
-  bool operator>=(const ArrayIterator& other) const { return ptr >= other.ptr; }
+  bool operator>=(const ArrayIterator& other) const {
+    return ptr_ >= other.ptr_;
+  }
+
+ private:
+  pointer ptr_;
 };
 
 }  // namespace s21
