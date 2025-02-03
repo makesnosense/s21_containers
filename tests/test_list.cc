@@ -135,9 +135,6 @@ TYPED_TEST(ListTest, CopyAssignmentOperator) {
   this->stl_list_ = this->empty_stl_list_;
 
   auto stl_it = this->empty_stl_list_.begin();
-  // auto stl_it_end = this->empty_s21_list_.end();
-
-  // std::cout << "\n\n\n\n" << *stl_it_end << "\n\n\n\n";
   for (auto i = this->empty_stl_list_.begin(); i != this->empty_stl_list_.end();
        ++i) {
     EXPECT_EQ(*i, *stl_it);

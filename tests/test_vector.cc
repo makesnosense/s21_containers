@@ -229,7 +229,6 @@ TYPED_TEST(VectorTest, Iterators) {
 }
 
 TYPED_TEST(VectorTest, OperatorBracketsModification) {
-  // Test that operator[] returns a modifiable reference
   this->stl_vec_[0] = this->stl_vec_[1];
   this->s21_vec_[0] = this->s21_vec_[1];
 
@@ -244,7 +243,6 @@ TYPED_TEST(VectorTest, OperatorBracketsModification) {
   EXPECT_EQ(this->stl_vec_[2], this->s21_vec_[2]);
 }
 
-// Additional edge cases for reserve()
 TYPED_TEST(VectorTest, ReserveEdgeCases) {
   size_t original_capacity = this->s21_vec_.capacity();
   this->s21_vec_.reserve(1);
@@ -638,7 +636,6 @@ TEST(VectorTestNonTyped, ReverseIterators) {
 
   std::vector<int> std_vec = {1, 2, 3, 4};
   auto std_rbegin = std_vec.rbegin();
-  // auto std_rend = std_vec.rend();
 
   for (; rbegin != rend; ++rbegin, ++std_rbegin) {
     EXPECT_EQ(*rbegin, *std_rbegin);
@@ -707,7 +704,6 @@ TEST(VectorTestNonTyped, PositiveSizeConstructor) {
   EXPECT_EQ(v.capacity(), size_t{10});
   EXPECT_NE(v.data(), nullptr);
 
-  // Проверяем инициализацию значениями по умолчанию
   for (std::size_t i = 0; i < v.size(); ++i) {
     EXPECT_EQ(v[i], 0);
   }
@@ -764,28 +760,24 @@ TEST(VectorTestNonTyped, EraseEmptyVector) {
 TEST(VectorConstCorrectnessTest, ConstMemberAccess) {
   const s21::vector<int> const_vec{1, 2, 3};
 
-  // Test const element access methods
-  EXPECT_EQ(const_vec[0], 1);              // Test const operator[]
-  EXPECT_EQ(const_vec.front(), 1);         // Test const front()
-  EXPECT_EQ(const_vec.back(), 3);          // Test const back()
-  EXPECT_EQ(const_vec.size(), size_t{3});  // Test const size()
-  EXPECT_FALSE(const_vec.empty());         // Test const empty()
+  EXPECT_EQ(const_vec[0], 1);
+  EXPECT_EQ(const_vec.front(), 1);
+  EXPECT_EQ(const_vec.back(), 3);
+  EXPECT_EQ(const_vec.size(), size_t{3});
+  EXPECT_FALSE(const_vec.empty());
 }
 
-TEST(VectorConstCorrectnessTest, ConstIterators) {
+TEST(VectorTestNonTyped, ConstIterators) {
   const s21::vector<int> const_vec{1, 2, 3};
 
-  // Test const_iterator functionality
   s21::vector<int>::const_iterator it = const_vec.begin();
   EXPECT_EQ(*it, 1);
 
-  // Verify iteration works with const_iterator
   int expected = 1;
   for (auto it = const_vec.begin(); it != const_vec.end(); ++it) {
     EXPECT_EQ(*it, expected++);
   }
 
-  // Verify const_iterator comparison operators
   auto it1 = const_vec.begin();
   auto it2 = const_vec.begin() + 1;
   EXPECT_TRUE(it1 < it2);
@@ -794,11 +786,10 @@ TEST(VectorConstCorrectnessTest, ConstIterators) {
   EXPECT_FALSE(it1 >= it2);
 }
 
-TEST(VectorConstCorrectnessTest, ConstVectorAssignment) {
+TEST(VectorTestNonTyped, ConstVectorAssignment) {
   const s21::vector<int> const_source{1, 2, 3};
   s21::vector<int> target;
 
-  // Test assignment from const vector
   target = const_source;
   EXPECT_EQ(target.size(), const_source.size());
   for (size_t i = 0; i < target.size(); ++i) {
@@ -806,7 +797,7 @@ TEST(VectorConstCorrectnessTest, ConstVectorAssignment) {
   }
 }
 
-TEST(VectorConstCorrectnessTest, ConstAt) {
+TEST(VectorTestNonTyped, ConstAt) {
   const s21::vector<int> const_vec{1, 2, 3};
 
   // Test const at() method
@@ -816,10 +807,9 @@ TEST(VectorConstCorrectnessTest, ConstAt) {
   EXPECT_THROW(const_vec.at(3), std::out_of_range);
 }
 
-TEST(VectorConstCorrectnessTest, ConstIteratorArithmetic) {
+TEST(VectorTestNonTyped, ConstIteratorArithmetic) {
   const s21::vector<int> const_vec{1, 2, 3, 4, 5};
 
-  // Test const_iterator arithmetic operations
   auto it = const_vec.begin();
   EXPECT_EQ(*(it + 2), 3);
   EXPECT_EQ(*(it + 4), 5);
@@ -831,34 +821,25 @@ TEST(VectorConstCorrectnessTest, ConstIteratorArithmetic) {
   EXPECT_EQ(it[1], 4);
 }
 
-TEST(VectorConstCorrectnessTest, ConstData) {
+TEST(VectorTestNonTyped, ConstData) {
   const s21::vector<int> const_vec{1, 2, 3};
 
-  // Test const data() method
   const int* data = const_vec.data();
   EXPECT_EQ(data[0], 1);
   EXPECT_EQ(data[1], 2);
   EXPECT_EQ(data[2], 3);
 }
 
-TEST(VectorConstCorrectnessTest, ComparisonWithConstVector) {
+TEST(VectorTestNonTyped, ComparisonWithConstVector) {
   const s21::vector<int> const_vec1{1, 2, 3};
   const s21::vector<int> const_vec2{1, 2, 3};
   const s21::vector<int> const_vec3{1, 2, 4};
 
-  // Test comparison operators with const vectors
   EXPECT_TRUE(const_vec1 == const_vec2);
   EXPECT_FALSE(const_vec1 == const_vec3);
 }
 
-// This is a working example showing how to verify compile failures
-TEST(VectorConstCorrectnessTest, NotCompiling) {
-  // 1. This would not compile:
-
-  // const s21::vector<int> const_vec{1, 2, 3};
-  // s21::vector<int>::iterator it = const_vec.begin();
-
-  // 2. This compiles fine (correct const usage):
+TEST(VectorTestNonTyped, NotCompiling) {
   const s21::vector<int> const_vec{1, 2, 3};
   s21::vector<int>::const_iterator const_it = const_vec.begin();
   EXPECT_EQ(*const_it, 1);
@@ -875,22 +856,17 @@ TYPED_TEST(VectorTest, SimpleIterator) {
 }
 
 TYPED_TEST(VectorTest, IteratorDereference) {
-  // Add known value to vector
   this->s21_vec_.push_back(TypeParam{});
 
-  // Get iterator
   auto it = this->s21_vec_.begin();
 
-  [[maybe_unused]] TypeParam* ptr = it;  // This calls operator pointer()
+  [[maybe_unused]] TypeParam* ptr = it;
 
-  // Force dereference operator usage
   TypeParam& ref = *it;
   [[maybe_unused]] const auto hm{*it};
-  // Verify we can read through the dereferenced iterator
   EXPECT_EQ(ref, this->s21_vec_[0]);
   ++it;
   it -= 1;
-  // Verify we can write through the dereferenced iterator
   *it = TypeParam{};
   EXPECT_EQ(this->s21_vec_[0], TypeParam{});
 }
