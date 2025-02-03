@@ -32,7 +32,6 @@ TEST(ArrayTest, array) {
   myArray.print();
   myArray.empty();
   myArray.max_size();
-  // std::cout << "Size of array: " << myArray.size() << std::endl;
 
   EXPECT_TRUE(true);
   EXPECT_EQ(1, 1);

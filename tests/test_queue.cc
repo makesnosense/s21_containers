@@ -124,7 +124,7 @@ TEST(QueueTest, QueueFunctionality) {
   EXPECT_TRUE(queue.empty());
 }
 
-TEST(QueueTest, qeue) {
+TEST(QueueTest, QueuePush) {
   s21::queue<int> mss;
   s21::queue<int> mss_swap;
   for (int i = 0; i < 10; i++) {
@@ -133,11 +133,7 @@ TEST(QueueTest, qeue) {
   mss_swap.push(5);
   mss_swap.push(5);
 
-  std::cout << mss.size() << "\n";
   mss.pop();
-  std::cout << mss.size() << "\n";
-  std::cout << mss.front() << "\n";
-  std::cout << mss.back() << "\n";
   mss_swap = mss;
   mss_swap.swap(mss);
   EXPECT_TRUE(true);
