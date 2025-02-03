@@ -62,17 +62,15 @@ TYPED_TEST(ListTest, max_size) {
   EXPECT_EQ(this->s21_list_.max_size(), this->s21_list_.max_size());
 }
 
-// TYPED_TEST(ListTest, reverse) {
-//   this->s21_list_.reverse();
-//   this->stl_list_.reverse();
-//   auto it2 = this->stl_list_.begin();
-//   for (auto it = this->s21_list_.begin(); it != this->s21_list_.end(); ++it)
-//   {
-//     EXPECT_EQ(*it, *it2);
-
-//     ++it2;
-//   }
-// }
+TYPED_TEST(ListTest, reverse) {
+  this->s21_list_.reverse();
+  this->stl_list_.reverse();
+  auto stl_it = this->stl_list_.begin();
+  for (auto s21_it = this->s21_list_.begin(); s21_it != this->s21_list_.end();
+       ++s21_it, ++stl_it) {
+    EXPECT_EQ(*s21_it, *stl_it);
+  }
+}
 
 TYPED_TEST(ListTest, get_front) {
   EXPECT_EQ(this->stl_list_.front(), this->s21_list_.front());
@@ -97,19 +95,19 @@ TYPED_TEST(ListTest, erase) {
   }
 }
 
-// TYPED_TEST(ListTest, sort) {
-//   this->s21_list_.reverse();
-//   this->stl_list_.reverse();
+TYPED_TEST(ListTest, sort) {
+  this->s21_list_.reverse();
+  this->stl_list_.reverse();
 
-//   this->s21_list_.sort();
-//   this->stl_list_.sort();
-//   auto stl_it = this->stl_list_.begin();
-//   for (auto i = this->s21_list_.begin(); i != this->s21_list_.end(); ++i) {
-//     EXPECT_EQ(*i, *stl_it);
+  this->s21_list_.sort();
+  this->stl_list_.sort();
+  auto stl_it = this->stl_list_.begin();
+  for (auto i = this->s21_list_.begin(); i != this->s21_list_.end(); ++i) {
+    EXPECT_EQ(*i, *stl_it);
 
-//     ++stl_it;
-//   }
-// }
+    ++stl_it;
+  }
+}
 
 TYPED_TEST(ListTest, unique) {
   this->s21_list_.push_back(5);
@@ -162,49 +160,46 @@ TYPED_TEST(ListTest, swap) {
   }
 }
 
-// TYPED_TEST(ListTest, merge) {
-//   this->s21_list_.merge(this->s21_list_for_swap);
-//   this->stl_list_.merge(this->stl_list_for_swap);
+TYPED_TEST(ListTest, merge) {
+  this->s21_list_.merge(this->s21_list_for_swap);
+  this->stl_list_.merge(this->stl_list_for_swap);
 
-//   // auto stl_it = this->stl_list_.begin();
-//   // for (auto i = this->s21_list_.begin(); i != this->s21_list_.end(); ++i)
-//   {
-//   //   EXPECT_EQ(*i, *stl_it);
+  auto stl_it = this->stl_list_.begin();
+  for (auto i = this->s21_list_.begin(); i != this->s21_list_.end(); ++i) {
+    EXPECT_EQ(*i, *stl_it);
 
-//   //   ++stl_it;
-//   // }
-// }
+    ++stl_it;
+  }
+}
 
-#if 0
+TYPED_TEST(ListTest, insert) {
+  auto stl_it = this->stl_list_.begin();
+  auto s21_it = this->s21_list_.begin();
 
-// TYPED_TEST(ListTest, insert) {
-//   auto stl_it = this->stl_list_.begin();
-//   // auto s21_it = this->s21_list_.begin();
-
-//   this->stl_list_.insert(stl_it, 2);
-//   // this->s21_list_.insert(s21_it, 2);
-//   // stl_it = this->stl_list_.begin();
-//   // for (auto i = this->s21_list_.begin(); i != this->s21_list_.end(); ++i)
-//   {
-//   //   EXPECT_EQ(*i, *stl_it);
-
-//   //   ++stl_it;
-//   // }
-// }
+  this->stl_list_.insert(stl_it, 70);
+  this->s21_list_.insert(s21_it, 70);
+  this->stl_list_.insert(stl_it, 80);
+  this->s21_list_.insert(s21_it, 80);
+  this->stl_list_.insert(stl_it, 90);
+  this->s21_list_.insert(s21_it, 90);
+  stl_it = this->stl_list_.begin();
+  for (auto s21_it = this->s21_list_.begin(); s21_it != this->s21_list_.end();
+       ++s21_it, ++stl_it) {
+    EXPECT_EQ(*s21_it, *stl_it);
+  }
+}
 
 TYPED_TEST(ListTest, copy) {
   EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
 }
 
-TYPED_TEST(ListTest, movedList) {
-  s21::list<int> original_list;
-  original_list.push_back(1);
-  original_list.push_back(2);
-  original_list.push_back(3);
+TYPED_TEST(ListTest, MovedList) {
+  s21::list<TypeParam> original_list;
+  original_list.push_back(70);
+  original_list.push_back(72);
+  original_list.push_back(73);
 
-  s21::list<int> movedList(std::move(original_list));
-
-  EXPECT_EQ(this->stl_list_.size(), this->s21_list_.size());
+  s21::list<TypeParam> moved_list(std::move(original_list));
 }
 
 TYPED_TEST(ListTest, splice) {
@@ -493,7 +488,7 @@ TEST(ListTest, insert_many) {
   s21_numbers_list.insert_many(it, values_to_insert[0], values_to_insert[1],
                                values_to_insert[2]);
 
-  EXPECT_EQ(s21_numbers_list.size(), 6);
+  EXPECT_EQ(s21_numbers_list.size(), size_t{6});
 
   auto it_check = s21_numbers_list.begin();
   EXPECT_EQ(*it_check++, 1);
@@ -514,7 +509,7 @@ TEST(ListTest, insert_many_back) {
   s21_numbers_list.insert_many_back(values_to_insert[0], values_to_insert[1],
                                     values_to_insert[2]);
 
-  EXPECT_EQ(s21_numbers_list.size(), 6);
+  EXPECT_EQ(s21_numbers_list.size(), size_t{6});
 
   auto it_check = s21_numbers_list.begin();
   EXPECT_EQ(*it_check++, 1);
@@ -535,7 +530,7 @@ TEST(ListTest, insert_many_front) {
   s21_numbers_list.insert_many_front(values_to_insert[0], values_to_insert[1],
                                      values_to_insert[2]);
 
-  EXPECT_EQ(s21_numbers_list.size(), 6);
+  EXPECT_EQ(s21_numbers_list.size(), size_t{6});
 
   auto it_check = s21_numbers_list.begin();
   EXPECT_EQ(*it_check++, 4);
@@ -545,19 +540,3 @@ TEST(ListTest, insert_many_front) {
   EXPECT_EQ(*it_check++, 2);
   EXPECT_EQ(*it_check++, 3);
 }
-
-#if 0 
-TYPED_TEST(ListTest, begin) {
-  auto s21_it = this->s21_list_.begin();
-  auto stl_it = this->stl_list_.begin();
-  EXPECT_EQ(s21_it, stl_it);
-}
-
-TYPED_TEST(ListTest, end) {
-  auto s21_it = this->s21_list_.end();
-  auto stl_it = this->stl_list_.end();
-  (void)stl_it;
-  EXPECT_EQ(1, 1);
-}
-#endif
-#endif
