@@ -7,7 +7,7 @@
 #include <stdexcept>
 
 namespace s21 {
-template <typename T>
+template <typename T, bool is_const>
 class ArrayIterator;
 template <typename T, std::size_t N>
 class array {
@@ -15,7 +15,8 @@ class array {
   using reference = T&;
   using const_reference = const T&;
   using size_type = std::size_t;
-  using iterator = s21::ArrayIterator<T>;
+  using iterator = s21::ArrayIterator<T, false>;
+  using const_iterator = s21::ArrayIterator<T, true>;
 
  public:
   constexpr array() {
@@ -105,12 +106,12 @@ class array {
   value_type data_[N];
 };
 
-template <typename T>
+template <typename T, bool is_const>
 class ArrayIterator {
  public:
   using value_type = T;
-  using reference = T&;
-  using pointer = T*;
+  using reference = std::conditional_t<is_const, const T&, T&>;
+  using pointer = std::conditional_t<is_const, const T*, T*>;
   using difference_type = std::ptrdiff_t;
   using iterator_category = std::random_access_iterator_tag;
 
