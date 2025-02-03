@@ -204,11 +204,7 @@ class RedBlackTree {
 
   iterator erase(iterator pos) {
     iterator next{pos};
-    if (next != nullptr) {
-      ++next;
-    } else {
-      return iterator();
-    }
+    ++next;
     RemoveNode(pos.current_);
     return next;
   }
@@ -665,7 +661,7 @@ class RedBlackTreeIteratorBase {
       std::conditional_t<is_const, const Node<Key, T>, Node<Key, T>>;
   node_type* current_{nullptr};
 
-  RedBlackTreeIteratorBase() = default;
+  RedBlackTreeIteratorBase() = delete;
   explicit RedBlackTreeIteratorBase(node_type* node) : current_(node) {}
 
   // Common traversal logic
@@ -731,7 +727,7 @@ class RedBlackTreeIterator : public RedBlackTreeIteratorBase<Key, is_const, T> {
   using Base::current_;
 
   // Constructors
-  RedBlackTreeIterator() : Base() {}
+  RedBlackTreeIterator() = delete;
   explicit RedBlackTreeIterator(typename Base::node_type* node) : Base(node) {}
 
   template <bool other_is_const,
@@ -782,7 +778,7 @@ class RedBlackTreeIterator<Key, is_const, void>
   using Base = RedBlackTreeIteratorBase<Key, is_const, void>;
   using Base::current_;
 
-  RedBlackTreeIterator() : Base() {}
+  RedBlackTreeIterator() = delete;
   explicit RedBlackTreeIterator(typename Base::node_type* node) : Base(node) {}
 
   template <bool other_is_const,

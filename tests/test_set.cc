@@ -263,13 +263,6 @@ TYPED_TEST(SetTest, EraseIteratorPos2) {
   EXPECT_EQ(this->s21_set_.empty(), this->stl_set_.empty());
 }
 
-TYPED_TEST(SetTest, EraseIteratorPos_EmptySet) {
-  auto it = this->empty_s21_set_.begin();
-  this->empty_s21_set_.erase(it);
-
-  EXPECT_TRUE(this->empty_s21_set_.empty());
-}
-
 TEST(SetNonTyped, EraseIteratorPos_SingleElement) {
   s21::set<int> s21_set = {10};
 
@@ -279,12 +272,11 @@ TEST(SetNonTyped, EraseIteratorPos_SingleElement) {
   EXPECT_TRUE(s21_set.empty());
 }
 
-TEST(SetNonTyped, EraseIteratorPos_NotFound) {
+TEST(SetNonTyped, IteratorPos_NotFound) {
   s21::set<int> s21_set = {1, 2, 3, 4, 5};
 
   auto it = s21_set.find(6);
   EXPECT_EQ(it, s21_set.end());
-  s21_set.erase(it);
 
   EXPECT_EQ(s21_set.size(), size_t{5});
 }

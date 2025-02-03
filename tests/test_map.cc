@@ -314,14 +314,6 @@ TYPED_TEST(MapTest, Contains) {
   EXPECT_FALSE(this->empty_s21_map_.contains(1));
 }
 
-// Additional erase tests
-TYPED_TEST(MapTest, EraseIteratorPos_EmptyMap) {
-  auto it = this->empty_s21_map_.begin();
-  this->empty_s21_map_.erase(it);
-
-  EXPECT_TRUE(this->empty_s21_map_.empty());
-}
-
 TEST(MapNonTyped, EraseIteratorPos_SingleElement) {
   s21::map<int, std::string> s21_map = {{10, "test"}};
 
@@ -331,13 +323,12 @@ TEST(MapNonTyped, EraseIteratorPos_SingleElement) {
   EXPECT_TRUE(s21_map.empty());
 }
 
-TEST(MapNonTyped, EraseIteratorPos_NotFound) {
+TEST(MapNonTyped, IteratorPos_NotFound) {
   s21::map<int, std::string> s21_map = {
       {1, "one"}, {2, "two"}, {3, "three"}, {4, "four"}, {5, "five"}};
 
   auto it = s21_map.find(6);
   EXPECT_EQ(it, s21_map.end());
-  s21_map.erase(it);
 
   EXPECT_EQ(s21_map.size(), size_t{5});
 }
