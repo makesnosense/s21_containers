@@ -3,7 +3,6 @@
 
 #include <cstddef>
 #include <initializer_list>
-#include <iostream>
 #include <iterator>
 #include <stdexcept>
 
@@ -588,9 +587,6 @@ class list {
     return iterator(head_);
   }
   iterator end() const { return iterator(end_sentinel_); }
-
-  // const_iterator begin() const { return const_iterator(head_); }
-  // const_iterator end() const { return const_iterator(end_sentinel_); }
 
   void clear() {
     node_type* current = head_;
