@@ -97,8 +97,12 @@ class array {
     return (std::numeric_limits<size_type>::max() / sizeof(value_type));
   }
   iterator begin() { return iterator(data_); }
-
   iterator end() { return iterator(data_ + N); }
+  const_iterator begin() const { return const_iterator(data_); }
+  const_iterator end() const { return const_iterator(data_ + N); }
+  const_iterator cbegin() const { return const_iterator(data_); }
+  const_iterator cend() const { return const_iterator(data_ + N); }
+
   iterator data() { return iterator(data_); }
   ~array() = default;
 
