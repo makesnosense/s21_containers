@@ -5,6 +5,7 @@
 #pragma GCC diagnostic pop
 
 #include <algorithm>
+#include <string>
 #include <vector>
 
 #include "random.h"
@@ -1517,4 +1518,81 @@ TEST(RedBlackTreeSetTest, DecrementIteratorAfterEnd) {
 
   EXPECT_EQ(tree.size(), size_t{5});
   EXPECT_TRUE(tree.FindNode(3) == nullptr);
+}
+
+TEST(RedBlackTreeSetTest, DecrementEndIteratorBehavior) {
+  // STL set
+  std::set<int> std_set{};
+  s21::RedBlackTree<int> s21_tree{};
+
+  // Empty containers
+  auto std_it = std_set.end();
+  auto s21_it = s21_tree.end();
+
+  // Should not be able to decrement end() on empty containers
+  // STL behavior is undefined here, so we'll skip this case
+
+  // Add some elements
+  for (int i = 1; i <= 5; ++i) {
+    std_set.insert(i);
+    s21_tree.insert(i);
+  }
+
+  // Test decrementing end() with non-empty containers
+  std_it = std_set.end();
+  s21_it = s21_tree.end();
+
+  --std_it;  // Now points to 5
+  --s21_it;  // Should also point to 5
+
+  EXPECT_EQ(*std_it, *s21_it);  // Both should be 5
+
+  // Test multiple decrements from end()
+  std_it = std_set.end();
+  s21_it = s21_tree.end();
+
+  --std_it;  // 5
+  --std_it;  // 4
+  --std_it;  // 3
+
+  --s21_it;  // 5
+  --s21_it;  // 4
+  --s21_it;  // 3
+
+  EXPECT_EQ(*std_it, *s21_it);  // Both should be 3
+}
+
+TEST(RedBlackTreeMapTest, DecrementEndIteratorBehavior) {
+  // STL map
+  std::map<int, std::string> std_map{};
+  s21::RedBlackTree<int, std::string> s21_tree{};
+
+  // Add some elements
+  for (int i = 1; i <= 5; ++i) {
+    std_map.insert({i, "value" + std::to_string(i)});
+    s21_tree.insert({i, "value" + std::to_string(i)});
+  }
+
+  // Test decrementing end()
+  auto std_it = std_map.end();
+  auto s21_it = s21_tree.end();
+
+  --std_it;  // Now points to {5, "value5"}
+  --s21_it;  // Should also point to {5, "value5"}
+
+  EXPECT_EQ(std_it->first, s21_it->first);
+  EXPECT_EQ(std_it->second, s21_it->second);
+
+  // Test multiple decrements
+  std_it = std_map.end();
+  s21_it = s21_tree.end();
+
+  --std_it;  // {5, "value5"}
+  --std_it;  // {4, "value4"}
+
+  --s21_it;  // {5, "value5"}
+  --s21_it;  // {4, "value4"}
+
+  EXPECT_EQ(std_it->first, s21_it->first);
+  EXPECT_EQ(std_it->second, s21_it->second);
 }
