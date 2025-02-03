@@ -81,8 +81,10 @@ class Node<Key, void> {
 
 template <typename Key, typename T>
 class RedBlackTree;
+
 template <typename Key, bool is_const, typename T = void>
 class RedBlackTreeIterator;
+
 template <typename Key, typename T>
 void print_tree(const RedBlackTree<Key, T>& tree);
 
@@ -126,10 +128,10 @@ class RedBlackTree {
     while (current->left_) {
       current = current->left_;
     }
-    return iterator(current);
+    return iterator(current, this);
   }
 
-  iterator end() { return iterator(nullptr); }
+  iterator end() { return iterator(nullptr, this); }
 
   size_type size() const { return size_; }
 
@@ -141,10 +143,10 @@ class RedBlackTree {
     while (current->left_) {
       current = current->left_;
     }
-    return const_iterator(current);
+    return const_iterator(current, this);
   }
 
-  const_iterator end() const { return const_iterator(nullptr); }
+  const_iterator end() const { return const_iterator(nullptr, this); }
 
   std::pair<node_type*, bool> insert(const value_type& value) {
     if (root_ == nullptr) {
@@ -235,6 +237,14 @@ class RedBlackTree {
       size_ = other.size_;
     }
     return *this;
+  }
+
+  node_type* GetMax(node_type* us) const {
+    node_type* current = us;
+    while (current->right_ != nullptr) {
+      current = current->right_;
+    }
+    return current;
   }
 
  private:
@@ -477,14 +487,6 @@ class RedBlackTree {
     return current;
   }
 
-  node_type* GetMax(node_type* us) {
-    node_type* current = us;
-    while (current->right_ != nullptr) {
-      current = current->right_;
-    }
-    return current;
-  }
-
   void InsertFixup(node_type* us) {
     if (IsRoot(us)) {
       us->color_ = NodeColor::BLACK;
@@ -659,10 +661,31 @@ class RedBlackTreeIteratorBase {
  protected:
   using node_type =
       std::conditional_t<is_const, const Node<Key, T>, Node<Key, T>>;
-  node_type* current_{nullptr};
+  using tree_type = const RedBlackTree<Key, T>;
 
   RedBlackTreeIteratorBase() = delete;
-  explicit RedBlackTreeIteratorBase(node_type* node) : current_(node) {}
+  RedBlackTreeIteratorBase(node_type* node, tree_type* tree)
+      : current_(node), tree_(tree) {}
+
+ public:
+  tree_type* get_tree() const { return tree_; }
+
+  // Common operators
+  bool operator==(const RedBlackTreeIteratorBase& other) const {
+    return current_ == other.current_;
+  }
+
+  bool operator!=(const RedBlackTreeIteratorBase& other) const {
+    return !(*this == other);
+  }
+
+  bool operator==(std::nullptr_t) const { return current_ == nullptr; }
+
+  bool operator!=(std::nullptr_t) const { return current_ != nullptr; }
+
+ protected:
+  node_type* current_{nullptr};
+  tree_type* tree_;
 
   // Common traversal logic
   void increment() {
@@ -682,6 +705,10 @@ class RedBlackTreeIteratorBase {
   }
 
   void decrement() {
+    if (current_ == nullptr && tree_) {
+      current_ = tree_->GetMax(tree_->get_root());
+      return;
+    }
     if (current_->left_) {
       current_ = current_->left_;
       while (current_->right_) {
@@ -696,20 +723,6 @@ class RedBlackTreeIteratorBase {
       current_ = parent;
     }
   }
-
- public:
-  // Common operators
-  bool operator==(const RedBlackTreeIteratorBase& other) const {
-    return current_ == other.current_;
-  }
-
-  bool operator!=(const RedBlackTreeIteratorBase& other) const {
-    return !(*this == other);
-  }
-
-  bool operator==(std::nullptr_t) const { return current_ == nullptr; }
-
-  bool operator!=(std::nullptr_t) const { return current_ != nullptr; }
 };
 
 // Map version
@@ -728,13 +741,15 @@ class RedBlackTreeIterator : public RedBlackTreeIteratorBase<Key, is_const, T> {
 
   // Constructors
   RedBlackTreeIterator() = delete;
-  explicit RedBlackTreeIterator(typename Base::node_type* node) : Base(node) {}
+  RedBlackTreeIterator(typename Base::node_type* node,
+                       typename Base::tree_type* tree)
+      : Base(node, tree) {}
 
   template <bool other_is_const,
             typename = std::enable_if_t<(is_const || !other_is_const)>>
   RedBlackTreeIterator(
       const RedBlackTreeIterator<Key, other_is_const, T>& other)
-      : Base(other.current_) {}
+      : Base(other.current_, other.get_tree()) {}
 
   // Specialized dereferencing
   reference operator*() const { return current_->data_; }
@@ -779,12 +794,14 @@ class RedBlackTreeIterator<Key, is_const, void>
   using Base::current_;
 
   RedBlackTreeIterator() = delete;
-  explicit RedBlackTreeIterator(typename Base::node_type* node) : Base(node) {}
+  RedBlackTreeIterator(typename Base::node_type* node,
+                       typename Base::tree_type* tree)
+      : Base(node, tree) {}
 
   template <bool other_is_const,
             typename = std::enable_if_t<(is_const || !other_is_const)>>
   RedBlackTreeIterator(const RedBlackTreeIterator<Key, other_is_const>& other)
-      : Base(other.current_) {}
+      : Base(other.current_, other.get_tree()) {}
 
   // Specialized dereferencing
   reference operator*() const { return current_->data_; }

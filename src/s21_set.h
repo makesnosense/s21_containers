@@ -78,10 +78,10 @@ class set {
     // let's try to find first
     node_type* found{tree_.FindNode(value)};
     if (found) {
-      return {iterator(found), false};
+      return {iterator(found, &tree_), false};
     } else {
       auto result = tree_.insert(value);
-      return {iterator(result.first), result.second};
+      return {iterator(result.first, &tree_), result.second};
     }
   }
 
@@ -113,9 +113,11 @@ class set {
     }
   }
 
-  iterator find(const key_type& key) { return iterator(tree_.FindNode(key)); }
+  iterator find(const key_type& key) {
+    return iterator(tree_.FindNode(key), &tree_);
+  }
   bool contains(const key_type& key) {
-    return iterator(tree_.FindNode(key)) != tree_.end();
+    return iterator(tree_.FindNode(key), &tree_) != tree_.end();
   }
 
   bool operator==(const set& other) const {

@@ -1511,10 +1511,10 @@ TEST(RedBlackTreeSetTest, DecrementIteratorAfterEnd) {
 
   [[maybe_unused]] auto it = tree.end();
 
-  // --it;
+  --it;
 
-  // tree.erase(it);
+  tree.erase(3);
 
-  // EXPECT_EQ(tree.size(), size_t{5});
-  // EXPECT_TRUE(tree.FindNode(3) == nullptr);
+  EXPECT_EQ(tree.size(), size_t{5});
+  EXPECT_TRUE(tree.FindNode(3) == nullptr);
 }
