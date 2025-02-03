@@ -48,9 +48,12 @@ class list {
   using const_iterator = const ListIterator<T, true>;
   using size_type = std::size_t;
 
-  list() : head_{nullptr}, tail_{nullptr}, size_{0} {}
+  list() : head_{nullptr}, tail_{nullptr}, size_{0} {
+    end_sentinel_ = new node_type();
+  }
   explicit list(std::initializer_list<value_type> init)
       : head_{nullptr}, tail_{nullptr}, size_{0} {
+    end_sentinel_ = new node_type();
     for (const T& value : init) {
       node_type* new_node = new node_type(value);
       if (!head_) {
@@ -63,9 +66,13 @@ class list {
       }
       ++size_;
     }
+
+    tail_->next_ = end_sentinel_;
+    end_sentinel_->pre_ = tail_;
   }
 
   list(size_type n) : head_{nullptr}, tail_{nullptr}, size_{0} {
+    end_sentinel_ = new node_type();
     for (size_type i{0}; i < n; i++) {
       node_type* new_node = new node_type();
       if (!head_) {
@@ -78,6 +85,8 @@ class list {
       }
       ++size_;
     }
+    tail_->next_ = end_sentinel_;
+    end_sentinel_->pre_ = tail_;
   }
 
   list(const list& other) : head_(nullptr), tail_(nullptr), size_(0) {
@@ -99,6 +108,7 @@ class list {
 
   explicit list(size_type n, const value_type& value)
       : head_{nullptr}, tail_{nullptr}, size_{0} {
+    end_sentinel_ = new node_type();
     for (size_type i{0}; i < n; ++i) {
       node_type* new_node = new node_type(value);
       if (!head_) {
@@ -112,9 +122,28 @@ class list {
       }
       ++size_;
     }
+    tail_->next_ = end_sentinel_;
+    end_sentinel_->pre_ = tail_;
   }
 
-  ~list() { clear(); };
+  list& operator=(const list& other) {
+    if (this != &other) {
+      clear();
+
+      node_type* current = other.head_;
+      while (current != nullptr) {
+        push_back(current->data_);
+        current = current->next_;
+      }
+    }
+
+    return *this;
+  }
+
+  ~list() {
+    clear();
+    delete end_sentinel_;
+  };
 
   iterator insert(iterator pos, const_reference value) {
     node_type* new_node = new node_type(value);
@@ -425,6 +454,7 @@ class list {
 
   void push_back(const_reference value) {
     node_type* new_node = new node_type(value);
+    end_sentinel_ = new node_type();
     if (empty()) {
       head_ = new_node;
       tail_ = new_node;
@@ -435,6 +465,8 @@ class list {
     }
 
     ++size_;
+    tail_->next_ = end_sentinel_;
+    end_sentinel_->pre_ = tail_;
   }
 
   void reverse() {
@@ -537,19 +569,6 @@ class list {
     return true;
   }
 
-  list& operator=(const list& other) {
-    if (this != &other) {
-      clear();
-
-      node_type* current = other.head_;
-      while (current != nullptr) {
-        push_back(current->data_);
-        current = current->next_;
-      }
-    }
-    return *this;
-  }
-
   bool operator==(const std::list<T>& first) {
     if (first.size() != this->size()) {
       return false;
@@ -570,26 +589,28 @@ class list {
   }
 
   iterator begin() { return iterator(head_); }
-  iterator end() { return nullptr; }
-
-  int get_size() const;
+  iterator end() { return iterator(end_sentinel_); }
 
   void clear() {
     node_type* current = head_;
     while (current != nullptr) {
       node_type* next_node = current->next_;
-      delete current;
+      if (current != end_sentinel_) {  // Don't delete sentinel
+        delete current;
+      }
       current = next_node;
     }
     head_ = nullptr;
     tail_ = nullptr;
+    end_sentinel_->pre_ = nullptr;  // Reset sentinel connections
     size_ = 0;
   }
 
  private:
-  node_type* head_;
-  node_type* tail_;
-  size_type size_;
+  node_type* head_{nullptr};
+  node_type* tail_{nullptr};
+  size_type size_{};
+  node_type* end_sentinel_{nullptr};
 
   std::pair<node_type*, node_type*> Split(node_type* head) {
     node_type* slow = head;
@@ -666,7 +687,7 @@ class list {
 template <typename T, bool is_const>
 class ListIterator {
  public:
-  using iterator_category = std::forward_iterator_tag;
+  using iterator_category = std::bidirectional_iterator_tag;
   using difference_type = std::ptrdiff_t;
   using reference = std::conditional_t<is_const, const T&, T&>;
   using value_type = T;
