@@ -9,20 +9,17 @@ namespace s21 {
 
 template <typename T>
 class queue {
- private:
-  deque<T> data_;
-
  public:
   using size_type = std::size_t;
   using value_type = T;
   using reference = T &;
   using const_reference = const T &;
-  queue() : data_() {};
 
+  queue() : data_() {};
   queue(std::initializer_list<T> const &init) : data_(init) {}
   queue(const queue &other) : data_(other.data_) {}
-
   queue(queue &&other) noexcept : data_(std::move(other.data_)) {}
+  ~queue() { clear(); }
 
   template <typename... Args>
   void insert_many_back(Args &&...args) {
@@ -79,7 +76,8 @@ class queue {
     }
   }
 
-  ~queue() { clear(); }
+ private:
+  deque<T> data_;
 };
 
 }  // namespace s21

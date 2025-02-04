@@ -9,9 +9,6 @@ namespace s21 {
 
 template <typename T>
 class stack {
- private:
-  deque<T> data_;
-
  public:
   using size_type = std::size_t;
   using value_type = T;
@@ -22,6 +19,8 @@ class stack {
   stack(const stack &other) : data_(other.data_) {}
   stack(stack &&other) noexcept : data_(std::move(other.data_)) {}
   stack(std::initializer_list<T> const &init) : stack(init) {}
+
+  ~stack() { clear(); }
 
   template <typename... Args>
   void insert_many_back(Args &&...args) {
@@ -64,7 +63,8 @@ class stack {
     }
   }
 
-  ~stack() { clear(); }
+ private:
+  deque<T> data_;
 };
 
 }  // namespace s21
