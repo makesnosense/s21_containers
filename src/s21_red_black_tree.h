@@ -98,13 +98,8 @@ class RedBlackTree {
   using mapped_type = T;
   using iterator = RedBlackTreeIterator<Key, false, T>;
   using const_iterator = RedBlackTreeIterator<Key, true, T>;
-
-  // using value_type = typename traits::value_type;
-  // using pointer = T*;
-  // using const_pointer = const T*;
-  // using reference = typename traits::reference;
-  // using const_reference = typename traits::const_reference;
   using size_type = std::size_t;
+
   friend void print_tree<Key, T>(const RedBlackTree<Key, T>&);
 
   RedBlackTree() : root_(nullptr), size_(0) {}
