@@ -757,7 +757,7 @@ TEST(VectorTestNonTyped, EraseEmptyVector) {
   EXPECT_NO_THROW(custom_vec.erase(custom_vec.begin()));
 }
 
-TEST(VectorConstCorrectnessTest, ConstMemberAccess) {
+TEST(VectorTestNonTyped, ConstMemberAccess) {
   const s21::vector<int> const_vec{1, 2, 3};
 
   EXPECT_EQ(const_vec[0], 1);
