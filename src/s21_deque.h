@@ -2,7 +2,9 @@
 #ifndef S21_DEQUE_H
 #define S21_DEQUE_H
 #include <cstddef>
+#include <cstring>
 #include <initializer_list>
+#include <limits>
 
 namespace s21 {
 

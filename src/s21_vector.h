@@ -1,8 +1,10 @@
 #ifndef S21_VECTOR_H
 #define S21_VECTOR_H
 
+#include <cstring>
 #include <initializer_list>
 #include <iterator>
+#include <limits>
 
 namespace s21 {
 
