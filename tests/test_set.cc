@@ -94,8 +94,6 @@ TYPED_TEST(SetTest, InsertWithExistingElements) {
   EXPECT_EQ(this->empty_s21_set_.size(), this->empty_stl_set_.size());
 }
 
-/////////////////////////////
-
 TYPED_TEST(SetTest, InsertMany) {
   std::vector<TypeParam> values = {TypeParam{1}, TypeParam{2}, TypeParam{3},
                                    TypeParam{4}, TypeParam{5}};
@@ -137,16 +135,14 @@ TYPED_TEST(SetTest, InsertManyDuplicates) {
   EXPECT_TRUE(results[3].second);
 }
 
-///////////////////
-
-// copy contructer
+// copy contructor
 TYPED_TEST(SetTest, CopyConstructor) {
   s21::set<TypeParam> s21_set_2(this->s21_set_);
 
   EXPECT_EQ(this->s21_set_, s21_set_2);
 }
 
-// move constructer
+// move constructor
 TYPED_TEST(SetTest, MoveConstructor) {
   s21::set<TypeParam> s21_set_2(std::move(this->s21_set_));
 
@@ -194,7 +190,6 @@ TYPED_TEST(SetTest, MoveAssignmentOperator) {
   EXPECT_EQ(s21_temp_set, this->empty_s21_set_);
 }
 
-// erase
 TYPED_TEST(SetTest, EraseIteratorPos1) {
   auto it = this->s21_set_.find(103);
   EXPECT_NE(it, this->s21_set_.end());

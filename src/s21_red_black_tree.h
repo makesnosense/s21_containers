@@ -147,7 +147,6 @@ class RedBlackTree {
   std::pair<node_type*, bool> insert(const value_type& value) {
     if (root_ == nullptr) {
       root_ = CreateNode(value);
-      // root_ = new node(value.first, value.second);
       root_->parent_ = nullptr;
       root_->color_ = NodeColor::BLACK;
       ++size_;
