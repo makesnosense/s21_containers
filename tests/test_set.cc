@@ -142,7 +142,6 @@ TYPED_TEST(SetTest, CopyConstructor) {
   EXPECT_EQ(this->s21_set_, s21_set_2);
 }
 
-// move constructor
 TYPED_TEST(SetTest, MoveConstructor) {
   s21::set<TypeParam> s21_set_2(std::move(this->s21_set_));
 
@@ -162,7 +161,6 @@ TYPED_TEST(SetTest, MoveConstructor) {
   EXPECT_FALSE(this->s21_set_.contains(3));
 }
 
-// ConstructorWithSizeAndValue
 TEST(SetNonTyped, ConstructorWithSizeAndValue) {
   size_t size = 5;
   int value = 42;
@@ -178,7 +176,6 @@ TEST(SetNonTyped, ConstructorWithSizeAndValue) {
   EXPECT_FALSE(empty_set.contains(value));
 }
 
-// Move Assignment Operator
 TYPED_TEST(SetTest, MoveAssignmentOperator) {
   s21::set<TypeParam> s21_temp_set{this->s21_set_};
 
@@ -276,7 +273,6 @@ TEST(SetNonTyped, IteratorPos_NotFound) {
   EXPECT_EQ(s21_set.size(), size_t{5});
 }
 
-// swap
 TYPED_TEST(SetTest, Swap_SameSize_1) {
   this->empty_s21_set_.swap(this->s21_set_);
 

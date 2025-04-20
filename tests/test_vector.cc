@@ -72,7 +72,6 @@ TYPED_TEST(VectorTest, MoveConstructor) {
   EXPECT_TRUE(this->s21_vec_.empty());
 }
 
-// Element Access Tests
 TYPED_TEST(VectorTest, OperatorBrackets) {
   for (size_t i = 0; i < this->stl_vec_.size(); ++i) {
     EXPECT_EQ(this->stl_vec_[i], this->s21_vec_[i]);
@@ -252,7 +251,6 @@ TYPED_TEST(VectorTest, ReserveEdgeCases) {
   EXPECT_GE(this->s21_vec_.capacity(), this->s21_vec_.size());
 }
 
-// insert
 TEST(VectorTestNonTyped, InsertSingleElement) {
   s21::vector<int> s21_vec;
   s21_vec.insert(s21_vec.begin(), 324);
@@ -402,8 +400,6 @@ TYPED_TEST(VectorTest, InsertManyBackWithExistingElements_2) {
   EXPECT_TRUE(std::equal(this->s21_vec_.begin(), this->s21_vec_.end(),
                          this->stl_vec_.begin()));
 }
-
-// erase
 
 TEST(VectorTestNonTyped, EraseSingleElement) {
   s21::vector<int> custom_vec;
