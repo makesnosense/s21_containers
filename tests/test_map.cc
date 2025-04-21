@@ -187,7 +187,6 @@ TYPED_TEST(MapTest, OperatorSqaerScobki) {
   EXPECT_EQ(this->empty_s21_map_.size(), size_t{3});
 }
 
-// // Element access tests
 TYPED_TEST(MapTest, At) {
   EXPECT_EQ(this->s21_map_.at(103), "a");
   EXPECT_EQ(this->s21_map_.at(53), "b");
@@ -214,7 +213,6 @@ TYPED_TEST(MapTest, CopyConstructor) {
   EXPECT_EQ(this->s21_map_, s21_map_2);
 }
 
-// Move constructor
 TYPED_TEST(MapTest, MoveConstructor) {
   s21::map<typename TypeParam::first_type, typename TypeParam::second_type>
       s21_map_2(std::move(this->s21_map_));

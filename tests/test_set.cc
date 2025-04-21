@@ -135,7 +135,6 @@ TYPED_TEST(SetTest, InsertManyDuplicates) {
   EXPECT_TRUE(results[3].second);
 }
 
-// copy contructor
 TYPED_TEST(SetTest, CopyConstructor) {
   s21::set<TypeParam> s21_set_2(this->s21_set_);
 
