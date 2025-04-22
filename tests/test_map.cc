@@ -205,7 +205,6 @@ TYPED_TEST(MapTest, OperatorSubscript) {
   EXPECT_EQ(this->s21_map_.size(), size_t{9});
 }
 
-// // Copy constructor
 TYPED_TEST(MapTest, CopyConstructor) {
   s21::map<typename TypeParam::first_type, typename TypeParam::second_type>
       s21_map_2(this->s21_map_);
@@ -231,7 +230,6 @@ TYPED_TEST(MapTest, MoveConstructor) {
   EXPECT_THROW(this->s21_map_.at(103), std::out_of_range);
 }
 
-// Move Assignment Operator
 TYPED_TEST(MapTest, MoveAssignmentOperator) {
   s21::map<typename TypeParam::first_type, typename TypeParam::second_type>
       s21_temp_map{this->s21_map_};
@@ -244,7 +242,6 @@ TYPED_TEST(MapTest, MoveAssignmentOperator) {
   EXPECT_EQ(s21_temp_map, this->empty_s21_map_);
 }
 
-// Erase
 TYPED_TEST(MapTest, EraseIteratorPos) {
   auto it = this->s21_map_.find(103);
   EXPECT_NE(it, this->s21_map_.end());
@@ -261,7 +258,6 @@ TYPED_TEST(MapTest, EraseIteratorPos) {
   EXPECT_THROW(this->s21_map_.at(102), std::out_of_range);
 }
 
-// Swap
 TYPED_TEST(MapTest, SwapMaps) {
   s21::map<typename TypeParam::first_type, typename TypeParam::second_type>
       map1{{1, "one"}, {2, "two"}};
@@ -281,7 +277,6 @@ TYPED_TEST(MapTest, SwapMaps) {
   EXPECT_EQ(map2.at(2), "two");
 }
 
-// Merge
 TYPED_TEST(MapTest, MergeMaps) {
   s21::map<typename TypeParam::first_type, typename TypeParam::second_type>
       other{{48, "extra"}, {49, "more"}};
@@ -295,7 +290,6 @@ TYPED_TEST(MapTest, MergeMaps) {
   EXPECT_TRUE(other.empty());
 }
 
-// Find
 TYPED_TEST(MapTest, Find) {
   auto it = this->s21_map_.find(103);
   EXPECT_NE(it, this->s21_map_.end());
@@ -305,7 +299,6 @@ TYPED_TEST(MapTest, Find) {
   EXPECT_EQ(it, this->s21_map_.end());
 }
 
-// Contains
 TYPED_TEST(MapTest, Contains) {
   EXPECT_TRUE(this->s21_map_.contains(103));
   EXPECT_FALSE(this->s21_map_.contains(52));
@@ -331,7 +324,6 @@ TEST(MapNonTyped, IteratorPos_NotFound) {
   EXPECT_EQ(s21_map.size(), size_t{5});
 }
 
-// Additional swap tests
 TEST(MapNonTyped, Swap_EmptyAndNonEmpty) {
   s21::map<int, std::string> s21_map1;
   s21::map<int, std::string> s21_map2 = {{42, "test"}};
@@ -365,7 +357,6 @@ TYPED_TEST(MapTest, Swap_SameElements) {
   EXPECT_EQ(s21_map, this->s21_map_);
 }
 
-// Additional merge tests
 TEST(MapNonTyped, Merge_EmptyIntoNonEmpty) {
   s21::map<int, std::string> s21_map1 = {
       {10, "ten"}, {20, "twenty"}, {30, "thirty"}};
