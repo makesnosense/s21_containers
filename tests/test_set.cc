@@ -476,7 +476,6 @@ TEST(SetNonTyped, Merge_SameSets) {
   EXPECT_TRUE(s21_set2.empty());
 }
 
-// find
 TYPED_TEST(SetTest, Find_ExistingElement) {
   auto s21_it = this->s21_set_.find(53);
   auto std_it = this->stl_set_.find(53);

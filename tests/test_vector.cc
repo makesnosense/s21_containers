@@ -90,7 +90,6 @@ TYPED_TEST(VectorTest, FrontBack) {
   EXPECT_EQ(this->stl_vec_.back(), this->s21_vec_.back());
 }
 
-// Capacity Tests
 TYPED_TEST(VectorTest, Capacity) {
   EXPECT_EQ(this->stl_vec_.capacity(), this->s21_vec_.capacity());
   EXPECT_EQ(this->large_stl_vec_.capacity(), this->large_s21_vec_.capacity());
@@ -479,7 +478,6 @@ TEST(VectorTestNonTyped, EraseMultipleElements) {
   EXPECT_EQ(*custom_iterator, *std_iterator);
 }
 
-// swap
 TEST(VectorTestNonTyped, SwapContent) {
   s21::vector<int> my_vector1{1, 2, 3};
   s21::vector<int> my_vector2{4, 5};
