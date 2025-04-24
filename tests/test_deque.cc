@@ -50,7 +50,6 @@ TYPED_TEST(DequeTest, Second) {
   EXPECT_EQ(this->empty_stl_deque_.size(), this->empty_s21_deque_.size());
 }
 
-// push_back
 TYPED_TEST(DequeTest, PushBackBasic) {
   std::deque<int> std_q;
   s21::deque<int> s21_q;
@@ -113,7 +112,6 @@ TYPED_TEST(DequeTest, PushBackEmptyDeque) {
   EXPECT_EQ(this->empty_s21_deque_.front(), value);
 }
 
-// push_front
 TYPED_TEST(DequeTest, PushFrontBasic) {
   std::deque<int> std_q;
   s21::deque<int> s21_q;
@@ -176,7 +174,6 @@ TYPED_TEST(DequeTest, PushFrontEmptyDeque) {
   EXPECT_EQ(this->empty_s21_deque_.front(), value);
 }
 
-// iterartor
 TEST(DequeNonTyped, ComparisonOperators) {
   s21::deque<int> arr{1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7};
   s21::deque<int>::iterator iter1 = arr.begin();
@@ -205,7 +202,7 @@ TEST(DequeNonTyped, ArithmeticOperators) {
   iter -= 1;
   EXPECT_EQ(*iter, 2);
 }
-// #if 0
+
 TEST(DequeNonTyped, ConstIterator_1) {
   s21::deque<int> arr{1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7};
   s21::deque<int>::iterator iter = arr.begin();
@@ -229,7 +226,6 @@ TEST(DequeNonTyped, ConstIterator_1) {
   (void)const_iter_std;
   (void)iter_2_std;
 }
-// #endif
 
 TYPED_TEST(DequeTest, Dereference) {
   typename s21::deque<TypeParam>::const_iterator iter =
@@ -408,7 +404,6 @@ TEST(DequeNonTyped, DefaultConstructorIterator) {
   EXPECT_NE(it1, it2);
 }
 
-// InitializerListConstructor
 TEST(DequeNonTyped, InitializerListConstructor) {
   int arr[] = {10, 20, 30, 40, 50};
   s21::deque<int> q{10, 20, 30, 40, 50};
@@ -418,7 +413,6 @@ TEST(DequeNonTyped, InitializerListConstructor) {
   EXPECT_EQ(q[2], arr[2]);
 }
 
-// at
 TYPED_TEST(DequeTest, At_1) { EXPECT_EQ(this->s21_deque_, this->stl_deque_); }
 
 TYPED_TEST(DequeTest, At_2) {
@@ -460,7 +454,6 @@ TYPED_TEST(DequeTest, AtEmptyDeque) {
   EXPECT_THROW(this->empty_s21_deque_.at(0), std::out_of_range);
 }
 
-// pop_back
 TYPED_TEST(DequeTest, PopBack_1) {
   this->large_s21_deque_.pop_back();
   this->large_stl_deque_.pop_back();
@@ -503,7 +496,6 @@ TYPED_TEST(DequeTest, PopBack_3) {
   EXPECT_EQ(this->empty_s21_deque_, this->empty_stl_deque_);
 }
 
-// pop_front
 TYPED_TEST(DequeTest, PopFront_1) {
   TypeParam value{};
   for (size_t i = 0; i < 5; ++i) {
@@ -568,7 +560,6 @@ TYPED_TEST(DequeTest, PopFront_4) {
   EXPECT_EQ(this->empty_s21_deque_.size(), this->empty_stl_deque_.size());
 }
 
-// back and front
 TYPED_TEST(DequeTest, BackAndFront_1) {
   TypeParam value{};
 
@@ -598,7 +589,6 @@ TYPED_TEST(DequeTest, BackAndFront_2) {
   EXPECT_EQ(this->empty_s21_deque_.back(), this->empty_stl_deque_.back());
 }
 
-// begin and end
 TEST(DequeNonTyped, BeginAndEnd) {
   std::deque<int> std_q;
   s21::deque<int> s21_q;
@@ -619,7 +609,6 @@ TEST(DequeNonTyped, BeginAndEnd) {
   EXPECT_EQ(std_q, s21_q);
 }
 
-// empty
 TYPED_TEST(DequeTest, Empty_1) {
   TypeParam value{};
 
@@ -637,7 +626,6 @@ TYPED_TEST(DequeTest, Empty_2) {
   EXPECT_TRUE(this->empty_s21_deque_.empty());
 }
 
-// swap
 TEST(DequeNonTyped, Swap) {
   std::deque<int> std_q_1;
   s21::deque<int> s21_q_1;
@@ -705,7 +693,6 @@ TEST(DequeNonTyped, MinMaxSort) {
             std::binary_search(std_q.begin(), std_q.end(), s21_q[2]));
 }
 
-// copy constructor
 TYPED_TEST(DequeTest, CopyConstructor) {
   s21::deque<TypeParam> copy(this->s21_deque_);
 
@@ -721,7 +708,6 @@ TYPED_TEST(DequeTest, CopyConstructor) {
   EXPECT_EQ(copy.back(), 60);
 }
 
-// move constructor
 TEST(DequeNonTyped, MoveConstructor) {
   s21::deque<int> original{10, 20, 30, 40, 50};
   size_t original_size = original.size();
@@ -776,6 +762,3 @@ TEST(DequeTest, MoveAssignmentOperator) {
   EXPECT_EQ(moved.size(), size_t{0});
   EXPECT_THROW(moved.at(0), std::out_of_range);
 }
-
-#if 0
-#endif
