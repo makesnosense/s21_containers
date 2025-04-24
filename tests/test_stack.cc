@@ -18,8 +18,10 @@ class StackTest : public testing::Test {
   std::stack<T> empty_stl_stack_;
   s21::stack<T> empty_s21_stack_;
 };
+
 using TestedTypes = ::testing::Types<char, int, double, DummyObject>;
 TYPED_TEST_SUITE(StackTest, TestedTypes, );
+
 TYPED_TEST(StackTest, PushElement) {
   TypeParam value = TypeParam();
   this->empty_s21_stack_.push(value);
@@ -27,6 +29,7 @@ TYPED_TEST(StackTest, PushElement) {
   EXPECT_EQ(this->empty_s21_stack_.size(), this->empty_stl_stack_.size());
   EXPECT_FALSE(this->empty_s21_stack_.empty());
 }
+
 TYPED_TEST(StackTest, PopElement) {
   TypeParam value = TypeParam();
   this->empty_s21_stack_.push(value);
@@ -39,11 +42,13 @@ TYPED_TEST(StackTest, PopElement) {
 
   EXPECT_TRUE(this->empty_s21_stack_.empty());
 }
+
 TYPED_TEST(StackTest, TopElement) {
   TypeParam value = TypeParam();
   this->empty_s21_stack_.push(value);
   EXPECT_EQ(this->empty_s21_stack_.top(), value);
 }
+
 TYPED_TEST(StackTest, IsEmpty) {
   EXPECT_TRUE(this->empty_s21_stack_.empty());
   TypeParam value = TypeParam();
@@ -69,6 +74,7 @@ TYPED_TEST(StackTest, MoveConstructor) {
   EXPECT_EQ(moved_stack.size(), size_t{1});
   EXPECT_EQ(moved_stack.top(), value);
 }
+
 TYPED_TEST(StackTest, CopyAssignmentOperator) {
   TypeParam value = TypeParam();
 
@@ -90,6 +96,7 @@ TYPED_TEST(StackTest, MoveAssignmentOperator) {
   EXPECT_EQ(another_stack.size(), size_t{1});
   EXPECT_EQ(another_stack.top(), value);
 }
+
 TEST(StackTestNonTyped, StackPush) {
   s21::stack<int> mss;
   s21::stack<int> mss_swap;

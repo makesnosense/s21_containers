@@ -370,7 +370,6 @@ TYPED_TEST(SetTest, Swap_SameElements) {
   EXPECT_EQ(s21_set, this->s21_set_);
 }
 
-// merge
 TYPED_TEST(SetTest, Merge_NonOverlapping) {
   s21::set<TypeParam> s21_set2 = {19, 21, 29};
   std::set<TypeParam> std_set2 = {19, 21, 29};
