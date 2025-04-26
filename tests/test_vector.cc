@@ -108,7 +108,6 @@ TYPED_TEST(VectorTest, ShrinkToFit) {
   EXPECT_EQ(this->s21_vec_.capacity(), this->s21_vec_.size());
 }
 
-// Modifier Tests
 TYPED_TEST(VectorTest, PushBack) {
   TypeParam value{};
   this->stl_vec_.push_back(value);
@@ -212,7 +211,6 @@ TYPED_TEST(VectorTest, Clear) {
   EXPECT_EQ(this->s21_vec_.size(), size_t{0});
 }
 
-// Iterator Tests
 TYPED_TEST(VectorTest, Iterators) {
   auto stl_it = this->stl_vec_.begin();
   auto s21_it = this->s21_vec_.begin();
@@ -544,7 +542,6 @@ TEST(VectorTestNonTyped, SwapLargeVectors) {
   EXPECT_EQ(my_vector2, std_vector2);
 }
 
-// iterator
 TYPED_TEST(VectorTest, ComparisonOperators) {
   typename s21::vector<TypeParam>::iterator iter1(this->large_s21_vec_.begin());
   typename s21::vector<TypeParam>::iterator iter2(this->large_s21_vec_.begin() +
@@ -794,7 +791,6 @@ TEST(VectorTestNonTyped, ConstVectorAssignment) {
 TEST(VectorTestNonTyped, ConstAt) {
   const s21::vector<int> const_vec{1, 2, 3};
 
-  // Test const at() method
   EXPECT_EQ(const_vec.at(0), 1);
   EXPECT_EQ(const_vec.at(1), 2);
   EXPECT_EQ(const_vec.at(2), 3);
