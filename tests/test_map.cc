@@ -411,7 +411,6 @@ TEST(MapNonTyped, Merge_SameMaps) {
   EXPECT_TRUE(s21_map2.empty());
 }
 
-// Additional find tests
 TYPED_TEST(MapTest, Find_FirstElement) {
   auto s21_it = this->s21_map_.find(46);  // First element in the map
   auto std_it = this->stl_map_.find(46);
