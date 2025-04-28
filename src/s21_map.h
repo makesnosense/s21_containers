@@ -67,7 +67,6 @@ class map {
 
     auto result = tree_.insert({key, mapped_type{}});
     mapped_type& result_value = result.first->data_.second;
-    // return tree_.insert({key, mapped_type{}}).first->data_.second;
     return result_value;
   }
 
